@@ -1,0 +1,15 @@
+{
+  "name": "ai-agents-from-zero",
+  "version": "1.0.0",
+  "description": "AI 大模型智能体从入门到精通 - 笔记与教程",
+  "author": "didilili <dili@outlook.com>",
+  "private": true,
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.0",
+    "@commitlint/config-conventional": "^20.4.0",
+    "husky": "^9.1.7"
+  }
+}
