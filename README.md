@@ -1,6 +1,16 @@
-# 《AI 大模型智能体从入门到精通》| ai-agents-from-zero
+# AI 大模型智能体从入门到精通 | ai-agents-from-zero
 
 > 一份**技术栈全、易上手、能落地**的 AI 智能体入门教程：覆盖大模型基础 → 低代码平台（Coze/Dify）→ LangChain/LangGraph → RAG/Agent 企业级实战，含**大量提示词工程等模板**与**可直接部署的企业级源码**，从零到能独立做项目。
+
+<div align="center">
+
+![AI](https://img.shields.io/badge/AI-Agent-00c853?style=flat)
+![Language](https://img.shields.io/badge/language-Chinese-2ea44f?style=flat)
+![Stars](https://img.shields.io/github/stars/didilili/ai-agents-from-zero?logo=github&style=flat)
+![GitHub](https://img.shields.io/badge/GitHub-Project-181717?logo=github&logoColor=white)
+[![Read Online](https://img.shields.io/badge/在线阅读-点击访问-blue?logo=bookstack)]()
+
+</div>
 
 **📢 说明**：本仓库正在持续更新中，为 **2026 年最新版** 笔记与教程。若对你有帮助，欢迎 **Star** ⭐~
 
@@ -14,7 +24,7 @@
 
 ---
 
-## 🛠 教程所涉及的技术栈
+## 🛠 涉及技术栈
 
 | 类别             | 技术/平台                                     | 说明                                                              |
 | ---------------- | --------------------------------------------- | ----------------------------------------------------------------- |
@@ -122,4 +132,4 @@
 
 ---
 
-**仓库英文名**：`i-agents-from-zero` · **中文名称**：《AI 大模型智能体从入门到精通》
+**仓库英文名**：`ai-agents-from-zero` · **中文名称**：《AI 大模型智能体从入门到精通》
