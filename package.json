@@ -1,13 +1,15 @@
 {
   "name": "ai-agents-from-zero",
   "version": "1.0.0",
-  "description": "AI 大模型智能体从入门到精通 - 笔记与教程",
+  "description": "AI 智能体从入门到精通 | ai-agents-from-zero",
   "author": "didilili <dili@outlook.com>",
   "private": true,
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "docs:serve": "docsify serve . --open"
   },
   "devDependencies": {
+    "docsify-cli": "^4.4.3",
     "@commitlint/cli": "^20.4.0",
     "@commitlint/config-conventional": "^20.4.0",
     "husky": "^9.1.7"

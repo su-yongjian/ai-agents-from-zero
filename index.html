@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="《AI智能体从入门到精通》——技术栈全、易上手、可落地的智能体教程，含大量工程模板与企业级可部署源码；覆盖大模型基础→Coze/Dify→LangChain/LangGraph→RAG/Agent 实战→微调→大厂规范全链路"
+    />
+    <title>AI智能体从入门到精通 | ai-agents-from-zero</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"
+    />
+    <style>
+      :root {
+        --theme-color: #00c853;
+        --sidebar-nav-link-color: #2c3e50;
+      }
+      .app-name-link img {
+        max-width: 200px;
+      }
+      .sidebar-nav li {
+        margin: 6px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">加载中...</div>
+    <script>
+      (function () {
+        var isGitHubPages = /github\.io$/i.test(location.hostname);
+        var config = {
+          name: "AI智能体从入门到精通",
+          repo: "https://github.com/didilili/ai-agents-from-zero",
+          loadSidebar: true,
+          loadNavbar: false,
+          subMaxLevel: 3,
+          auto2top: true,
+          homepage: "README.md",
+          search: {
+            placeholder: "搜索文档",
+            noData: "未找到结果",
+            depth: 6,
+          },
+          pagination: {
+            previousText: "上一页",
+            nextText: "下一页",
+            crossChapter: true,
+            crossChapterText: true,
+          },
+          copyCode: {
+            buttonText: "复制",
+            errorText: "错误",
+            successText: "已复制",
+          },
+        };
+        // 仅 GitHub Pages 需要 basePath；本地不设置，否则会请求 /undefinedREADME.md 等错误路径
+        if (isGitHubPages) config.basePath = "/ai-agents-from-zero/";
+        window.$docsify = config;
+      })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
+  </body>
+</html>

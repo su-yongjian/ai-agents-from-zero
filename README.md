@@ -1,4 +1,4 @@
-# AI 大模型智能体从入门到精通 | ai-agents-from-zero
+# AI 智能体从入门到精通 | ai-agents-from-zero
 
 > 一份**技术栈全、易上手、能落地**的 AI 智能体入门教程：覆盖大模型基础 → 低代码平台（Coze/Dify）→ LangChain/LangGraph → RAG/Agent 企业级实战，含**大量提示词工程等模板**与**可直接部署的企业级源码**，从零到能独立做项目。
 
@@ -136,4 +136,4 @@
 
 ---
 
-**仓库英文名**：`ai-agents-from-zero` · **中文名称**：《AI 大模型智能体从入门到精通》
+**仓库英文名**：`ai-agents-from-zero` · **中文名称**：《AI 智能体从入门到精通》
