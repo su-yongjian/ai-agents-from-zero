@@ -1,6 +1,8 @@
 <div align='center'>
   <img src="./images/banner.png" alt="alt text" width="950px">
-  <h1 style="margin-top: 15px;">AI 智能体从入门到精通 | ai-agents-from-zero</h1>
+  <h1 style="margin-top: 15px;">AI 智能体实战速成指南：从零到企业级落地</h1>
+  <h4><b>ai-agents-from-zero</b></h4>
+  <p><em>零基础掌握 Coze/Dify/LangGraph，搞定企业级 RAG/Agent 部署</em></p>
 </div>
 
 > **少讲原理，专注实战**：无需算法/深度学习基础，一份**技术栈全、易上手、能落地**的 AI 智能体入门教程。
@@ -140,4 +142,4 @@
 
 ---
 
-**仓库英文名**：`ai-agents-from-zero` · **仓库中文名**：《AI 智能体从入门到精通》
+**仓库英文名**：`ai-agents-from-zero` · **仓库中文名**：《AI 智能体实战速成指南：从零到企业级落地》
