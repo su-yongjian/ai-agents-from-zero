@@ -1,6 +1,11 @@
-# AI 智能体从入门到精通 | ai-agents-from-zero
+<div align='center'>
+  <img src="./images/banner.png" alt="alt text" width="950px">
+  <h1 style="margin-top: 15px;">AI 智能体从入门到精通 | ai-agents-from-zero</h1>
+</div>
 
-> 一份**技术栈全、易上手、能落地**的 AI 智能体入门教程：覆盖大模型基础 → 低代码平台（Coze/Dify）→ LangChain/LangGraph → RAG/Agent 企业级实战，含**大量提示词工程等模板**与**可直接部署的企业级源码**，从零到能独立做项目。
+> **少讲原理，专注实战**：无需算法/深度学习基础，一份**技术栈全、易上手、能落地**的 AI 智能体入门教程。
+> 覆盖大模型基础 → 低代码平台（Coze/Dify）→ LangChain/LangGraph → RAG/Agent 企业级实战，一路**做出来、跑起来、用得上**，含**提示词工程等模板**与**可部署企业级源码**。
+> 从零到能独立做项目，适合想**快速上手开发 AI 智能体**的开发者。
 
 <div align="center">
 

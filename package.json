@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky",
-    "docs:serve": "docsify serve . --open"
+    "serve": "docsify serve . --open"
   },
   "devDependencies": {
     "docsify-cli": "^4.4.3",
