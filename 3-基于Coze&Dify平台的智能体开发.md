@@ -799,8 +799,6 @@ Agent 日志如下：
 
 #### ④ 完整测试
 
-<img src="images/3/3-5-3-9.png" style="zoom:90%;" />
-
 ![](images/3/3-5-3-10.png)
 
 ## 6、工作流的搭建
@@ -877,7 +875,7 @@ https://metaso.cn/
 
 选择长思考-R1 会调用秘塔部署的满血版 DeepSeek-R1 模型。
 
-问题如下
+问题如下：
 
 ```
 对比QWQ和DeepSeek-R1
