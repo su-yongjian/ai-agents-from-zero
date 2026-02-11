@@ -12,6 +12,11 @@
 .npm-cache
 .angular/
 
+# Python
+.venv/
+venv/
+env/
+
 # profiling files
 chrome-profiler-events*.json
 speed-measure-plugin*.json
