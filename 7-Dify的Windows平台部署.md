@@ -1,5 +1,20 @@
 # 7 - Dify 的 Windows 平台部署
 
+本章偏**实操部署**：在 Windows 上把 Dify 跑在本地，实现**私有化**使用 Dify 开发 Agent、工作流和 RAG 应用。流程比 [第 6 章 Coze 部署](6-Coze的Windows平台部署.md) 更简单，核心就是「装 Docker → 拿代码 → 改配置 → 一条命令启动」。
+
+---
+
+**本章课程目标：**
+
+- 在 Windows 上正确安装 **Docker Desktop**，并能用命令行 `docker` 验证安装成功；遇到 WSL 提示时选择安装。
+- 获取 **Dify** 源码（GitHub 或网盘），进入 **docker** 目录，将 `.env.example` 复制为 `.env` 并按需修改（如端口改为 8100 等未被占用的端口）。
+- 在 docker 目录下执行 `docker compose up -d` 完成部署，能在浏览器访问 Dify（如 `http://localhost` 或 `http://localhost:8100`），并完成首次用户名/密码设置。
+- 知道若镜像拉取失败可多试几次或检查网络，使用方式与 Dify 云平台一致。
+
+**前置知识建议：** 已用过 Dify 云端或在 [第 3 章](3-基于Coze&Dify平台的智能体开发.md) 中接触过 Dify 会更易理解本地版用途；会基本命令行（打开 cmd、进入目录）即可。若未接触过 Docker，按第 1 节步骤安装即可。
+
+**入门阅读提示：** 先完成第 1 节 Docker 安装并重启（必要时安装 WSL），再用第 2 节：获取 Dify → 进入 docker 目录 → 复制并修改 .env（端口冲突时必改）→ 执行 `docker compose up -d`。首次拉镜像可能较慢，报错可重试。官方文档见：https://docs.dify.ai/zh/self-host/quick-start/docker-compose 。
+
 ---
 
 ## 1. Docker Desktop 安装
@@ -93,6 +108,8 @@
 > 例如：默认端口为 80，可改为 8100 等未被占用的端口。
 
 ![](images/7/7-2-2-2.png)
+
+> **可这样记：** 部署 Dify 就两件事：**环境**（装好 Docker）和**启动**（拿代码 → 进 docker 目录 → 复制 .env 并改端口 → `docker compose up -d`）。端口 80 被占用时一定要改 .env 里的端口，否则无法访问。
 
 ### 2.3 打开终端
 

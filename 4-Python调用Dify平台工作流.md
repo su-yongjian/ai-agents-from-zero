@@ -1,5 +1,20 @@
 # 4 - Python 调用 Dify 平台工作流
 
+本章偏**实操部署**：学会用 API 和 Python 调用你在 Dify 上已搭建好的工作流，把「页面里的工作流」变成「代码里可调用的服务」。
+
+---
+
+**本章课程目标：**
+
+- 知道调用前需在 Dify 中**发布工作流**，并会**创建 API 密钥**（密钥与工作流一一对应）。
+- 理解请求方式：POST、URL、请求头（Authorization: Bearer api_key）、请求体（inputs、response_mode、user），以及**流式（streaming）**与**阻塞式（blocking）**的区别。
+- 能用 **Postman**（可选）或 **Python + requests** 成功触发工作流，并能从流式响应中解析出 `workflow_finished` 与最终 `outputs`。
+- 会在 Dify 工作空间查看运行日志，并与本地控制台输出对照排查问题。
+
+**前置知识建议：** 需先在 Dify 上有一个**已搭建并发布**的工作流（见 [第 3 章 - 基于 Coze&Dify 平台的智能体开发](3-基于Coze&Dify平台的智能体开发.md) 中的工作流与 Dify 部分）；具备 Python 基础（会写简单脚本、会用 `pip install`）即可。
+
+**入门阅读提示：** 按文档顺序做即可：发布 → 查 API 文档 → 创建 API Key → 看懂请求格式 → 用 Postman 试一遍（可跳过）→ 用 Python 代码跑通。本地部署 Dify 时，将代码里的 `base_url` 改为 `http://localhost/v1` 即可。
+
 ---
 
 ## 1、发布
@@ -73,6 +88,8 @@ api_key 替换为上一步创建的 API 密钥。
 
 - **流式（streaming）**：基于 SSE（Server-Sent Events）实现类似打字机输出方式的流式返回。
 - **阻塞式（blocking）**：等待执行完毕后一次性返回结果（流程较长时可能会被中断）。由于 Dify 云平台/网关限制，请求在约 100 秒无返回后会超时中断。
+
+> **可这样记：** 流式 = 边执行边推送，适合长时间任务、需要实时看到进度；阻塞式 = 等全部执行完再一次性返回，写法简单但容易超时（约 100 秒）。一般用 **streaming**，代码里解析 `data:` 开头的 SSE 行即可拿到最终结果。
 
 ## 5、Postman 测试（可跳过）
 

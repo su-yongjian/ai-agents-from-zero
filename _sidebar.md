@@ -10,18 +10,18 @@
 
 - 02 RAG
 
-  - [搭建企业私有&个人知识库](2-RAG-搭建企业私有&个人知识库.md)
+  - [2 搭建企业私有&个人知识库](2-RAG-搭建企业私有&个人知识库.md)
 
 - 03 Coze & Dify 平台
 
-  - [基于 Coze&Dify 的智能体开发](3-基于Coze&Dify平台的智能体开发.md)
+  - [3 基于 Coze&Dify 的智能体开发](3-基于Coze&Dify平台的智能体开发.md)
   - 智能体的调用与部署
-    - [Python 调用 Dify 平台工作流](4-Python调用Dify平台工作流.md)
-    - [Python 调用 Coze 平台工作流](5-Python调用Coze平台工作流.md)
-    - [Coze 的 Windows 平台部署](6-Coze的Windows平台部署.md)
-    - [Dify 的 Windows 平台部署](7-Dify的Windows平台部署.md)
-    - [企业级大模型部署](8-企业级大模型部署.md)
-    - [Docker 入门与 Dify 部署常见问题](8.1-Docker入门与Dify部署常见问题.md)
+    - [4 Python 调用 Dify 平台工作流](4-Python调用Dify平台工作流.md)
+    - [5 Python 调用 Coze 平台工作流](5-Python调用Coze平台工作流.md)
+    - [6 Coze 的 Windows 平台部署](6-Coze的Windows平台部署.md)
+    - [7 Dify 的 Windows 平台部署](7-Dify的Windows平台部署.md)
+    - [8 企业级大模型部署](8-企业级大模型部署.md)
+    - [8.1 Docker 入门与 Dify 部署常见问题](8.1-Docker入门与Dify部署常见问题.md)
   - 工作流智能体案例与源码
     - [1 一键生成行业调研 PPT（Coze)](3-Coze&Dify平台工作流智能体案例与源码/3.1-Coze案例：一键生成行业调研PPT/3.1-一键生成行业调研PPT.md)
     - [2 复刻爆款视频（Coze)](3-Coze&Dify平台工作流智能体案例与源码/3.2-Coze案例：复刻爆款视频/3.2-复刻爆款视频.md)
@@ -36,8 +36,8 @@
 
 - 04 大模型核心开发框架
 
-  - [LangChain 概述与快速上手](9-LangChain概述与快速上手.md)
-  - [Model-I-O 与 Ollama 本地部署](10-Model-I-O与Ollama本地部署.md)
-  - [提示词与输出解析](11-提示词与输出解析.md)
+  - [9 LangChain 概述与快速上手](9-LangChain概述与快速上手.md)
+  - [10 Model-I-O 与 Ollama 本地部署](10-Model-I-O与Ollama本地部署.md)
+  - [11 提示词与输出解析](11-提示词与输出解析.md)
 
 - [更新日志](教程更新日志.md)

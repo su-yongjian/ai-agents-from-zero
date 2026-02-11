@@ -1,5 +1,21 @@
 # 5 - Python 调用 Coze 平台工作流
 
+本章偏**实操部署**：学会用 API 和 Python 调用你在 Coze 上已搭建好的工作流，把「扣子里的工作流」变成「代码里可调用的服务」。整体流程与 [第 4 章 - Python 调用 Dify 工作流](4-Python调用Dify平台工作流.md) 类似，只是平台接口和 SDK 不同。
+
+---
+
+**本章课程目标：**
+
+- 知道调用前需在 Coze 中**发布 API**，并在「API 调试」里拿到 **workflow_id**、**app_id** 和 **API Key（token）**。
+- 理解请求方式：POST、URL（如 `api.coze.cn/v1/workflow/stream_run`）、请求头与请求体（**parameters** 对应工作流输入变量）；能看懂调试结果中的 PING（心跳）、Message（携带 content）、Done（结束）含义。
+- 能用 **cozepy** 官方 SDK 在本地跑通流式调用：安装 `cozepy`、配置 token 与 `COZE_CN_BASE_URL`、在 `stream()` 中传入 **parameters**，并会处理 MESSAGE / ERROR / INTERRUPT 等事件。
+
+**前置知识建议：** 需先在 Coze 上有一个**已搭建并发布**的工作流（见 [第 3 章 - 基于 Coze&Dify 平台的智能体开发](3-基于Coze&Dify平台的智能体开发.md)）；具备 Python 基础（会写简单脚本、会用 `pip install`）即可。若已学过第 4 章 Dify 调用，对比着看会更快。
+
+**入门阅读提示：** 按文档顺序做即可：发布 API → 进入调试拿到 workflow_id、app_id、API Key → 在调试里用 curl 或界面跑通 → 安装 cozepy、拷贝示例代码并补全 **parameters** 后本地运行。国内使用需选 **api.coze.cn**（示例中已用 `COZE_CN_BASE_URL`）。
+
+---
+
 ## 1. 发布 API
 
 Coze 的 API 功能需要通过应用发布功能启用。
@@ -82,6 +98,8 @@ curl -X POST 'https://api.coze.cn/v1/workflow/stream_run' \
 **Done** 为最后一个响应，表示工作流执行完毕，通常出现在所有 Message 之后。
 
 ![](images/5/5-2-7-3.png)
+
+> **可这样记：** 流式返回时，**PING** 是保活心跳，**Message** 才是真正带 `content` 的数据，**Done** 表示流结束。写代码时一般只关心 Message 和 Done（或错误类型），心跳可忽略。
 
 ## 3. 通过 Python 代码调用工作流
 
