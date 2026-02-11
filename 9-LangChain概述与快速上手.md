@@ -340,7 +340,7 @@ pip install langchain-core
 
 在项目目录下执行脚本，可一次性查看 LangChain、langchain_community 的版本与安装路径，以及当前 Python 版本。
 
-【案例源码】环境检查脚本：`4-LangGraph框架框架案例与源码/01-helloworld/GetEnvInfo.py`
+【案例源码】环境检查脚本：`案例与源码-4-LangGraph框架/01-helloworld/GetEnvInfo.py`
 
 ```python
 import langchain
