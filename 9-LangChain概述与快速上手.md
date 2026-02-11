@@ -8,7 +8,9 @@
 - 完成从零到一的 HelloWorld：接入阿里百炼/通义、多模型共存、企业级封装与流式输出。
 - 为后续学习 Model I/O、Ollama 本地部署、提示词与输出解析（第 10、11 章）打好基础。
 
-**前置知识建议：** 具备 Python 基础（环境、包管理、基本语法）；对大模型与 API 调用有初步认识（可参考第 1 章「大模型智能体概述」）。
+**前置知识建议：** 具备 Python 基础（环境、包管理、基本语法）；对大模型与 API 调用有初步认识（可参考 [第 1 章](1-1-大模型认知与工程概览.md) 大模型与智能体概述）。若已用过 [Coze/Dify](3-基于Coze&Dify平台的智能体开发.md) 做应用，可对比理解「平台拖拽」与「代码框架」的差异。
+
+**入门阅读提示：** 第 1 节先建立「LangChain 是什么、能做什么、和 Coze/Dify 有何不同、六大模块长什么样」的整体印象，不必死记 API；第 2 节按「环境与约定 → 安装依赖 → 百炼三件套 → HelloWorld → 多模型共存 → 企业级封装与流式」顺序动手。调用任何模型都离不开 **API Key、模型名、Base URL** 三件套，建议先在一个平台（如阿里百炼）跑通再扩展。
 
 ---
 
@@ -193,6 +195,8 @@ Java 代码要操作数据库 MySQL，中间需要**JDBC** 这个标准接口—
 - **Callback（回调）**：日志、监控、调试等可观测性。
 
 **本节小结**：先建立「六大模块 + 分层架构」的整体图景，具体 API 在后续章节按需查阅即可。
+
+> **可这样记：** 六大模块可记为「**模型、记忆、检索、链、智能体、回调**」——**Models** 接大模型，**Memory** 管对话/状态，**Retrieval** 连向量库做 RAG，**Chains** 把多步串成固定流程，**Agents** 自己选工具和规划步骤，**Callback** 做日志与监控。它们之间**无固定顺序**，按业务自由组合；入门时知道「调模型用 Models、做 RAG 用 Retrieval+Models、复杂决策用 Agents」即可。
 
 <img src="images/9/9-1-3-6.jpg" style="zoom:70%;" alt="六大模块小结"/>
 
@@ -492,7 +496,7 @@ print(model.invoke("你是谁").content)
 
 下面示例使用 **不同变量名**（`model_qwen`、`model_deepseek`）保存两个模型实例，避免后者覆盖前者，便于后续扩展与维护。
 
-【案例源码】`4-LangGraph 框架框架案例与源码/01-helloworld/LangChain_MoreV1.0.py`
+【案例源码】`4-LangGraph框架案例与源码/01-helloworld/LangChain_MoreV1.0.py`
 
 ```python
 # LangChain 1.0+ 多模型共存（推荐用不同变量名区分）
@@ -536,7 +540,7 @@ print(model_deepseek.invoke("你是谁").content)
 
 下面示例将 LLM 初始化封装成函数、做环境变量校验、使用日志与异常处理，并演示流式调用。
 
-【案例源码】`4-LangGraph 框架框架案例与源码/01-helloworld/StandardDesc.py`
+【案例源码】`4-LangGraph框架案例与源码/01-helloworld/StandardDesc.py`
 
 ```python
 # 企业级示例：封装、异常处理、流式输出
@@ -601,3 +605,16 @@ if __name__ == "__main__":
 <img src="images/9/9-2-8-1.gif" alt="从链式到图状：LangGraph 核心理念" style="zoom:70%">
 
 > **说明**：上图示意从单链顺序执行，演进到带状态、可分支、可循环的图结构，为后续学习 LangGraph 做铺垫。
+
+---
+
+**本章小结（便于复习）**
+
+- **LangChain** 是一套把大模型与数据源、工具、记忆等**连接起来的胶水框架**（不是大模型本身）；你的代码调 LangChain，LangChain 再在内部调模型、查知识库、拼 prompt。与 **Coze/Dify** 的区别：前者是**代码框架**、适合深度集成与定制，后者是**低代码平台**、适合快速搭应用；两者可并存使用。
+- **定位**：主要服务于「超级个体 + 智能体」应用开发层，处在**服务/链层**，通过 OpenAI 兼容 API 调用下层模型、访问存储层向量库；常被类比为 AI 应用开发里的 **Spring**。
+- **六大核心模块**：Models（对接 LLM/Chat/Embedding）、Memory（对话与状态）、Retrieval（向量库与 RAG）、Chains（多步链式编排）、Agents（选工具与规划）、Callback（日志与监控）；模块间耦合松散，按需组合。当前以 **LangChain 1.0** 为主，推荐用 **`init_chat_model`** 统一入口。
+- **上手路径**：安装 `langchain`、`langchain-openai`、`langchain-core`、`python-dotenv` 等；调用任意模型需准备**三件套**：**API Key**、**模型名**、**Base URL**（阿里百炼、DeepSeek 等均提供 OpenAI 兼容接口）。密钥放在 `.env`，用 `load_dotenv()` 加载，不要写进代码。
+- **HelloWorld**：用 `init_chat_model` 或 `ChatOpenAI` 初始化模型，`model.invoke("问题")` 得到回复，`.content` 取文本；**多模型共存**用不同变量名保存多个模型实例；**流式输出**用 `model.stream(...)` 逐 token 返回；企业级写法可封装初始化函数、做环境校验与异常处理、打日志。
+- **注意**：文档与版本迭代快，以官方文档和当前版本为准；遇到 API 更名或报错可查文档或锁定课程所用版本。后续将学习 Model I/O、Ollama 本地部署、提示词与输出解析（第 10、11 章）及 LangGraph 图编排。
+
+**建议下一步：** 在本地用阿里百炼或 DeepSeek 的 API Key、模型名、Base URL 跑通一次 `init_chat_model` + `invoke`，再试 `stream()` 流式输出；若需多模型，在同一脚本里初始化通义与 DeepSeek 各一个实例并分别调用。接着可学习 [第 10 章 - Model I/O 与 Ollama](10-Model-I-O与Ollama本地部署.md)、[第 11 章 - 提示词与输出解析](11-提示词与输出解析.md)，深入提示模板与结构化输出。
