@@ -17,7 +17,7 @@
 
 ---
 
-## 1. Docker Desktop 安装
+## 1、Docker Desktop 安装
 
 ### 1.1 下载安装包
 
@@ -79,7 +79,7 @@
 
 ![](images/7/7-1-10-2.png)
 
-## 2. 部署 Dify
+## 2、部署 Dify
 
 ### 2.1 拉取 Dify 代码
 
