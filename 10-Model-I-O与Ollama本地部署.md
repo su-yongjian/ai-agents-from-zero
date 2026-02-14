@@ -483,7 +483,7 @@ Ollama 就是让你**在自己电脑上跑大模型**的一个免费、开源小
 
 #### 2.2.1 自定义 Ollama 安装路径与模型存储目录
 
-若希望将 Ollama 或模型文件安装到非默认目录（例如 D 盘或大容量磁盘），可先自定义安装路径，再设置**模型存储目录**。
+若希望将 Ollama 或模型文件安装到非默认目录（例如 D 盘或大容量磁盘），可先自定义安装路径，再设置**模型存储目录**。**Windows 下建议不要装到 C 盘**，以免程序与模型占满系统盘；安装时或安装前将安装路径与模型目录设到 D 盘等其它盘符即可。
 
 ![自定义 Ollama 安装路径的配置步骤](images/10/10-2-2-1.gif)
 
@@ -532,11 +532,16 @@ Ollama 就是让你**在自己电脑上跑大模型**的一个免费、开源小
 - 查看版本：在终端执行 `ollama --version`。
 - 检查服务端口：Ollama 默认使用端口 **11434**。
   - Windows：`netstat -ano | findstr 11434`
-  - Linux：`ps -ef | grep 8080` 或检查 11434 端口占用。
+  - macOS：`lsof -i :11434` 或 `netstat -an | grep 11434`
+  - Linux：`lsof -i :11434` 或 `netstat -tlnp | grep 11434`
+
+> **lsof 和 netstat 的区别**：**lsof**（list open files）列出打开的文件，在 Unix/macOS 里网络连接也算一种文件，所以 `lsof -i :11434` 能直接看到**哪个进程**（PID、进程名）占用了该端口，适合回答「谁在用这个端口」。**netstat**（network statistics）显示网络连接、监听端口等**连接状态**（如 LISTEN、ESTABLISHED），偏重「端口是否在监听、有哪些连接」；要看进程通常需加参数（如 Linux 的 `-p`）。查 Ollama 是否在跑时，用 **lsof -i :11434** 最直接；两者二选一即可。
 
 ![验证 Ollama 安装与服务状态](images/10/10-2-4-1.jpeg)
 
 #### 2.4.2 以通义千问、DeepSeek 为例运行模型
+
+执行 `ollama run <模型名>` 时，**若本地还没有该模型，Ollama 会先自动拉取（pull）再启动对话**，无需先单独执行 `ollama pull`；若已拉取过则直接进入对话。
 
 - **千问**（示例 4B 尺寸）：
   ```bash
@@ -577,7 +582,7 @@ pip install -U ollama
 
 以下示例使用 `langchain_ollama` 的 `ChatOllama`，连接本机默认的 Ollama 服务（`http://localhost:11434`），并调用已拉取的模型（如 `qwen:4b` 或 `llama3`）。
 
-【案例源码】`案例与源码-4-LangGraph框架/02-models_io/ModelIO_Ollama.py`
+【案例源码】`案例与源码-4-LangGraph框架/03-ollama/LangChain_Ollama.py`
 
 ```python
 from langchain_ollama import ChatOllama
