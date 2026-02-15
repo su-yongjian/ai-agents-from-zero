@@ -1,0 +1,48 @@
+"""
+【第 11 章 - 模型调用：异步 astream（异步流式输出）】
+对应笔记：11-提示词与输出解析.md → 1.4 模型调用方法 → 1.4.2 流式调用（异步）
+
+知识点速览：
+- astream：异步版的 stream。流式返回 + 不阻塞主线程，适合高并发下的「打字机」体验。
+- 用法：astream 返回「异步生成器」，必须用 async for 遍历，不能再用普通 for。
+- 入口：在 async 函数里调用，最后用 asyncio.run() 运行。
+"""
+
+import os
+import asyncio
+from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
+from langchain.messages import HumanMessage, SystemMessage
+
+load_dotenv()
+
+# ---------- 1. 实例化模型 ----------
+model = init_chat_model(
+    model="qwen-plus",
+    model_provider="openai",
+    api_key=os.getenv("aliQwen-api"),
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+)
+
+# ---------- 2. 构建多角色消息 ----------
+messages = [
+    SystemMessage(content="你叫小问，是一个乐于助人的AI人工助手"),
+    HumanMessage(content="你是谁")
+]
+
+
+# ---------- 3. 异步流式调用（在 async 函数中）----------
+async def async_stream_call():
+    # astream(messages) 返回的是「异步生成器」，不是 await 一个整体结果
+    response = model.astream(messages)
+    print(f"响应类型：{type(response)}")  # <class 'async_generator'>
+
+    # 必须用 async for 遍历异步生成器，不能用普通 for
+    async for chunk in response:
+        print(chunk.content, end="", flush=True)
+    print("\n")
+
+
+# ---------- 4. 运行异步函数 ----------
+if __name__ == "__main__":
+    asyncio.run(async_stream_call())
