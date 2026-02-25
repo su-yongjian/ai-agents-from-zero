@@ -28,3 +28,14 @@ print()
 # ---------- 4. to_messages()：转成「消息列表」，可接入需要多角色消息的链 ----------
 print(prompt.to_messages())
 print(type(prompt.to_messages()))
+
+
+# 【输出示例】
+# text='你是一个专业的python开发工程师，请回答我的问题给出回答，我的问题是：冒泡排序怎么写？'
+# <class 'langchain_core.prompt_values.StringPromptValue'>
+
+# 你是一个专业的python开发工程师，请回答我的问题给出回答，我的问题是：冒泡排序怎么写？
+# <class 'str'>
+
+# [HumanMessage(content='你是一个专业的python开发工程师，请回答我的问题给出回答，我的问题是：冒泡排序怎么写？', additional_kwargs={}, response_metadata={})]
+# <class 'list'>
