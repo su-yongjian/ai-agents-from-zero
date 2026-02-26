@@ -36,8 +36,11 @@
 
 - 04 大模型核心开发框架
 
-  - [9 LangChain 概述与快速上手](9-LangChain概述与快速上手.md)
-  - [10 Model-I-O 与 Ollama 本地部署](10-Model-I-O与Ollama本地部署.md)
-  - [11 提示词与输出解析](11-提示词与输出解析.md)
+  - [9 LangChain 概述与架构](9-LangChain概述与架构.md)
+  - [10 LangChain 快速上手与 HelloWorld](10-LangChain快速上手与HelloWorld.md)
+  - [11 Model I/O 与模型接入](11-Model-I-O与模型接入.md)
+  - [12 Ollama 本地部署与调用](12-Ollama本地部署与调用.md)
+  - [13 提示词与消息模板](13-提示词与消息模板.md)
+  - [14 输出解析器](14-输出解析器.md)
 
 - [更新日志](教程更新日志.md)
