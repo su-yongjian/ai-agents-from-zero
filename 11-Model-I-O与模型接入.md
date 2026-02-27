@@ -185,7 +185,7 @@ LangChain 支持通过不同集成包接入多种大模型，以下按「OpenAI 
 | **特点**     | 轻量、直接、贴近原生 API            | 可与 Prompt、Chain、Agent、Memory 等组件无缝配合 |
 | **选型建议** | 仅需简单调用、不打算用 LangChain 时 | 需要链式编排、多组件协作时                       |
 
-**类比**：可类比 Java 里的 **`Collection`** 与 **`List<String>`**——前者是通用、底层的集合接口，后者是在同一套类型体系下更具体、可组合、与业务（如遍历、流式处理）更贴合的一种形态；同理，`openai.OpenAI` 是通用 API 能力，`ChatOpenAI` 是 LangChain 生态里「带类型、可编排」的那一层。
+**类比**：可类比 Java 里的 **`Collection`** 与 <strong>`List<String>`<strong>——前者是通用、底层的集合接口，后者是在同一套类型体系下更具体、可组合、与业务（如遍历、流式处理）更贴合的一种形态；同理，`openai.OpenAI` 是通用 API 能力，`ChatOpenAI` 是 LangChain 生态里「带类型、可编排」的那一层。
 
 **结论**：两者无绝对优劣，按需求选择——**简单调用用官方 SDK**，**复杂工作流用 LangChain 的 ChatOpenAI**。
 

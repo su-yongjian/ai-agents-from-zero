@@ -472,7 +472,7 @@ git clone https://gitee.com/shkstart/coze-loop.git
 docker compose -f docker-compose.yml --env-file .env --profile "*" up -d
 ```
 
-若希望在前台运行以便查看完整日志（关闭终端窗口后进程会退出），可去掉 `-d`。**首次启动建议不加 `-d`**，便于观察启动过程。
+若希望在前台运行以便查看完整日志（关闭终端窗口后进程会退出），可去掉 `-d`。首次启动建议不加 `-d`，便于观察启动过程。
 
 首次启动推荐命令
 
