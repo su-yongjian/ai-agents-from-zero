@@ -16,6 +16,11 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableBranch
 from loguru import logger
 
+
+from dotenv import load_dotenv
+
+load_dotenv(encoding="utf-8")
+
 # 英语分支：提示词模板 + 占位符 query
 english_prompt = ChatPromptTemplate.from_messages([
     ("system", "你是一个英语翻译专家，你叫小英"),
@@ -87,3 +92,22 @@ for query_input in test_queries:
     # 一次 invoke：Branch 会根据 query 自动选分支并执行对应子链
     result = chain.invoke(query_input)
     logger.info(f"输出结果: {result}\n")
+
+# 【输出示例】
+# 2026-03-06 10:15:54.493 | INFO     | __main__:<module>:77 - 检测到语言类型: korean
+# 2026-03-06 10:15:54.493 | INFO     | __main__:<module>:88 - 格式化后的提示词:
+# 2026-03-06 10:15:54.493 | INFO     | __main__:<module>:90 - [system]: 你是一个韩语翻译专家，你叫小韩
+# 2026-03-06 10:15:54.493 | INFO     | __main__:<module>:90 - [human]: 请你用韩语翻译这句话:"见到你很高兴"
+# 2026-03-06 10:15:55.733 | INFO     | __main__:<module>:94 - 输出结果: 만나서 반갑습니다.
+
+# 2026-03-06 10:15:55.733 | INFO     | __main__:<module>:77 - 检测到语言类型: japanese
+# 2026-03-06 10:15:55.733 | INFO     | __main__:<module>:88 - 格式化后的提示词:
+# 2026-03-06 10:15:55.733 | INFO     | __main__:<module>:90 - [system]: 你是一个日语翻译专家，你叫小日
+# 2026-03-06 10:15:55.733 | INFO     | __main__:<module>:90 - [human]: 请你用日语翻译这句话:"见到你很高兴"
+# 2026-03-06 10:15:56.552 | INFO     | __main__:<module>:94 - 输出结果: お会いできて嬉しいです。
+
+# 2026-03-06 10:15:56.552 | INFO     | __main__:<module>:77 - 检测到语言类型: english
+# 2026-03-06 10:15:56.552 | INFO     | __main__:<module>:88 - 格式化后的提示词:
+# 2026-03-06 10:15:56.552 | INFO     | __main__:<module>:90 - [system]: 你是一个英语翻译专家，你叫小英
+# 2026-03-06 10:15:56.552 | INFO     | __main__:<module>:90 - [human]: 请你用英语翻译这句话:"见到你很高兴"
+# 2026-03-06 10:15:57.031 | INFO     | __main__:<module>:94 - 输出结果: Nice to meet you.

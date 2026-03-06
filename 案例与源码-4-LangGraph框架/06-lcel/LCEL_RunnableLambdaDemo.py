@@ -16,6 +16,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
 from loguru import logger
 
+from dotenv import load_dotenv
+
+load_dotenv(encoding="utf-8")
+
 model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
@@ -57,3 +61,9 @@ debug_node = RunnableLambda(debug_print)
 full_chain = chain1 | debug_node | chain2
 result2 = full_chain.invoke({"topic": "langchain"})
 logger.info(f"最终结果222:{result2}")
+
+# 【输出实例】
+# 2026-03-06 10:30:31.657 | INFO     | __main__:debug_print:34 - 中间结果:LangChain 是一个开源框架，用于构建基于大语言模型（LLM）的应用程序。它提供模块化组件（如链、代理、记忆、工具集成等），帮助开发者轻松连接 LLM 与外部数据源（如数据库、API）、实现对话状态管理、支持多步推理与工具调用，从而快速开发智能应用（如问答系统、聊天机器人、自动化工作流）。核心理念是“编排”——将 LLM 作为通用接口，协同其他能力完成复杂任务。
+# 2026-03-06 10:30:34.964 | INFO     | __main__:<module>:57 - 最终结果111:LangChain is an open-source framework for building applications powered by large language models (LLMs). It provides modular components—such as chains, agents, memory, and tool integrations—that enable developers to easily connect LLMs with external data sources (e.g., databases, APIs), manage conversational state, support multi-step reasoning and tool invocation, and rapidly develop intelligent applications—including question-answering systems, chatbots, and automated workflows. Its core philosophy centers on “orchestration”: treating the LLM as a universal interface that coordinates with other capabilities to accomplish complex tasks.
+# 2026-03-06 10:30:38.152 | INFO     | __main__:debug_print:34 - 中间结果:LangChain 是一个开源框架，用于构建基于大语言模型（LLM）的应用程序。它提供模块化组件（如链、代理、记忆、工具集成等），帮助开发者轻松连接 LLM 与外部数据源（如数据库、API）、实现对话状态管理、支持多步推理与工具调用，从而快速开发智能应用（如问答系统、聊天机器人、自动化工作流）。核心理念是“编排”——将 LLM 作为通用接口，协同其他能力完成复杂任务。
+# 2026-03-06 10:30:41.184 | INFO     | __main__:<module>:63 - 最终结果222:LangChain is an open-source framework for building applications powered by large language models (LLMs). It provides modular components—such as chains, agents, memory, and tool integrations—that enable developers to easily connect LLMs with external data sources (e.g., databases, APIs), manage conversational state, support multi-step reasoning and tool invocation, and rapidly develop intelligent applications—including question-answering systems, chatbots, and automated workflows. Its core philosophy centers on “orchestration”: treating the LLM as a universal interface that coordinates with other capabilities to accomplish complex tasks.

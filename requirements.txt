@@ -23,3 +23,6 @@ dashscope>=1.0
 
 # ---------- 输出解析与日志（05_parser 等） ----------
 loguru>=0.7
+
+# ---------- LCEL 图可视化（06-lcel 中 get_graph().print_ascii() 需此依赖） ----------
+grandalf>=0.6
