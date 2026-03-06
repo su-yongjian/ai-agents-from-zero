@@ -10,6 +10,7 @@ print(redis.__version__)
 try:
     # 导入 redis 包
     import redis
+
     print("✅ redis 包导入成功！")
     print(f"✅ redis 包版本：{redis.__version__}")
 except ModuleNotFoundError:

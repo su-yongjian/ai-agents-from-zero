@@ -9,7 +9,9 @@
 - invoke 同步调用、response.content 取回复正文。了解即可，当前主推 1.0 的 init_chat_model 写法。
 """
 
-from langchain_openai import ChatOpenAI  # OpenAI 兼容的聊天模型封装，可配合 base_url 接国内平台
+from langchain_openai import (
+    ChatOpenAI,
+)  # OpenAI 兼容的聊天模型封装，可配合 base_url 接国内平台
 import os
 from dotenv import load_dotenv  # 从 .env 文件加载环境变量，避免把 API Key 写进代码
 
@@ -33,12 +35,14 @@ from dotenv import load_dotenv  # 从 .env 文件加载环境变量，避免把 
 
 # 第 3 版（推荐）：用 python-dotenv 从 .env 加载，再通过 os.getenv 读取
 # 项目根目录放 .env 文件，内容如：QWEN_API_KEY=sk-xxx（不要提交到 Git）
-load_dotenv(encoding='utf-8')  # encoding 指定 utf-8，避免 .env 中中文注释乱码
+load_dotenv(encoding="utf-8")  # encoding 指定 utf-8，避免 .env 中中文注释乱码
 
 llm = ChatOpenAI(
-    model="deepseek-v3.2",           # 模型名，需与平台「模型广场」中的名称一致
-    api_key=os.getenv("QWEN_API_KEY"),  # 从环境变量取 Key（已由 load_dotenv 从 .env 加载）
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  # 阿里百炼 OpenAI 兼容接口地址
+    model="deepseek-v3.2",  # 模型名，需与平台「模型广场」中的名称一致
+    api_key=os.getenv(
+        "QWEN_API_KEY"
+    ),  # 从环境变量取 Key（已由 load_dotenv 从 .env 加载）
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",  # 阿里百炼 OpenAI 兼容接口地址
 )
 
 # ========== 2. 调用大模型并打印结果 ==========
@@ -46,9 +50,8 @@ llm = ChatOpenAI(
 response = llm.invoke("你是谁")
 
 # response 为 LangChain 消息对象，包含 content、additional_kwargs 等元数据
-print(response)        # 打印完整对象（含元数据，便于调试）
+print(response)  # 打印完整对象（含元数据，便于调试）
 print()
 print(response.content)  # 只取「正文」文本，即模型回复内容
 
 print()
-

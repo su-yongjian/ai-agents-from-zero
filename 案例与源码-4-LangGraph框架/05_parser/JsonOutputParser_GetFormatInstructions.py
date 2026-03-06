@@ -25,6 +25,7 @@ load_dotenv(encoding="utf-8")
 
 class Person(BaseModel):
     """定义一条「新闻」的结构：时间、人物、事件。用于约束模型输出的 JSON 形状。"""
+
     time: str = Field(description="时间")
     person: str = Field(description="人物")
     event: str = Field(description="事件")
@@ -37,20 +38,24 @@ parser = JsonOutputParser(pydantic_object=Person)
 format_instructions = parser.get_format_instructions()
 
 # 在 human 消息里加入 {format_instructions}，模型会看到「请按如下格式输出 JSON …」
-chat_prompt = ChatPromptTemplate.from_messages([
-    ("system", "你是一个AI助手，你只能输出结构化JSON数据。"),
-    ("human", "请生成一个关于{topic}的新闻。{format_instructions}")
-])
+chat_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "你是一个AI助手，你只能输出结构化JSON数据。"),
+        ("human", "请生成一个关于{topic}的新闻。{format_instructions}"),
+    ]
+)
 
 # 填 topic 和 format_instructions，得到消息列表
-prompt = chat_prompt.format_messages(topic="小米su7跑车", format_instructions=format_instructions)
+prompt = chat_prompt.format_messages(
+    topic="小米su7跑车", format_instructions=format_instructions
+)
 logger.info(prompt)
 
 model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 result = model.invoke(prompt)
@@ -68,4 +73,4 @@ logger.info(f"结果类型: {type(response)}")
 # 2026-02-27 15:01:47.540 | INFO     | __main__:<module>:61 - 解析后的结构化结果:
 # {'time': '2024年3月28日', 'person': '雷军', 'event': '小米正式发布首款高性能纯电动轿车SU7，百公里加速2.78秒，续航达800公里，开启预订后24小时订单突破10万辆'}
 # 2026-02-27 15:01:47.540 | INFO     | __main__:<module>:62 - 结果类型: <class 'dict'>
-# (.venv) tools@ToolsMacBook-Pro 05_parser % 
+# (.venv) tools@ToolsMacBook-Pro 05_parser %

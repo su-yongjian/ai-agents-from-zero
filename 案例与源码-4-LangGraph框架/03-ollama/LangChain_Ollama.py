@@ -28,4 +28,3 @@ print(response)
 
 # 【可选】如果你只想看到模型回复的纯文字，可以这样取：
 # print(response.content)
-

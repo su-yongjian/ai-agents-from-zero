@@ -13,7 +13,8 @@ import os
 from langchain_deepseek import ChatDeepSeek
 
 from dotenv import load_dotenv
-load_dotenv(encoding='utf-8')
+
+load_dotenv(encoding="utf-8")
 
 # ========== 2. 初始化 DeepSeek 聊天模型 ==========
 model = ChatDeepSeek(

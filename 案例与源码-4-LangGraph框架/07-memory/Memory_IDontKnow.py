@@ -1,4 +1,3 @@
-
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain.chat_models import init_chat_model
@@ -10,12 +9,10 @@ llm = init_chat_model(
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
     temperature=0.0,
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
-prompt = PromptTemplate.from_template(
-    "请回答我的问题：{question}"
-)
+prompt = PromptTemplate.from_template("请回答我的问题：{question}")
 # 创建字符串输出解析器
 parser = StrOutputParser()
 

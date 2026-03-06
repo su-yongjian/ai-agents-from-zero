@@ -27,7 +27,7 @@ from langchain_core.prompts import ChatPromptTemplate
 chat_prompt = ChatPromptTemplate(
     [
         SystemMessage(content="你是AI助手，你的名字叫{name}。"),
-        HumanMessage(content="请问：{question}")
+        HumanMessage(content="请问：{question}"),
     ]
 )
 

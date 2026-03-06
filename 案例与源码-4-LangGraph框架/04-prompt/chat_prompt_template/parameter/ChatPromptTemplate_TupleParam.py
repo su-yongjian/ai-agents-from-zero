@@ -29,7 +29,9 @@ chatPromptTemplate = ChatPromptTemplate(
 )
 
 # 传入占位符变量，得到消息列表
-prompt = chatPromptTemplate.format_messages(name="小谷AI", thing="AI", user_input="7 + 5等于多少")
+prompt = chatPromptTemplate.format_messages(
+    name="小谷AI", thing="AI", user_input="7 + 5等于多少"
+)
 print(prompt)
 
 # 【输出示例】

@@ -13,7 +13,8 @@ import os
 from langchain.chat_models import init_chat_model
 
 from dotenv import load_dotenv
-load_dotenv(encoding='utf-8')
+
+load_dotenv(encoding="utf-8")
 
 # ========== 2. 实例化时设置常用参数 ==========
 # temperature：控制输出随机性，0 更确定、高重复，越大越随机、越有创意。
@@ -24,7 +25,7 @@ model = init_chat_model(
     model_provider="openai",
     api_key=os.getenv("deepseek-api"),
     base_url="https://api.deepseek.com",
-    temperature=0.7,   # 0～1，越高越随机；此处略高便于看到多次输出差异
+    temperature=0.7,  # 0～1，越高越随机；此处略高便于看到多次输出差异
     # max_tokens=256,  # 可选：限制单次回复长度
 )
 

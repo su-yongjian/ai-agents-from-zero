@@ -14,7 +14,8 @@ from langchain_community.chat_models.tongyi import ChatTongyi
 from langchain_core.messages import HumanMessage
 
 from dotenv import load_dotenv
-load_dotenv(encoding='utf-8')
+
+load_dotenv(encoding="utf-8")
 
 # ========== 2. 初始化通义千问聊天模型 ==========
 chat_llm = ChatTongyi(

@@ -23,19 +23,26 @@ from loguru import logger
 load_dotenv(encoding="utf-8")
 
 # 在系统消息里直接写明：返回 json，且包含 q（问题）、a（答案）字段
-chat_prompt = ChatPromptTemplate.from_messages([
-    ("system", "你是一个{role}，请简短回答我提出的问题，结果返回json格式，q字段表示问题，a字段表示答案。"),
-    ("human", "请回答:{question}")
-])
+chat_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "你是一个{role}，请简短回答我提出的问题，结果返回json格式，q字段表示问题，a字段表示答案。",
+        ),
+        ("human", "请回答:{question}"),
+    ]
+)
 
-prompt = chat_prompt.invoke({"role": "AI助手", "question": "什么是LangChain，简洁回答100字以内"})
+prompt = chat_prompt.invoke(
+    {"role": "AI助手", "question": "什么是LangChain，简洁回答100字以内"}
+)
 logger.info(prompt)
 
 model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # 模型返回的可能是带 JSON 的文本
@@ -60,6 +67,6 @@ logger.info(f"结果类型: {type(response)}")  # <class 'dict'>
 # ************************************************************
 # 2026-02-26 12:00:56.501 | INFO     | __main__:<module>:48 - 解析后的结构化结果:
 # {'q': '什么是LangChain，简洁回答100字以内', 'a': 'LangChain是一个开源框架，用于构建基于大语言模型（LLM）的应用程序，支持链式调用、数据连接、记忆管理与工具集成，简化提示工程、RAG和Agent开发。'}
-# 2026-02-26 12:00:56.501 | INFO     | __main__:<module>:49 - 
+# 2026-02-26 12:00:56.501 | INFO     | __main__:<module>:49 -
 
 # 2026-02-26 12:00:56.501 | INFO     | __main__:<module>:50 - 结果类型: <class 'dict'>

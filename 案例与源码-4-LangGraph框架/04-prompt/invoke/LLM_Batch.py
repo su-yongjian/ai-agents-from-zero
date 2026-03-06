@@ -14,6 +14,7 @@
 import os
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
+
 # 本示例用「字符串列表」作为 batch 输入，无需 Message 类型；若改为多角色可引入 HumanMessage、SystemMessage
 
 load_dotenv()
@@ -23,7 +24,7 @@ model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # ---------- 2. 准备多条独立问题（批量输入的列表）----------
@@ -31,7 +32,7 @@ model = init_chat_model(
 questions = [
     "什么是redis?简洁回答，字数控制在100以内",
     "Python的生成器是做什么的？简洁回答，字数控制在100以内",
-    "解释一下Docker和Kubernetes的关系?简洁回答，字数控制在100以内"
+    "解释一下Docker和Kubernetes的关系?简洁回答，字数控制在100以内",
 ]
 
 # ---------- 3. 批量调用：model.batch(questions) ----------

@@ -12,8 +12,10 @@
 # ========== 1. 导入与环境 ==========
 # 下面每一行都是「把别人写好的功能拿进来」，后面才能用。
 
-from langchain_openai import ChatOpenAI   # 用 OpenAI 兼容接口和模型对话（阿里云等也兼容这个接口）
-import os                                 # Python 自带：用来读「环境变量」（如 API 密钥）
+from langchain_openai import (
+    ChatOpenAI,
+)  # 用 OpenAI 兼容接口和模型对话（阿里云等也兼容这个接口）
+import os  # Python 自带：用来读「环境变量」（如 API 密钥）
 
 # load_dotenv：从项目根目录的 .env 文件里，把变量加载到「环境」里，之后用 os.getenv("变量名") 就能读到。
 # 把密钥写在 .env 里而不是代码里，既安全（不把密钥提交到 Git），又方便换环境（开发/生产用不同 .env）。
@@ -24,19 +26,24 @@ from dotenv import load_dotenv
 from langchain_core.exceptions import LangChainException
 
 # 真正执行「从 .env 加载到环境」；encoding='utf-8' 避免 .env 里有中文时乱码。
-load_dotenv(encoding='utf-8')
+load_dotenv(encoding="utf-8")
 
 # ----- 日志配置 -----
 # logging 是 Python 自带的日志库，不用 pip 安装。用 logger.info() / logger.error() 代替 print，方便区分「普通信息」和「错误」，且可统一格式、写文件等。
 # 通过环境变量 LOG_LEVEL 控制输出多少：开发时用 INFO（看得到调试信息），生产时在 .env 里设 LOG_LEVEL=WARNING，就只打警告和错误，减少刷屏。
 import logging
+
 _log_level = os.getenv("LOG_LEVEL", "INFO").upper()
-logging.basicConfig(level=getattr(logging, _log_level, logging.INFO), format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)   # 当前模块的 logger，后面用 logger.info(...) 即可
+logging.basicConfig(
+    level=getattr(logging, _log_level, logging.INFO),
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)  # 当前模块的 logger，后面用 logger.info(...) 即可
 
 
 # ========== 2. LLM 客户端初始化（封装为函数，便于多处复用） ==========
 # 「LLM」= 大语言模型（如通义千问、DeepSeek）。这里把「创建可对话的客户端」封装成一个函数，以后在别处也能直接调 init_llm_client()，不用重复写一长串配置。
+
 
 def init_llm_client() -> ChatOpenAI:
     """
@@ -52,17 +59,18 @@ def init_llm_client() -> ChatOpenAI:
 
     # 创建客户端：指定用哪个模型、密钥、接口地址，以及「回复风格」相关参数。
     llm = ChatOpenAI(
-        model="deepseek-v3.2",       # 模型名称（这里用的是 DeepSeek，走阿里云兼容接口）
+        model="deepseek-v3.2",  # 模型名称（这里用的是 DeepSeek，走阿里云兼容接口）
         api_key=api_key,
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",  # 阿里云提供的兼容 OpenAI 的地址
-        temperature=0.7,             # 控制「随机程度」：0 更确定、重复性高；1 更随机、更有创意。一般 0.5～0.8 即可。
-        max_tokens=2048              # 单次回复最多生成多少个 token（约等于字数），防止回复过长或超限。
+        temperature=0.7,  # 控制「随机程度」：0 更确定、重复性高；1 更随机、更有创意。一般 0.5～0.8 即可。
+        max_tokens=2048,  # 单次回复最多生成多少个 token（约等于字数），防止回复过长或超限。
     )
     return llm
 
 
 # ========== 3. 主逻辑：invoke（一次性） + stream（流式）两种调用方式 ==========
 # 这里把「问问题、拿回答、打日志」都放在 main() 里，并用 try/except 把可能出现的错误分开处理，避免程序一报错就崩掉、且能打出清晰错误信息。
+
 
 def main():
     """主函数：封装核心逻辑，符合 Python 工程化规范。"""
@@ -76,7 +84,7 @@ def main():
         question = "你是谁"
         response = llm.invoke(question)
         logger.info(f"问题：{question}")
-        logger.info(f"回答：{response.content}")   # .content 里是模型的纯文字回复
+        logger.info(f"回答：{response.content}")  # .content 里是模型的纯文字回复
 
         # ----- 方式二：stream（流式，边生成边输出） -----
         # 模型边想边返回，每次返回一小段（chunk），用 for 循环一段段打印，就像打字机效果。适合长文或需要「实时看到输出」的场景。
@@ -84,8 +92,8 @@ def main():
         print("*" * 50)
         response_stream = llm.stream("介绍下 langchain，300字以内")
         for chunk in response_stream:
-            print(chunk.content, end="")   # end="" 表示不换行，紧挨着打
-        print()   # 流式结束后补一个换行，避免和后续输出粘在一起
+            print(chunk.content, end="")  # end="" 表示不换行，紧挨着打
+        print()  # 流式结束后补一个换行，避免和后续输出粘在一起
 
     # ----- 异常处理：根据错误类型打不同日志，方便排查 -----
     # try 里面的代码一旦报错，会跳到下面某个 except；若都不匹配，再往上抛。

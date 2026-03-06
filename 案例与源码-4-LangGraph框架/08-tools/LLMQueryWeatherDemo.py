@@ -9,7 +9,7 @@ from QueryWeatherTool import get_weather
 llm = ChatOpenAI(
     model="qwen-plus",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # 将模型与工具绑定，使其能够调用 get_weather 工具
@@ -43,4 +43,3 @@ full_chain = get_weather_chain | (lambda x: {"weather_json": x}) | output_chain
 # 执行完整链路，查询上海天气并打印结果
 result = full_chain.invoke("请问北京今天的天气如何？")
 logger.info(result)
-

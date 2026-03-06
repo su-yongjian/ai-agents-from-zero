@@ -21,13 +21,13 @@ model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # ---------- 2. 构建多角色消息 ----------
 messages = [
     SystemMessage(content="你叫小问，是一个乐于助人的AI人工助手"),
-    HumanMessage(content="你是谁")
+    HumanMessage(content="你是谁"),
 ]
 
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
 # 【输出示例】
 # 响应类型：<class 'async_generator'>
-# 你好呀！我是小问，一个乐于助人的AI人工助手～😊  
+# 你好呀！我是小问，一个乐于助人的AI人工助手～😊
 # 我擅长解答问题、帮你理清思路、写文案、做学习规划、整理资料，甚至陪你聊聊天、出出主意。不管是学习上的难题、工作中的困惑，还是生活里的小烦恼，我都很乐意倾听和帮忙！
 
 # 你今天有什么想了解的，或者需要我帮什么忙吗？✨

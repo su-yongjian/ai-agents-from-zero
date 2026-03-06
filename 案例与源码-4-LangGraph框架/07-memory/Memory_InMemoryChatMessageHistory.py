@@ -1,4 +1,3 @@
-
 from langchain.chat_models import init_chat_model
 from langchain_core.chat_history import InMemoryChatMessageHistory
 from loguru import logger
@@ -9,7 +8,7 @@ llm = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 

@@ -15,15 +15,17 @@ llm = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # 定义 Prompt
-prompt = ChatPromptTemplate.from_messages([
-    # 用于插入历史消息
-    MessagesPlaceholder(variable_name="history"),
-    ("human", "{input}")
-])
+prompt = ChatPromptTemplate.from_messages(
+    [
+        # 用于插入历史消息
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{input}"),
+    ]
+)
 
 parser = StrOutputParser()
 # 构建处理链：将提示词模板、语言模型和输出解析器组合
@@ -35,7 +37,7 @@ runnable = RunnableWithMessageHistory(
     chain,
     get_session_history=lambda session_id: history,
     input_messages_key="input",  # 指定输入键
-    history_messages_key="history"  # 指定历史消息键
+    history_messages_key="history",  # 指定历史消息键
 )
 # 清空历史记录
 history.clear()

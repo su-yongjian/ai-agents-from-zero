@@ -4,7 +4,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableConfig
 import os
-import redis  #导入原生redis库，pip install redis==5.3.1
+import redis  # 导入原生redis库，pip install redis==5.3.1
 from loguru import logger
 
 REDIS_URL = "redis://localhost:26379"
@@ -16,14 +16,14 @@ llm = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # 创建提示模板
-prompt = ChatPromptTemplate.from_messages([
-    MessagesPlaceholder("history"),
-    ("human", "{question}")
-])
+prompt = ChatPromptTemplate.from_messages(
+    [MessagesPlaceholder("history"), ("human", "{question}")]
+)
+
 
 def get_session_history(session_id: str) -> RedisChatMessageHistory:
     """获取或创建会话历史（使用 Redis）"""
@@ -36,12 +36,13 @@ def get_session_history(session_id: str) -> RedisChatMessageHistory:
 
     return history
 
+
 # 创建带历史的链
 chain = RunnableWithMessageHistory(
     prompt | llm,
     get_session_history,
     input_messages_key="question",
-    history_messages_key="history"
+    history_messages_key="history",
 )
 
 # 配置
@@ -52,7 +53,7 @@ config = RunnableConfig(configurable={"session_id": "user-001"})
 print("开始对话（输入 'quit' 退出）")
 while True:
     question = input("\n输入问题：")
-    if question.lower() in ['quit', 'exit', 'q']:
+    if question.lower() in ["quit", "exit", "q"]:
         break
 
     response = chain.invoke({"question": question}, config)

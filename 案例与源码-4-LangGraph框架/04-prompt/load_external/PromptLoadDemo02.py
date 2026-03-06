@@ -16,8 +16,10 @@
 """
 
 import warnings
-warnings.filterwarnings("ignore",
-                        message="Core Pydantic V1 functionality isn't compatible with Python 3.14")
+
+warnings.filterwarnings(
+    "ignore", message="Core Pydantic V1 functionality isn't compatible with Python 3.14"
+)
 
 # 从 YAML 加载提示词模板，API 与 load_prompt("prompt.json") 一致
 from langchain_core.prompts import load_prompt

@@ -8,6 +8,7 @@
 - 适用场景：同一问题用中/英文各答一遍并聚合、多模型并行、多路径推理等。
 - invoke 的返回值为 dict，键为 RunnableParallel 的键名，值为对应子链的输出；可用 get_graph().print_ascii() 查看图结构（为 LangGraph 铺垫）。
 """
+
 import os
 
 from langchain.chat_models import init_chat_model
@@ -24,30 +25,31 @@ model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # 子链 1：中文简短介绍
-prompt1 = ChatPromptTemplate.from_messages([
-    ("system", "你是一个知识渊博的计算机专家，请用中文简短回答"),
-    ("human", "请简短介绍什么是{topic}")
-])
+prompt1 = ChatPromptTemplate.from_messages(
+    [
+        ("system", "你是一个知识渊博的计算机专家，请用中文简短回答"),
+        ("human", "请简短介绍什么是{topic}"),
+    ]
+)
 parser1 = StrOutputParser()
 chain1 = prompt1 | model | parser1
 
 # 子链 2：英文简短介绍（与 chain1 同结构，仅提示词语言不同）
-prompt2 = ChatPromptTemplate.from_messages([
-    ("system", "你是一个知识渊博的计算机专家，请用英文简短回答"),
-    ("human", "请简短介绍什么是{topic}")
-])
+prompt2 = ChatPromptTemplate.from_messages(
+    [
+        ("system", "你是一个知识渊博的计算机专家，请用英文简短回答"),
+        ("human", "请简短介绍什么是{topic}"),
+    ]
+)
 parser2 = StrOutputParser()
 chain2 = prompt2 | model | parser2
 
 # RunnableParallel：同一输入会同时喂给多个子链，结果汇总为 dict
-parallel_chain = RunnableParallel({
-    "chinese": chain1,
-    "english": chain2
-})
+parallel_chain = RunnableParallel({"chinese": chain1, "english": chain2})
 
 # 一次 invoke，返回 {"chinese": "...", "english": "..."}
 result = parallel_chain.invoke({"topic": "langchain"})
@@ -58,31 +60,31 @@ parallel_chain.get_graph().print_ascii()
 
 # 【输出实例】
 # 2026-03-06 10:28:37.853 | INFO     | __main__:<module>:54 - {'chinese': 'LangChain 是一个开源框架，用于构建基于大语言模型（LLM）的应用程序。它提供模块化组件（如链（Chains）、提示模板、记忆（Memory）、工具（Tools）和数据连接器），帮助开发者轻松实现提示工程、外部数据检索（RAG）、多步推理、对话状态管理等功能，提升 LLM 应用的可控性、可扩展性和实用性。', 'english': 'LangChain is a framework for developing applications powered by large language models (LLMs), enabling chaining of prompts, LLM calls, and external tools (e.g., APIs, databases) to build complex, stateful, and context-aware workflows.'}
-#             +--------------------------------+             
-#             | Parallel<chinese,english>Input |             
-#             +--------------------------------+             
-#                    ***               ***                   
-#                 ***                     ***                
-#               **                           **              
-# +--------------------+              +--------------------+ 
-# | ChatPromptTemplate |              | ChatPromptTemplate | 
-# +--------------------+              +--------------------+ 
-#            *                                   *           
-#            *                                   *           
-#            *                                   *           
-#     +------------+                      +------------+     
-#     | ChatOpenAI |                      | ChatOpenAI |     
-#     +------------+                      +------------+     
-#            *                                   *           
-#            *                                   *           
-#            *                                   *           
-#   +-----------------+                 +-----------------+  
-#   | StrOutputParser |                 | StrOutputParser |  
-#   +-----------------+                 +-----------------+  
-#                    ***               ***                   
-#                       ***         ***                      
-#                          **     **                         
-#             +---------------------------------+            
-#             | Parallel<chinese,english>Output |            
-#             +---------------------------------+            
-# (.venv) tools@ToolsMacBook-Pro 06-lcel % 
+#             +--------------------------------+
+#             | Parallel<chinese,english>Input |
+#             +--------------------------------+
+#                    ***               ***
+#                 ***                     ***
+#               **                           **
+# +--------------------+              +--------------------+
+# | ChatPromptTemplate |              | ChatPromptTemplate |
+# +--------------------+              +--------------------+
+#            *                                   *
+#            *                                   *
+#            *                                   *
+#     +------------+                      +------------+
+#     | ChatOpenAI |                      | ChatOpenAI |
+#     +------------+                      +------------+
+#            *                                   *
+#            *                                   *
+#            *                                   *
+#   +-----------------+                 +-----------------+
+#   | StrOutputParser |                 | StrOutputParser |
+#   +-----------------+                 +-----------------+
+#                    ***               ***
+#                       ***         ***
+#                          **     **
+#             +---------------------------------+
+#             | Parallel<chinese,english>Output |
+#             +---------------------------------+
+# (.venv) tools@ToolsMacBook-Pro 06-lcel %

@@ -34,10 +34,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 # 用 from_messages 创建模板：一条 system（带 {role}）、一条 human（带 {question}）
 chat_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", "你是一个{role}，请回答我提出的问题"),
-        ("human", "请回答:{question}")
-    ]
+    [("system", "你是一个{role}，请回答我提出的问题"), ("human", "请回答:{question}")]
 )
 
 # ---------- 方式一：format_messages ----------
@@ -45,21 +42,27 @@ chat_prompt = ChatPromptTemplate.from_messages(
 #   写法 A（关键字参数）：format_messages(role="python开发工程师", question="堆排序怎么写")
 #   写法 B（字典 + ** 解包）：format_messages(**{"role": "python开发工程师", "question": "堆排序怎么写"})
 # ** 表示把字典「解包」成 key=value 的形式传入，适合参数已经在 dict 里的场景。
-prompt_value = chat_prompt.format_messages(**{"role": "python开发工程师", "question": "堆排序怎么写"})
+prompt_value = chat_prompt.format_messages(
+    **{"role": "python开发工程师", "question": "堆排序怎么写"}
+)
 print(prompt_value)
 
 print()
 # ---------- 方式二：invoke（传字典）----------
 # 传入一个字典，键为占位符变量名，值为要填充的内容；返回的也是「消息列表」（PromptValue）
 # .to_string() 可把整段对话转成纯文本，方便打印查看
-prompt_value2 = chat_prompt.invoke({"role": "python开发工程师", "question": "堆排序怎么写"})
+prompt_value2 = chat_prompt.invoke(
+    {"role": "python开发工程师", "question": "堆排序怎么写"}
+)
 print(prompt_value2.to_string())
 
 print()
 
 # ---------- 方式三：format（注意：返回的是字符串，不是消息列表）----------
 # 适合只想得到「一整段文本」时用；若要把对话发给聊天模型，请用 format_messages 或 invoke
-prompt_value3 = chat_prompt.format(**{"role": "python开发工程师", "question": "快速排序怎么写"})
+prompt_value3 = chat_prompt.format(
+    **{"role": "python开发工程师", "question": "快速排序怎么写"}
+)
 print(prompt_value3)
 
 

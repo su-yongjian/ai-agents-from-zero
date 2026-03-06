@@ -12,6 +12,7 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
+
 # abatch 本示例用「字符串列表」作为输入，无需单独导入 Message 类型
 
 load_dotenv()
@@ -21,14 +22,14 @@ model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # ---------- 2. 准备批量问题（与同步 batch 相同）----------
 questions = [
     "什么是redis?简洁回答，字数控制在100以内",
     "Python的生成器是做什么的？简洁回答，字数控制在100以内",
-    "解释一下Docker和Kubernetes的关系?简洁回答，字数控制在100以内"
+    "解释一下Docker和Kubernetes的关系?简洁回答，字数控制在100以内",
 ]
 
 

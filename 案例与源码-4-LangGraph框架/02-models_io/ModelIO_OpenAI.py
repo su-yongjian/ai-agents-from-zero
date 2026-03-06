@@ -13,12 +13,13 @@ import os
 from openai import OpenAI
 
 from dotenv import load_dotenv
-load_dotenv(encoding='utf-8')
+
+load_dotenv(encoding="utf-8")
 
 # ========== 2. 初始化客户端（底层 API，直接请求厂商接口） ==========
 client = OpenAI(
-    api_key=os.getenv("deepseek-api"),   # 从环境变量读取，此处以 DeepSeek 为例
-    base_url="https://api.deepseek.com"   # 可改为其他 OpenAI 兼容地址（如阿里百炼）
+    api_key=os.getenv("deepseek-api"),  # 从环境变量读取，此处以 DeepSeek 为例
+    base_url="https://api.deepseek.com",  # 可改为其他 OpenAI 兼容地址（如阿里百炼）
 )
 
 # ========== 3. 发起对话并打印回复 ==========
@@ -28,7 +29,7 @@ response = client.chat.completions.create(
         {"role": "system", "content": "You are a helpful assistant"},
         {"role": "user", "content": "Hello，你是谁？"},
     ],
-    stream=False
+    stream=False,
 )
 
 print(response.choices[0].message.content)

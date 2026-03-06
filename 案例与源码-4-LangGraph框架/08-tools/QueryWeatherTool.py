@@ -24,9 +24,9 @@ def get_weather(loc):
     params = {
         "q": loc,
         "appid": os.getenv("OPENWEATHER_API_KEY"),  # 从环境变量中读取 API Key
-        #"appid": "fc19f7b552b4c1ae467e36fe6955666",  # 从环境变量中读取 API Key
+        # "appid": "fc19f7b552b4c1ae467e36fe6955666",  # 从环境变量中读取 API Key
         "units": "metric",  # 使用摄氏度
-        "lang": "zh_cn"  # 输出语言为简体中文
+        "lang": "zh_cn",  # 输出语言为简体中文
     }
 
     # Step 3. 发送 GET 请求获取天气数据
@@ -34,7 +34,7 @@ def get_weather(loc):
 
     # Step 4. 解析响应内容为 JSON 并序列化为字符串返回
     data = response.json()
-    #print(json.dumps(data))
+    # print(json.dumps(data))
     return json.dumps(data)
 
 
@@ -42,4 +42,3 @@ def get_weather(loc):
 # result = get_weather.invoke("shanghai")
 result = get_weather.invoke("beijing")
 print(result)
-

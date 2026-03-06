@@ -13,7 +13,8 @@ import os
 from langchain.chat_models import init_chat_model
 
 from dotenv import load_dotenv
-load_dotenv(encoding='utf-8')
+
+load_dotenv(encoding="utf-8")
 
 # ========== 2. 实例化模型（无需指定 model_provider 时，可由 base_url 推断） ==========
 model = init_chat_model(

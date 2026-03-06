@@ -25,6 +25,7 @@ load_dotenv(encoding="utf-8")
 
 class Product(BaseModel):
     """产品信息：名称、类别、简介。简介长度需 ≥ 10，由下方 validator 校验。"""
+
     name: str = Field(description="产品名称")
     category: str = Field(description="产品类别")
     description: str = Field(description="产品简介")
@@ -33,7 +34,7 @@ class Product(BaseModel):
     def validate_description(cls, value):
         """Pydantic 校验器：description 长度必须 ≥ 10，否则抛 ValueError。"""
         if len(value) < 10:
-            raise ValueError('产品简介长度必须大于等于10')
+            raise ValueError("产品简介长度必须大于等于10")
         return value
 
 
@@ -44,19 +45,23 @@ parser = PydanticOutputParser(pydantic_object=Product)
 format_instructions = parser.get_format_instructions()
 
 # 在 system 里放入 {format_instructions}，human 里放 {topic}
-prompt_template = ChatPromptTemplate.from_messages([
-    ("system", "你是一个AI助手，你只能输出结构化的json数据\n{format_instructions}"),
-    ("human", "请你输出标题为：{topic}的新闻内容")
-])
+prompt_template = ChatPromptTemplate.from_messages(
+    [
+        ("system", "你是一个AI助手，你只能输出结构化的json数据\n{format_instructions}"),
+        ("human", "请你输出标题为：{topic}的新闻内容"),
+    ]
+)
 
-prompt = prompt_template.format_messages(topic="华为Mate X7", format_instructions=format_instructions) 
+prompt = prompt_template.format_messages(
+    topic="华为Mate X7", format_instructions=format_instructions
+)
 logger.info(prompt)
 
 model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 result = model.invoke(prompt)

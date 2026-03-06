@@ -25,7 +25,7 @@ model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # ---------- 2. 构建多角色消息列表（即本次请求的 Prompt）----------
@@ -33,9 +33,11 @@ model = init_chat_model(
 # - SystemMessage：设定模型角色与行为边界（谁、怎么答），是高质量输出的第一步。
 # - HumanMessage：用户输入，即你向模型提出的问题。
 messages = [
-    SystemMessage(content="你是一个法律助手，只回答法律问题，超出范围的统一回答，非法律问题无可奉告"),
+    SystemMessage(
+        content="你是一个法律助手，只回答法律问题，超出范围的统一回答，非法律问题无可奉告"
+    ),
     # HumanMessage(content="简单介绍下广告法，一句话告知50字以内")
-    HumanMessage(content="2+3等于几?")  # 可替换为其他问题
+    HumanMessage(content="2+3等于几?"),  # 可替换为其他问题
 ]
 
 # ---------- 3. 同步调用模型（invoke）----------

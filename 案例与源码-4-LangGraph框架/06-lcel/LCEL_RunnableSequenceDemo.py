@@ -8,6 +8,7 @@
 - LCEL 用管道符 | 将多个 Runnable 串联，等价于 RunnableSequence；数据从左到右依次流过，前一步输出作为后一步输入。
 - prompt、model、parser 都实现了 Runnable 接口，统一用 .invoke() 调用，也可用 | 组合成链后一次 invoke。
 """
+
 import os
 
 from dotenv import load_dotenv
@@ -20,13 +21,17 @@ from langchain_core.prompts import ChatPromptTemplate
 from loguru import logger
 
 # 创建聊天提示模板（Runnable 子类）：包含系统角色与用户问题占位符
-chat_prompt = ChatPromptTemplate.from_messages([
-    ("system", "你是一个{role}，请简短回答我提出的问题"),
-    ("human", "请回答:{question}")
-])
+chat_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "你是一个{role}，请简短回答我提出的问题"),
+        ("human", "请回答:{question}"),
+    ]
+)
 
 # 使用 invoke 渲染提示词，返回 PromptValue，可直接交给模型（统一接口）
-prompt = chat_prompt.invoke({"role": "AI助手", "question": "什么是LangChain，简洁回答100字以内"})
+prompt = chat_prompt.invoke(
+    {"role": "AI助手", "question": "什么是LangChain，简洁回答100字以内"}
+)
 logger.info(prompt)
 
 # 初始化聊天模型（同样实现 Runnable，支持 invoke/stream/batch）
@@ -34,7 +39,7 @@ model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
 # 模型接收上一步的 PromptValue，返回 AIMessage
@@ -57,7 +62,9 @@ print()
 chain = chat_prompt | model | parser
 
 # 链整体也是 Runnable：一次 invoke 完成「渲染 → 模型 → 解析」，入参为提示词变量
-result_chain = chain.invoke({"role": "AI助手", "question": "什么是LangChain，简洁回答100字以内"})
+result_chain = chain.invoke(
+    {"role": "AI助手", "question": "什么是LangChain，简洁回答100字以内"}
+)
 logger.info(f"Chain执行结果:\n{result_chain}")
 logger.info(f"Chain执行结果类型: {type(result_chain)}")
 

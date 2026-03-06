@@ -21,11 +21,13 @@ load_dotenv()
 # template：整段话里用 {变量名} 表示占位符；input_variables：列出所有需要「每次调用时传入」的变量名
 template = PromptTemplate(
     template="你是一个专业的{role}工程师，请回答我的问题给出回答，我的问题是：{question}",
-    input_variables=['role', 'question']
+    input_variables=["role", "question"],
 )
 
 # ---------- 2. 用 format 填入占位符，得到一条最终提示词字符串 ----------
-prompt = template.format(role="python开发", question="冒泡排序怎么写,只要代码其它不要，简洁")
+prompt = template.format(
+    role="python开发", question="冒泡排序怎么写,只要代码其它不要，简洁"
+)
 print(prompt)
 
 # ---------- 3. 将格式化后的字符串发给模型（部分聊天模型支持直接传字符串）----------
@@ -33,7 +35,7 @@ model = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
     api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 result = model.invoke(prompt)
 print(result.content)

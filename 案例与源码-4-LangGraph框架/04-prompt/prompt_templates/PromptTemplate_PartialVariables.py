@@ -46,7 +46,7 @@ template3 = PromptTemplate(
     partial_variables={"foo": "hello"},
 )
 print(template3.format(foo="li4", bar="world"))  # li4 world
-print(template3.format(bar="world"))             # hello world
+print(template3.format(bar="world"))  # hello world
 
 # 【输出示例】
 # 现在时间是：2026-02-25 15:30:59,请对我的问题给出答案，我的问题是：今天是几号？

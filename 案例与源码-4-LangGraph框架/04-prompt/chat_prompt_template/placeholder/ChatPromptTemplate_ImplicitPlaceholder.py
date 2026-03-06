@@ -23,20 +23,27 @@ from langchain_core.prompts import ChatPromptTemplate
 
 # 隐式：("placeholder", "{memory}") 等价于 MessagesPlaceholder("memory")
 # 表示这里留一个「坑」，invoke 时用 "memory" 对应的消息列表填充
-prompt = ChatPromptTemplate.from_messages([
-    ("placeholder", "{memory}"),
-    ("system", "你是一个资深的Python应用开发工程师，请认真回答我提出的Python相关的问题"),
-    ("human", "{question}")
-])
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("placeholder", "{memory}"),
+        (
+            "system",
+            "你是一个资深的Python应用开发工程师，请认真回答我提出的Python相关的问题",
+        ),
+        ("human", "{question}"),
+    ]
+)
 
 # 传入 memory（历史消息列表）和 question（当前问题）
-prompt_value = prompt.invoke({
-    "memory": [
-        HumanMessage("我的名字叫亮仔，是一名程序员"),
-        AIMessage("好的，亮仔你好")
-    ],
-    "question": "请问我的名字叫什么？"
-})
+prompt_value = prompt.invoke(
+    {
+        "memory": [
+            HumanMessage("我的名字叫亮仔，是一名程序员"),
+            AIMessage("好的，亮仔你好"),
+        ],
+        "question": "请问我的名字叫什么？",
+    }
+)
 print(prompt_value.to_string())
 
 # 【输出示例】
