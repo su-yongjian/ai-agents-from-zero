@@ -1,15 +1,26 @@
 """
-可持续记忆（RunnableWithMessageHistory）
+【案例】内存版带历史对话（多 session）：用 store 按 session_id 维护多份 InMemoryChatMessageHistory
+
+对应教程章节：第 16 章 - 记忆与对话历史 → 6、案例代码 → 6.1 内存版（进程内，重启即丢失）
+
+知识点速览：
+- 与 Memory_RunnableWithMessageHistory 的区别：本案例用 get_session_history(session_id) 从 store 中按 session 取不同 history，可支持多用户/多会话（每 session 独立历史）。
+- MessagesPlaceholder("history") 与 prompt 中的变量名一致，RunnableWithMessageHistory 会把读到的历史注入此处；input_messages_key、history_messages_key 需与 prompt 占位符对应。
+- 生产环境可将 store 换成 Redis、数据库等，get_session_history 返回 RedisChatMessageHistory(session_id=session_id, ...) 即可实现持久化（见 6.2）。
 """
 
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(encoding="utf-8")
+
 from langchain.chat_models import init_chat_model
-from langchain_core.chat_history import InMemoryChatMessageHistory  # 内存型消息记录
+from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 import os
 
-# 设置本地模型
 llm = init_chat_model(
     model="qwen-plus",
     model_provider="openai",
@@ -17,9 +28,7 @@ llm = init_chat_model(
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
 )
 
-
-# 定义全局的“会话存储”，用来保存每个 session 的聊天历史
-#    （真实项目中可改为 Redis、SQLite 等）
+# 按 session_id 保存多份历史，便于多用户/多会话；生产可改为 Redis 等
 store = {}
 
 
@@ -44,28 +53,56 @@ prompt = ChatPromptTemplate.from_messages(
         ("human", "{question}"),
     ]
 )
-
-
 # 构建基本链：Prompt → LLM → 输出解析
 memory_chain = prompt | llm | StrOutputParser()
 
-# -----------------------------------------------------
-# 将链包装为支持记忆的版本
+# 包装为带历史链：get_session_history 决定「当前 session 用哪份 history」
 with_history = RunnableWithMessageHistory(
-    memory_chain,  # 原始链
-    get_session_history,  # 获取历史函数
-    input_messages_key="question",  # 对应 prompt 输入的 key
-    history_messages_key="history",  # 对应 MessagesPlaceholder 的变量名
+    memory_chain,
+    get_session_history,
+    input_messages_key="question",
+    history_messages_key="history",
 )
 
-# -----------------------------------------------------
-# 模拟一个会话，用 session_id 区分不同用户
 cfg = {"configurable": {"session_id": "user-001"}}
 
-# 第一次提问：告诉模型“我叫张三”
 print("用户：我叫张三。")
 print("AI：", with_history.invoke({"question": "我叫张三。"}, cfg))
 
-# 第二次提问：让模型回忆前面的对话
-print("\n 用户：我叫什么？")
+print("\n用户：我叫什么？")
 print("AI：", with_history.invoke({"question": "我叫什么？"}, cfg))
+
+# ---------- 查看当前存储了哪些历史数据 ----------
+# store 的 key 为 session_id，value 为该会话的 InMemoryChatMessageHistory
+# 每个 history 的 .messages 为 List[BaseMessage]，即该会话至今的全部消息（HumanMessage、AIMessage 等）
+print("\n--- 当前 store 中的历史数据 ---")
+for sid, history in store.items():
+    print(f"[session_id={sid}] 共 {len(history.messages)} 条消息:")
+    for i, msg in enumerate(history.messages):
+        # msg 有 .type（如 human/ai）、.content（文本内容）
+        content_preview = (
+            (msg.content[:50] + "…") if len(str(msg.content)) > 50 else msg.content
+        )
+        print(f"  {i+1}. [{msg.type}] {content_preview}")
+print("--- 以上 ---\n")
+
+# 【输出示例】
+# 用户：我叫张三。
+# AI： 你好，张三！很高兴认识你～😊
+# 有什么我可以帮你的吗？
+
+# 用户：我叫什么？
+# AI： 你叫张三！😄
+# （刚刚你已经自我介绍过啦～）
+# 需要我帮你做点什么吗？比如记个事项、解答问题、写点文字，或者聊聊天？
+
+# --- 当前 store 中的历史数据 ---
+# [session_id=user-001] 共 4 条消息:
+#   1. [human] 我叫张三。
+#   2. [ai] 你好，张三！很高兴认识你～😊
+# 有什么我可以帮你的吗？
+#   3. [human] 我叫什么？
+#   4. [ai] 你叫张三！😄
+# （刚刚你已经自我介绍过啦～）
+# 需要我帮你做点什么吗？比如记个事项、解答问题、写…
+# --- 以上 ---
