@@ -1,0 +1,385 @@
+# 18 - 向量数据库与 Embedding 实战
+
+---
+
+**本章课程目标：**
+
+- 理解**向量（Vector）**与**向量化**的概念，以及文本/图像等如何通过嵌入模型转为高维向量。
+- 掌握**向量数据库（Vector Store）**是什么、能干什么，以及与传统关系数据库「精确匹配」的区别（相似性搜索）。
+- 会使用 **Embedding 模型**做文本向量化，并会用**余弦相似度**比较文本语义相似性；能将向量存入 **RedisStack** 等向量库并做检索。
+
+**前置知识建议：** 已学习 [第 9 章 - LangChain 概述与架构](9-LangChain概述与架构.md)、[第 10 章 - LangChain 快速上手与 HelloWorld](10-LangChain快速上手与HelloWorld.md)。具备 Python 基础与基本环境配置能力。
+
+**学习建议：** 先建立「向量 → 向量化 → 向量数据库 → 相似性检索」的直觉，再动手跑通 Embedding 与 Redis 存取的案例；学完本章后可继续 [第 19 章 - RAG 检索增强生成](19-RAG检索增强生成.md)，把向量与向量库用到「先检索再生成」的完整流程中。
+
+---
+
+## 1、向量与向量化
+
+### 1.1 向量是什么
+
+**向量（Vector）** 是数学里的概念（物理中常称**矢量**），二者描述的是同一件事：**用于表示具有大小和方向的量**。向量可以在不同维度空间中定义，最常见的是二维 `(x, y)` 和三维 `(x, y, z)`，在 AI 与检索场景中则常用**高维向量**（如 1536 维、2048 维）表示文本或图像的特征。
+
+下面用更直白的方式把「向量」说清楚，方便零基础同学建立第一印象：
+
+- **名称从哪来**：英文 Vector 在中文里有两个叫法——**向量**（数学里常用）和**矢量**（物理里常用），说的是同一个东西，不用纠结用哪个词。
+- **一句话定义**：**向量就是「既有大小、又有方向」的一种量**。比如力有大小（多少牛顿）和方向（往哪推），用向量就能一起表示；速度和位移也一样。
+- **怎么用数字表示**：向量可以用一串数字（坐标）来表示，数字的个数叫**维度**。
+  - **二维**：在平面里用一个向量，写成 (x, y)，x 和 y 分别是沿横轴、纵轴方向的「分量」。
+  - **三维**：在空间里多一个竖轴，就多一个数，写成 (x, y, z)。
+  - **高维**：做 AI、做检索时，经常用几百维甚至上千维的向量（例如 1536 维），每一维是一个数，合起来表示一段文本或一张图的「特征」；我们不需要手写这些数，由模型算出来即可。
+
+### 1.2 文本、视频、图片的向量化
+
+将文本、图像、视频等非结构化数据通过**嵌入模型（Embedding Model）**转换成高维数值向量，这一过程称为**向量化**。向量化之后，就可以用数学方式（如余弦相似度、欧氏距离）衡量两段文本、两张图片之间的「语义相似程度」，从而支撑检索、推荐、聚类等应用。
+
+下图概括了上述流程：左侧是若干**文本/文档**（或图片等）作为输入，经中间的**嵌入模型**处理后，得到右侧的一串串数字——即**向量**（图中标为「Objects as vectors」）。这些向量可以视作高维空间里的点：**语义相近的内容，对应的向量在空间里会靠得比较近**，因此可以用「找最近的点」的方式做相似检索、推荐或聚类；后文要学的向量数据库，存的就是这些向量，查的也是「和查询向量最接近」的那几条。
+
+![文本、图像等通过嵌入模型转为向量，便于相似性计算与检索](images/18/image128.jpeg)
+
+**官方文档参考：**
+
+- LangChain 文本嵌入模型集成：https://docs.langchain.com/oss/python/integrations/text_embedding
+- Top integrations（常用集成列表）：https://docs.langchain.com/oss/python/integrations/text_embedding#top-integrations
+
+上图文档里对「嵌入」和「嵌入模型」做了规范说明，用文字概括如下，便于和本教程表述对照：
+
+- **嵌入（Embedding）**：把文本、图像、视频等不同形态的数据，变成一串数字（向量）。这串数字用来**表达原文的语义或上下文**；数字的个数就叫向量的**维度**（如 1536 维、2048 维）。
+- **嵌入模型（Embedding Model）**：具体干「把数据变成向量」这件事的模型或算法。在 LangChain 里，嵌入模型通常通过统一接口暴露，主要面向**文本 → 向量**的转换。
+- **接口设计上的两个目标**：
+  - **可移植性**：换一个嵌入模型（如从 A 厂商换成 B 厂商）时，只需改配置或少量代码，业务逻辑不用大改，类似「换数据库驱动」的感觉。
+  - **简单性**：对外只暴露简单方法，例如「传入一段文本，返回一个向量」或「传入一篇文档，返回向量」，把底层实现细节封装掉，上手更容易。
+
+**如何衡量「相似」：** 常用**余弦相似度**：两个向量夹角的余弦值，范围 [-1, 1]，越接近 1 表示方向越一致、语义越相似。也可用欧氏距离等，距离越小越相似。
+
+下面用更直白的方式说明「向量的维度」和「怎样才算相似」，方便建立直觉：
+
+- **维度是什么**：向量是一串数字，每个数字对应一个「轴」（可以想象成坐标轴），这些轴就叫做**维度**。要把现实里的东西（比如一段文字、一辆车）变成向量，就要先定好「用哪些特征当维度」，再给每个特征填一个数。例如用 4 个维度表示交通工具：轮子数、是否有发动机、是否在陆上跑、最多载几人——汽车可以是 (4, 1, 1, 5)，自行车是 (2, 0, 1, 1)（有/无发动机用 1/0 表示）。**维度越多，对事物的描述越细**；嵌入模型产出的向量通常有几百到上千维，每一维由模型自动学出来，不用我们手写。
+- **相似看方向还是长度**：每个向量既有**方向**（朝哪）又有**长度**（多长）。「谁和谁最像」取决于你怎么定义「像」：若只看**方向**，和 p 同向的 a 最像 p，反向的 b 最不像；若只看**长度**，和 p 等长的 b 最像 p。在做语义检索时，向量主要用来表示「含义」，**光比长度往往不够**，所以常用**只看方向**的余弦相似度，或**同时考虑方向和长度**的度量；本教程里的相似度计算以余弦相似度为主。
+
+**多模态对比（如图片相似度）**：嵌入模型也可对图像进行向量化，通过比较图像向量的相似度实现以图搜图或图文匹配。
+
+![图像向量化与对比示意](images/18/image132.jpeg)
+
+![向量维度与检索效果](images/18/image133.jpeg)
+
+**小结：** 向量化把「文本/图像」映射到高维空间中的点，语义相近的内容在空间中距离较近。例如「肯德基」和「麦当劳」的向量会比「肯德基」和「新疆大盘鸡」更接近。
+
+**向量化的应用场景小结：** 嵌入模型把文本、图像等信息表示成连续的一串数字（向量），从而能**捕捉语义或上下文上的相似性**，方便机器做比较、聚类、分类等任务。可以打个比方：要描述不同水果，不用写一大段话，只要用几个数表示「甜度、个头、颜色」等特征，例如苹果写成 [8, 5, 7]、香蕉写成 [9, 7, 4]，谁和谁更接近、哪些可以归为一类，一比数字就知道；向量化做的就是这种事，只不过维度和数值由模型自动学出来，用来比较文本或图像的「含义」是否接近。
+
+---
+
+## 2、向量数据库
+
+### 2.1 是什么
+
+**向量数据库（Vector Store）** 是一种专门用于**存储、管理和检索向量数据**（高维数值数组）的数据库系统。其核心能力是：通过高效的索引与相似性计算，支持**相似性搜索**而非传统关系型数据库的**精确匹配**。当给定一个查询向量时，向量库返回与它「最相似」的一组向量及其关联的原始数据（如文本、ID）。向量维度越高，在合理索引与模型下，查询的精准度与效果通常越好。
+
+- **官网 - 向量存储（Vector Store）**：https://docs.langchain.com/oss/python/integrations/vectorstores
+- **说人话**：和传统数据库「查 exact 匹配」不同，向量库做的是「按相似度排序的检索」。
+
+把上述核心概念再捋一遍，方便和后续 RAG 衔接：
+
+- **VectorStore 是什么**：专门用来**存、查高维向量**的数据库或存储方案，尤其适合「已经被嵌入模型转成向量」的数据。查的时候不是「等于某值才命中」，而是**按相似度找最接近的向量**：你给一个查询向量，它返回一批和这个向量「最像」的向量及对应的原始内容（如文档、ID）。
+- **和 AI 模型怎么配合（RAG 雏形）**：向量库用来**把你的数据和 AI 模型接在一起**。典型用法是：先把你的数据（文档等）转成向量并写入向量库；等用户提问时，先用问题向量在库里**检索出一批相似文档**，再把这些文档当作「上下文」，和用户问题一起塞给大模型，让模型基于这些资料生成回答——这就是**检索增强生成（RAG）**。后续第 19 章会专门讲 RAG 的完整流程。
+- **接口**：VectorStore 一般会提供简单 API，方便你做「写入向量、按相似度查询」等操作；LangChain 对各向量库做了统一封装，用法在文档和本教程案例里都会用到。
+
+**各生态支持的向量库列表（供扩展学习）：**
+
+- LangChain（Python）：https://docs.langchain.com/oss/python/integrations/vectorstores
+- LangChain4J（Java）：https://docs.langchain4j.dev/integrations/embedding-stores/
+- Spring AI：https://docs.spring.io/spring-ai/reference/api/vectordbs.html
+
+### 2.2 能干什么
+
+- 将文本、图像、视频等经嵌入模型得到的**向量**存入 Vector Store；查询时同样把问题向量化，在库中做**相似性搜索**，返回最相关的文档或片段。
+- **特点**：能捕捉语义相似性、同义词、多义词等复杂关系，是 **RAG（检索增强生成）** 的底层支撑。
+- **形象理解**：把文本映射到高维空间中的点，语义相近的文本在空间中距离较近；例如「肯德基」与「麦当劳」的向量会比「肯德基」与「新疆大盘鸡」更接近。
+
+**知识结构示意：**
+
+![向量与向量库在知识体系中的位置](images/18/image137.jpeg)
+
+**常用向量数据库一览：** 入门阶段知道「有哪几类可选」即可，不必全学；本教程实战以 **Redis** 为主，其他可按需查阅文档。
+
+| 名称              | 简要说明                                                                                           |
+| ----------------- | -------------------------------------------------------------------------------------------------- |
+| **FAISS**         | 面向稠密向量的高效相似性搜索与聚类库，适合在内存里做大规模最近邻检索。                             |
+| **Chroma**        | 开源、轻量级向量库，API 极简，适合本地或小规模快速搭建。                                           |
+| **Milvus**        | 开源、云原生的向量数据库，专为向量检索设计，性能和功能都较强，可从轻量原型扩展到数十亿向量级生产。 |
+| **Pgvector**      | PostgreSQL 的扩展，在关系库里增加向量类型和相似性搜索能力，适合已有 PG 的项目。                    |
+| **Redis**         | 开源内存存储，在 RedisStack 等版本中已原生支持向量相似性搜索；本教程案例即用 Redis 做向量存查。    |
+| **Elasticsearch** | 开源分布式搜索与分析引擎，支持结构化、非结构化与向量数据的统一存储与检索。                         |
+
+---
+
+## 3、用 RedisStack 作为向量存储
+
+本教程的向量存取案例使用 **Redis**（推荐 **RedisStack**，因其内置向量检索能力）。RedisStack 是什么、与原生 Redis 的区别、Docker 安装与端口说明等，已在 [第 16 章 - 记忆与对话历史](16-记忆与对话历史.md) 的 **「6.2.2 Redis Stack 简介」** 中介绍，此处不再重复。
+
+**本章仅需知道：** 做向量存储与相似性检索时，用到的是 RedisStack 里的 **RediSearch** 模块（负责向量数据的存储与检索）；若你尚未安装，请先参考第 16 章中的 Docker 命令（如 `redis/redis-stack-server` 或 `redis/redis-stack`）启动 RedisStack。本目录下案例默认通过 `redis_url` 连接 Redis，若你的服务端口为 **26379**（与第 16 章常用配置一致）或其它端口，请在代码或环境中将 `redis_url` 改为对应地址（如 `redis://localhost:26379`）。
+
+- **Spring AI 文档（Redis 向量库）**：https://docs.spring.io/spring-ai/reference/api/vectordbs/redis.html
+
+---
+
+## 4、Embedding 文本向量化
+
+### 4.1 是什么
+
+**Embedding（嵌入）** 是将文本字符串表示为**向量（浮点数列表）**的过程。通过计算向量之间的距离或相似度，可以衡量文本之间的相关性：**距离越小（或相似度越高），相关性越高**；距离越大，相关性越低。
+
+**常见应用包括：**
+
+- **搜索**：按与查询的相关性对结果排序
+- **聚类**：按文本相似性分组
+- **推荐**：根据相关文本推荐内容
+- **异常检测**：找出与多数内容相关性较低的异常点
+- **多样性测量**：分析相似性分布
+- **分类**：按与标签的相似性对文本分类
+
+### 4.2 阿里云百炼 — 文本嵌入模型
+
+- **控制台与 API**：https://bailian.console.aliyun.com/cn-beijing/?tab=api#/api/?type=model&url=2587654
+
+![阿里云百炼文本嵌入模型入口与能力](images/18/image139.jpeg)
+
+### 4.3 案例代码：文本向量化
+
+下面按「Hello 级 → LangChain 封装 → 多文档」顺序给出案例路径与用法说明。
+
+**（1）DashScope 原生调用 — 单句文本向量化**
+
+【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopeHello.py`
+
+```python
+# https://bailian.console.aliyun.com/cn-beijing/?productCode=p_efm&tab=doc#/doc/?type=model&url=2842587
+
+import dashscope
+from http import HTTPStatus
+
+input_text = "衣服的质量杠杠的"
+
+resp = dashscope.TextEmbedding.call(
+    model="text-embedding-v4",
+    input=input_text,
+)
+
+if resp.status_code == HTTPStatus.OK:
+    print(resp)
+```
+
+**（2）OpenAI 兼容接口调用（如百炼兼容模式）**
+
+【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_OpenAiHello.py`
+
+```python
+# 使用 OpenAI 兼容接口调用阿里百炼 Embedding
+import os
+from openai import OpenAI
+
+input_text = "衣服的质量杠杠的"
+
+client = OpenAI(
+    api_key=os.getenv("aliQwen-api"),
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+)
+
+completion = client.embeddings.create(
+    model="text-embedding-v4",
+    input=input_text
+)
+
+print(completion.model_dump_json())
+```
+
+**（3）LangChain DashScope 封装 — 单条与批量**
+
+【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScope.py`
+
+```python
+"""
+pip install langchain-community dashscope
+"""
+from langchain_community.embeddings import DashScopeEmbeddings
+
+embeddings = DashScopeEmbeddings(
+    model="text-embedding-v4",
+)
+
+text = "This is a test document."
+query_result = embeddings.embed_query(text)
+print("文本向量长度：", len(query_result))
+
+doc_results = embeddings.embed_documents([
+    "Hi there!",
+    "Oh, hello!",
+    "What's your name?",
+    "My friends call me World",
+    "Hello World!"
+])
+print("文本向量数量：", len(doc_results), "，文本向量长度：", len(doc_results[0]))
+```
+
+**（4）DashScope 进阶用法（如多模态或更多参数）**
+
+【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopePro.py`  
+（课程中可按需查看，此处不重复贴全码，路径供查阅。）
+
+---
+
+## 5、通过向量计算语义相似度
+
+文本转为向量后，可用**余弦相似度**等度量比较两段文本的语义是否接近。下面案例使用多句文本，先得到各自向量，再两两计算余弦相似度。
+
+【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_CosSimilarity.py`
+
+```python
+"""
+通过向量计算语义相似度：使用 sklearn 或手写余弦相似度比较多段文本。
+"""
+import dashscope
+import os
+from http import HTTPStatus
+import numpy as np
+
+texts = [
+    '我喜欢吃苹果',
+    '苹果是我最喜欢吃的水果',
+    '我喜欢用苹果手机'
+]
+
+embeddings = []
+for text in texts:
+    input_data = [{'text': text}]
+    resp = dashscope.MultiModalEmbedding.call(
+        model="multimodal-embedding-v1",
+        api_key=os.getenv("aliQwen-api"),
+        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+        input=input_data
+    )
+    if resp.status_code == HTTPStatus.OK:
+        embedding = resp.output['embeddings'][0]['embedding']
+        embeddings.append(embedding)
+
+def cosine_similarity(vec1, vec2):
+    dot_product = np.dot(vec1, vec2)
+    norm_vec1 = np.linalg.norm(vec1)
+    norm_vec2 = np.linalg.norm(vec2)
+    return dot_product / (norm_vec1 * norm_vec2)
+
+print("文本相似度比较结果:")
+for i in range(len(texts)):
+    for j in range(i+1, len(texts)):
+        similarity = cosine_similarity(embeddings[i], embeddings[j])
+        print(f"文本{i+1} vs 文本{j+1}: 余弦相似度 = {similarity:.4f}")
+```
+
+---
+
+## 6、Embedding 存入向量数据库（Redis）
+
+将文本转为向量后写入 Redis（或 RedisStack），便于后续做相似性检索。以下示例使用 **langchain_community** 的 Redis 向量存储，或 **langchain_redis** 的 `RedisVectorStore`。
+
+**（1）使用 langchain_community：Document 列表一次性写入**
+
+【案例源码】`案例与源码-4-LangGraph框架/09-embedding/EmbeddingStoreRedis.py`
+
+```python
+# pip install langchain-community dashscope redis redisvl
+import os
+from langchain_community.embeddings import DashScopeEmbeddings
+from langchain_community.vectorstores import Redis
+from langchain_core.documents import Document
+
+embeddings = DashScopeEmbeddings(
+    model="text-embedding-v3",
+    dashscope_api_key=os.getenv("aliQwen-api")
+)
+
+texts = [
+    "通义千问是阿里巴巴研发的大语言模型。",
+    "Redis 是一个高性能的键值存储系统，支持向量检索。",
+    "LangChain 可以轻松集成各种大模型和向量数据库。"
+]
+documents = [Document(page_content=text, metadata={"source": "manual"}) for text in texts]
+
+vector_store = Redis.from_documents(
+    documents=documents,
+    embedding=embeddings,
+    redis_url="redis://localhost:26379",
+    index_name="my_index11",
+)
+
+retriever = vector_store.as_retriever(search_kwargs={"k": 2})
+results = retriever.invoke("LangChain 和 Redis 怎么结合？")
+for res in results:
+    print(res.page_content)
+```
+
+**（2）使用 langchain_redis：add_texts 写入 + similarity_search_with_score 检索**
+
+【案例源码】`案例与源码-4-LangGraph框架/10-rag/RedisVectorStore.py`（写入文本并存入 Redis）
+
+```python
+from langchain_redis import RedisConfig, RedisVectorStore
+from langchain_community.embeddings import DashScopeEmbeddings
+import os
+
+embeddingsModel = DashScopeEmbeddings(
+    model="text-embedding-v3",
+    dashscope_api_key=os.getenv("aliQwen-api")
+)
+
+texts = [
+    "我喜欢吃苹果",
+    "苹果是我最喜欢吃的水果",
+    "我喜欢用苹果手机",
+]
+embeddings = embeddingsModel.embed_documents(texts)
+metadata = [{"segment_id": "1"}, {"segment_id": "2"}, {"segment_id": "3"}]
+
+config = RedisConfig(
+    index_name="newsgroups",
+    redis_url="redis://localhost:26379",
+)
+vector_store = RedisVectorStore(embeddingsModel, config=config)
+ids = vector_store.add_texts(texts, metadata)
+print(ids[0:5])
+```
+
+【案例源码】`案例与源码-4-LangGraph框架/10-rag/RedisVectorStore_SimilaritySearch.py`（相似性检索）
+
+```python
+from langchain_redis import RedisConfig, RedisVectorStore
+from langchain_community.embeddings import DashScopeEmbeddings
+import os
+
+embeddingsModel = DashScopeEmbeddings(
+    model="text-embedding-v3",
+    dashscope_api_key=os.getenv("aliQwen-api")
+)
+
+vector_store = RedisVectorStore(
+    embeddingsModel,
+    config=RedisConfig(index_name="newsgroups", redis_url="redis://localhost:26379")
+)
+
+query = "我喜欢用什么手机"
+results = vector_store.similarity_search_with_score(query, k=3)
+
+print("=== 查询结果 ===")
+for i, (doc, score) in enumerate(results, 1):
+    similarity = 1 - score  # score 为距离，可转为相似度
+    print(f"结果 {i}: {doc.page_content}, 相似度: {similarity:.4f}")
+```
+
+---
+
+**本章小结：**
+
+- **向量与向量化**：向量是既有大小又有方向的量；文本/图像等通过**嵌入模型**转为高维向量，便于用**余弦相似度**等度量语义相似性。
+- **向量数据库**：专门做**相似性搜索**的存储，与关系库的「精确匹配」不同；是 RAG 的底层支撑。**RedisStack** 可在 Redis 基础上提供向量检索能力，安装可用 Docker 一行命令。
+- **Embedding**：用阿里百炼等接口或 LangChain 的 `DashScopeEmbeddings` 做文本向量化；单条用 `embed_query`，多条用 `embed_documents`。语义相似度可用手写或 numpy/sklearn 计算余弦相似度；向量可写入 Redis 等向量库，并用 `similarity_search` / `as_retriever` 做检索。
+
+**建议下一步：** 在本地配置好 Redis 与阿里百炼 API Key，依次跑通 09-embedding 与 10-rag 下的向量存取示例；接着学习 [第 19 章 - RAG 检索增强生成](19-RAG检索增强生成.md)，把文档加载、分割与本章的 Embedding、向量库串联成完整 RAG 流程。
