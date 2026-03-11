@@ -73,7 +73,9 @@
 
 ### 2.1 是什么
 
-**向量数据库（Vector Store）** 是一种专门用于**存储、管理和检索向量数据**（高维数值数组）的数据库系统。其核心能力是：通过高效的索引与相似性计算，支持**相似性搜索**而非传统关系型数据库的**精确匹配**。当给定一个查询向量时，向量库返回与它「最相似」的一组向量及其关联的原始数据（如文本、ID）。向量维度越高，在合理索引与模型下，查询的精准度与效果通常越好。
+**向量数据库（Vector Store）** 是一种专门用于**存储、管理和检索向量数据**（高维数值数组）的数据库系统。
+
+其核心能力是：通过高效的索引与相似性计算，支持**相似性搜索**而非传统关系型数据库的**精确匹配**。当给定一个查询向量时，向量库返回与它「最相似」的一组向量及其关联的原始数据（如文本、ID）。向量维度越高，在合理索引与模型下，查询的精准度与效果通常越好。
 
 - **官网 - 向量存储（Vector Store）**：https://docs.langchain.com/oss/python/integrations/vectorstores
 - **说人话**：和传统数据库「查 exact 匹配」不同，向量库做的是「按相似度排序的检索」。
@@ -152,79 +154,25 @@
 
 【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopeHello.py`
 
-```python
-# https://bailian.console.aliyun.com/cn-beijing/?productCode=p_efm&tab=doc#/doc/?type=model&url=2842587
-
-import dashscope
-from http import HTTPStatus
-
-input_text = "衣服的质量杠杠的"
-
-resp = dashscope.TextEmbedding.call(
-    model="text-embedding-v4",
-    input=input_text,
-)
-
-if resp.status_code == HTTPStatus.OK:
-    print(resp)
-```
+[Text2Embedding_DashScopeHello.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopeHello.py ":include :type=code")
 
 **（2）OpenAI 兼容接口调用（如百炼兼容模式）**
 
 【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_OpenAiHello.py`
 
-```python
-# 使用 OpenAI 兼容接口调用阿里百炼 Embedding
-import os
-from openai import OpenAI
-
-input_text = "衣服的质量杠杠的"
-
-client = OpenAI(
-    api_key=os.getenv("aliQwen-api"),
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
-)
-
-completion = client.embeddings.create(
-    model="text-embedding-v4",
-    input=input_text
-)
-
-print(completion.model_dump_json())
-```
+[Text2Embedding_OpenAiHello.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_OpenAiHello.py ":include :type=code")
 
 **（3）LangChain DashScope 封装 — 单条与批量**
 
 【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScope.py`
 
-```python
-"""
-pip install langchain-community dashscope
-"""
-from langchain_community.embeddings import DashScopeEmbeddings
-
-embeddings = DashScopeEmbeddings(
-    model="text-embedding-v4",
-)
-
-text = "This is a test document."
-query_result = embeddings.embed_query(text)
-print("文本向量长度：", len(query_result))
-
-doc_results = embeddings.embed_documents([
-    "Hi there!",
-    "Oh, hello!",
-    "What's your name?",
-    "My friends call me World",
-    "Hello World!"
-])
-print("文本向量数量：", len(doc_results), "，文本向量长度：", len(doc_results[0]))
-```
+[Text2Embedding_DashScope.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScope.py ":include :type=code")
 
 **（4）DashScope 进阶用法（如多模态或更多参数）**
 
-【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopePro.py`  
-（课程中可按需查看，此处不重复贴全码，路径供查阅。）
+【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopePro.py`
+
+[Text2Embedding_DashScopePro.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopePro.py ":include :type=code")
 
 ---
 
@@ -234,46 +182,7 @@ print("文本向量数量：", len(doc_results), "，文本向量长度：", len
 
 【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_CosSimilarity.py`
 
-```python
-"""
-通过向量计算语义相似度：使用 sklearn 或手写余弦相似度比较多段文本。
-"""
-import dashscope
-import os
-from http import HTTPStatus
-import numpy as np
-
-texts = [
-    '我喜欢吃苹果',
-    '苹果是我最喜欢吃的水果',
-    '我喜欢用苹果手机'
-]
-
-embeddings = []
-for text in texts:
-    input_data = [{'text': text}]
-    resp = dashscope.MultiModalEmbedding.call(
-        model="multimodal-embedding-v1",
-        api_key=os.getenv("aliQwen-api"),
-        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
-        input=input_data
-    )
-    if resp.status_code == HTTPStatus.OK:
-        embedding = resp.output['embeddings'][0]['embedding']
-        embeddings.append(embedding)
-
-def cosine_similarity(vec1, vec2):
-    dot_product = np.dot(vec1, vec2)
-    norm_vec1 = np.linalg.norm(vec1)
-    norm_vec2 = np.linalg.norm(vec2)
-    return dot_product / (norm_vec1 * norm_vec2)
-
-print("文本相似度比较结果:")
-for i in range(len(texts)):
-    for j in range(i+1, len(texts)):
-        similarity = cosine_similarity(embeddings[i], embeddings[j])
-        print(f"文本{i+1} vs 文本{j+1}: 余弦相似度 = {similarity:.4f}")
-```
+[Text2Embedding_CosSimilarity.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_CosSimilarity.py ":include :type=code")
 
 ---
 
@@ -285,94 +194,17 @@ for i in range(len(texts)):
 
 【案例源码】`案例与源码-4-LangGraph框架/09-embedding/EmbeddingStoreRedis.py`
 
-```python
-# pip install langchain-community dashscope redis redisvl
-import os
-from langchain_community.embeddings import DashScopeEmbeddings
-from langchain_community.vectorstores import Redis
-from langchain_core.documents import Document
-
-embeddings = DashScopeEmbeddings(
-    model="text-embedding-v3",
-    dashscope_api_key=os.getenv("aliQwen-api")
-)
-
-texts = [
-    "通义千问是阿里巴巴研发的大语言模型。",
-    "Redis 是一个高性能的键值存储系统，支持向量检索。",
-    "LangChain 可以轻松集成各种大模型和向量数据库。"
-]
-documents = [Document(page_content=text, metadata={"source": "manual"}) for text in texts]
-
-vector_store = Redis.from_documents(
-    documents=documents,
-    embedding=embeddings,
-    redis_url="redis://localhost:26379",
-    index_name="my_index11",
-)
-
-retriever = vector_store.as_retriever(search_kwargs={"k": 2})
-results = retriever.invoke("LangChain 和 Redis 怎么结合？")
-for res in results:
-    print(res.page_content)
-```
+[EmbeddingStoreRedis.py](案例与源码-4-LangGraph框架/09-embedding/EmbeddingStoreRedis.py ":include :type=code")
 
 **（2）使用 langchain_redis：add_texts 写入 + similarity_search_with_score 检索**
 
 【案例源码】`案例与源码-4-LangGraph框架/10-rag/RedisVectorStore.py`（写入文本并存入 Redis）
 
-```python
-from langchain_redis import RedisConfig, RedisVectorStore
-from langchain_community.embeddings import DashScopeEmbeddings
-import os
-
-embeddingsModel = DashScopeEmbeddings(
-    model="text-embedding-v3",
-    dashscope_api_key=os.getenv("aliQwen-api")
-)
-
-texts = [
-    "我喜欢吃苹果",
-    "苹果是我最喜欢吃的水果",
-    "我喜欢用苹果手机",
-]
-embeddings = embeddingsModel.embed_documents(texts)
-metadata = [{"segment_id": "1"}, {"segment_id": "2"}, {"segment_id": "3"}]
-
-config = RedisConfig(
-    index_name="newsgroups",
-    redis_url="redis://localhost:26379",
-)
-vector_store = RedisVectorStore(embeddingsModel, config=config)
-ids = vector_store.add_texts(texts, metadata)
-print(ids[0:5])
-```
+[RedisVectorStore.py](案例与源码-4-LangGraph框架/10-rag/RedisVectorStore.py ":include :type=code")
 
 【案例源码】`案例与源码-4-LangGraph框架/10-rag/RedisVectorStore_SimilaritySearch.py`（相似性检索）
 
-```python
-from langchain_redis import RedisConfig, RedisVectorStore
-from langchain_community.embeddings import DashScopeEmbeddings
-import os
-
-embeddingsModel = DashScopeEmbeddings(
-    model="text-embedding-v3",
-    dashscope_api_key=os.getenv("aliQwen-api")
-)
-
-vector_store = RedisVectorStore(
-    embeddingsModel,
-    config=RedisConfig(index_name="newsgroups", redis_url="redis://localhost:26379")
-)
-
-query = "我喜欢用什么手机"
-results = vector_store.similarity_search_with_score(query, k=3)
-
-print("=== 查询结果 ===")
-for i, (doc, score) in enumerate(results, 1):
-    similarity = 1 - score  # score 为距离，可转为相似度
-    print(f"结果 {i}: {doc.page_content}, 相似度: {similarity:.4f}")
-```
+[RedisVectorStore_SimilaritySearch.py](案例与源码-4-LangGraph框架/10-rag/RedisVectorStore_SimilaritySearch.py ":include :type=code")
 
 ---
 
