@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://didilili.github.io/ai-agents-from-zero/</loc>
+    <priority>1.0</priority>
+  </url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/1-1-大模型认知与工程概览</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/1-2-提示词工程</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/1-3-RAG、微调、续训与智能体</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/10-LangChain快速上手与HelloWorld</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/11-Model-I-O与模型接入</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/12-Ollama本地部署与调用</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/13-提示词与消息模板</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/14-输出解析器</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/15-LCEL与链式调用</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/16-记忆与对话历史（含Redis基础）</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/17-Tools工具调用</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/18-向量数据库与Embedding实战</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/19-RAG检索增强生成</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/2-RAG-搭建企业私有&个人知识库</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/3-基于Coze&Dify平台的智能体开发</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/4-Python调用Dify平台工作流</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/5-Python调用Coze平台工作流</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/6-Coze的Windows平台部署</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/7-Dify的Windows平台部署</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/8-企业级大模型部署</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/8.1-Docker入门与Dify部署常见问题</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/9-LangChain概述与架构</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/CONTRIBUTING</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/README</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/教程更新日志</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/教程案例链接汇总</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/教程目录大纲</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/新手入门与常见问题</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.1-Coze案例：一键生成行业调研PPT/3.1-一键生成行业调研PPT</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.10-Coze案例：商品营销卖点提炼/3.10-商品营销卖点提炼-Coze</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.2-Coze案例：复刻爆款视频/3.2-复刻爆款视频</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.3-Coze案例：产品营销海报生成/3.3-产品营销海报生成</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.4-Dify案例：一键生成行业调研报告/3.4-一键生成行业调研报告</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.5-Dify案例：客户投诉分类助手/3.5-客户投诉分类助手</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.6-Coze案例：客服对话记录分析/3.6-客服对话记录分析-Coze</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.7-Dify案例：客服对话记录分析/3.7-客服对话记录分析-Dify</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.8-Coze案例：商品评论分析/3.8-商品评论分析-商品评论分析-Coze</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-3-Coze&Dify平台工作流智能体/3.9-Dify案例：商品评论分析/3.9-商品评论分析-Dify</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://didilili.github.io/ai-agents-from-zero/#/案例与源码-4-LangGraph框架/10-rag/docloads/assets/sample</loc>
+  <priority>0.8</priority>
+</url>
+</urlset>
