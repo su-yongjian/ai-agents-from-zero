@@ -63,9 +63,7 @@
 
 ![向量维度与检索效果](images/18/image133.jpeg)
 
-**小结：** 向量化把「文本/图像」映射到高维空间中的点，语义相近的内容在空间中距离较近。例如「肯德基」和「麦当劳」的向量会比「肯德基」和「新疆大盘鸡」更接近。
-
-**向量化的应用场景小结：** 嵌入模型把文本、图像等信息表示成连续的一串数字（向量），从而能**捕捉语义或上下文上的相似性**，方便机器做比较、聚类、分类等任务。可以打个比方：要描述不同水果，不用写一大段话，只要用几个数表示「甜度、个头、颜色」等特征，例如苹果写成 [8, 5, 7]、香蕉写成 [9, 7, 4]，谁和谁更接近、哪些可以归为一类，一比数字就知道；向量化做的就是这种事，只不过维度和数值由模型自动学出来，用来比较文本或图像的「含义」是否接近。
+**小结：** 向量化把「文本/图像」映射到高维空间中的点，语义相近的内容在空间中距离较近（例如「肯德基」与「麦当劳」的向量会比「肯德基」与「新疆大盘鸡」更接近）。嵌入模型用连续的一串数字表达语义或上下文，便于比较、聚类、分类；维度和数值由模型自动学习，无需手写特征。
 
 ---
 
@@ -80,11 +78,7 @@
 - **官网 - 向量存储（Vector Store）**：https://docs.langchain.com/oss/python/integrations/vectorstores
 - **说人话**：和传统数据库「查 exact 匹配」不同，向量库做的是「按相似度排序的检索」。
 
-把上述核心概念再捋一遍，方便和后续 RAG 衔接：
-
-- **VectorStore 是什么**：专门用来**存、查高维向量**的数据库或存储方案，尤其适合「已经被嵌入模型转成向量」的数据。查的时候不是「等于某值才命中」，而是**按相似度找最接近的向量**：你给一个查询向量，它返回一批和这个向量「最像」的向量及对应的原始内容（如文档、ID）。
-- **和 AI 模型怎么配合（RAG 雏形）**：向量库用来**把你的数据和 AI 模型接在一起**。典型用法是：先把你的数据（文档等）转成向量并写入向量库；等用户提问时，先用问题向量在库里**检索出一批相似文档**，再把这些文档当作「上下文」，和用户问题一起塞给大模型，让模型基于这些资料生成回答——这就是**检索增强生成（RAG）**。后续第 19 章会专门讲 RAG 的完整流程。
-- **接口**：VectorStore 一般会提供简单 API，方便你做「写入向量、按相似度查询」等操作；LangChain 对各向量库做了统一封装，用法在文档和本教程案例里都会用到。
+**与 RAG 的衔接**：向量库把「你的数据」和「大模型」接在一起——先把文档转成向量写入；用户提问时用问题向量在库中**检索相似文档**，再把这些文档作为上下文与问题一并交给大模型生成回答，即**检索增强生成（RAG）**，第 19 章将展开完整流程。VectorStore 提供写入与按相似度查询的 API，LangChain 对各向量库做了统一封装。
 
 **各生态支持的向量库列表（供扩展学习）：**
 
@@ -94,9 +88,8 @@
 
 ### 2.2 能干什么
 
-- 将文本、图像、视频等经嵌入模型得到的**向量**存入 Vector Store；查询时同样把问题向量化，在库中做**相似性搜索**，返回最相关的文档或片段。
+- 将文本、图像、视频等经嵌入模型得到的**向量**存入 Vector Store；查询时把问题向量化，在库中做**相似性搜索**，返回最相关的文档或片段。
 - **特点**：能捕捉语义相似性、同义词、多义词等复杂关系，是 **RAG（检索增强生成）** 的底层支撑。
-- **形象理解**：把文本映射到高维空间中的点，语义相近的文本在空间中距离较近；例如「肯德基」与「麦当劳」的向量会比「肯德基」与「新疆大盘鸡」更接近。
 
 **知识结构示意：**
 
@@ -117,9 +110,9 @@
 
 ## 3、用 RedisStack 作为向量存储
 
-本教程的向量存取案例使用 **Redis**（推荐 **RedisStack**，因其内置向量检索能力）。RedisStack 是什么、与原生 Redis 的区别、Docker 安装与端口说明等，已在 [第 16 章 - 记忆与对话历史](16-记忆与对话历史.md) 的 **「6.2.2 Redis Stack 简介」** 中介绍，此处不再重复。
+本教程的向量存取案例使用 **Redis**（推荐 **RedisStack**，因其内置向量检索能力）。RedisStack 是什么、与原生 Redis 的区别、Docker 安装与端口说明等，已在 [第 16 章 - 记忆与对话历史（含 Redis 基础）](16-记忆与对话历史（含Redis基础）.md) 的 **「6.2.2 Redis Stack 简介」** 中介绍，此处不再重复。
 
-**本章仅需知道：** 做向量存储与相似性检索时，用到的是 RedisStack 里的 **RediSearch** 模块（负责向量数据的存储与检索）；若你尚未安装，请先参考第 16 章中的 Docker 命令（如 `redis/redis-stack-server` 或 `redis/redis-stack`）启动 RedisStack。本目录下案例默认通过 `redis_url` 连接 Redis，若你的服务端口为 **26379**（与第 16 章常用配置一致）或其它端口，请在代码或环境中将 `redis_url` 改为对应地址（如 `redis://localhost:26379`）。
+**本章仅需知道：** 做向量存储与相似性检索时，用到的是 RedisStack 里的 **RediSearch** 模块（负责向量数据的存储与检索）；若你尚未安装，请先参考第 16 章中的 Docker 命令（如 `redis/redis-stack-server` 或 `redis/redis-stack`）启动 RedisStack。本目录下案例默认通过 `redis_url` 连接 Redis，若你的服务端口为 **26379**（与第 16 章常用配置一致）或其他端口，请在代码或环境中将 `redis_url` 改为对应地址（如 `redis://localhost:26379`）。
 
 - **Spring AI 文档（Redis 向量库）**：https://docs.spring.io/spring-ai/reference/api/vectordbs/redis.html
 
@@ -153,7 +146,7 @@
 - **向量维度（length）**：一般**不一致**。不同模型有各自固定的输出维度（如 1536、1024、2048），所以 `len(向量)` 会随模型变化；你在代码里看到的「文本向量长度」取决于当前用的模型。
 - **向量内容（各维的数值）**：**不一致**。即使两个模型输出维度相同，同一段文本得到的数字序列也不同，因为训练数据与网络结构不同，向量空间不可直接比较。
 
-**实践建议：** 做检索或相似度比较时，**写入向量库（建索引）与查询必须使用同一嵌入模型**；否则维度可能不匹配会报错，且不同模型的向量空间不可比，相似度结果没有意义。
+**实践建议：** 做检索或相似度比较时，**写入向量库（建索引）与查询必须使用同一嵌入模型**；否则维度可能不匹配会报错，且不同模型的向量空间不可比，相似度结果没有意义。生产环境中建议将嵌入模型与参数固化为配置项，避免索引与查询误用不同模型。
 
 ### 4.3 案例代码：文本向量化
 
@@ -195,13 +188,16 @@
 
 ---
 
-## 6、Embedding 存入向量数据库
+## 6、向量库的写入与检索（RAG 的底层能力）
 
-将文本转为向量后写入 Redis（或 RedisStack），便于后续做相似性检索。以下示例使用 **langchain_community** 的 Redis 向量存储，或 **langchain_redis** 的 `RedisVectorStore`。
+本节只演示两件事：**把文本向量化后写入向量库**、**按相似度检索**。这两步是 RAG 会用到的底层能力，但**还不是完整 RAG**：此处用**现成的 Document 列表或短文本**做示例，**不涉及**从 PDF/Word 等加载文档，也不涉及把长文档切块（文档加载器、文本分割器将在 [第 19 章 - RAG 检索增强生成](19-RAG检索增强生成.md) 与「检索结果 → 大模型生成」一起讲）。先在本章练熟「存向量、查向量」，再到第 19 章接上文档加载、分割与 LLM，组成完整 RAG 流程。
 
-**（1）使用 langchain_community：Document 列表一次性写入**
+下面示例使用 **langchain_community** 的 Redis 向量存储：用一段**手写的 Document 列表**做「写入 → 检索」，便于专注理解向量库的 API。
 
-本案例同时体现**索引**与**检索**：先通过 `Redis.from_documents()` 将文档向量化并写入 Redis（建索引），再通过 `as_retriever()` 得到检索器并用 `invoke(查询文本)` 做相似度检索（查索引）。
+**案例：Document 列表一次性写入 + 相似度检索**
+
+- **写入（建索引）**：`Redis.from_documents(documents, embeddings, ...)` 会把每个 Document 的 `page_content` 用嵌入模型向量化，并与原文、元数据一并写入 Redis。
+- **检索（查索引）**：`vectorstore.as_retriever()` 得到检索器，`retriever.invoke(查询文本)` 会把查询文本向量化，在库中做相似度比较，返回最相关的 Document 列表。
 
 【案例源码】`案例与源码-4-LangGraph框架/09-embedding/EmbeddingStoreRedis.py`
 
@@ -209,24 +205,16 @@
 
 ![RedisInsight 中查看写入的文档与向量](images/18/20260311134749.jpg)
 
-**图说明**：运行上述案例后，在 RedisInsight（或 redis-cli）中可看到 Redis 的存储结构。左侧为键列表：形如 `doc:my_index11:<uuid>` 的 HASH 键对应每个被写入的 Document（案例中共 3 条文本，故会有 3 个此类键；点开任一 `doc:my_index11:...`，右侧会显示该键的字段：**content** 为原文（即代码里的 `page_content`，如「通义千问是阿里巴巴研发的大语言模型。」）；**content_vector** 为该段文本经嵌入模型得到的向量（高维浮点数组，图中可能显示为编码后的形态）；**source** 等为元数据（即代码里 `metadata={"source": "manual"}`）。检索时用查询文本的向量与各 `content_vector` 做相似度比较，返回最接近的几条，对应「向量维度与检索效果」：维度由嵌入模型决定，检索效果依赖向量质量与相似度度量。
+**图说明**：运行上述案例后，在 RedisInsight（或 redis-cli）中可看到 Redis 的存储结构。形如 `doc:my_index11:<uuid>` 的 HASH 键对应每个被写入的 Document；其字段 **content** 为原文（`page_content`），**content_vector** 为该段文本经嵌入模型得到的向量，**source** 等为元数据。检索时用查询文本的向量与各 `content_vector` 做相似度比较，返回最接近的几条。
 
-**（2）使用 langchain_redis：add_texts 写入 + similarity_search_with_score 检索**
-
-【案例源码】`案例与源码-4-LangGraph框架/10-rag/RedisVectorStore.py`（写入文本并存入 Redis）
-
-[RedisVectorStore.py](案例与源码-4-LangGraph框架/10-rag/RedisVectorStore.py ":include :type=code")
-
-【案例源码】`案例与源码-4-LangGraph框架/10-rag/RedisVectorStore_SimilaritySearch.py`（相似性检索）
-
-[RedisVectorStore_SimilaritySearch.py](案例与源码-4-LangGraph框架/10-rag/RedisVectorStore_SimilaritySearch.py ":include :type=code")
+**其他写法**：若使用 **langchain_redis** 的 `RedisVectorStore`，可用 `add_texts()` 写入、`similarity_search_with_score()` 做带分数的检索。第 19 章会在完整 RAG 流程中再次使用向量库的写入与检索，并给出 10-rag 目录下的相关示例，可与本章本案例对照。
 
 ---
 
 **本章小结：**
 
 - **向量与向量化**：向量是既有大小又有方向的量；文本/图像等通过**嵌入模型**转为高维向量，便于用**余弦相似度**等度量语义相似性。
-- **向量数据库**：专门做**相似性搜索**的存储，与关系库的「精确匹配」不同；是 RAG 的底层支撑。**RedisStack** 可在 Redis 基础上提供向量检索能力，安装可用 Docker 一行命令。
-- **Embedding**：用阿里百炼等接口或 LangChain 的 `DashScopeEmbeddings` 做文本向量化；单条用 `embed_query`，多条用 `embed_documents`。语义相似度可用手写或 numpy/sklearn 计算余弦相似度；向量可写入 Redis 等向量库，并用 `similarity_search` / `as_retriever` 做检索。
+- **向量数据库**：专门做**相似性搜索**的存储，与关系库的「精确匹配」不同；是 RAG 的底层支撑。**RedisStack** 可在 Redis 基础上提供向量检索能力，安装见第 16 章。
+- **Embedding 与向量库**：用 `DashScopeEmbeddings` 等做文本向量化；单条用 `embed_query`，多条用 `embed_documents`。本节用现成 Document 列表练习「写入 Redis → as_retriever 检索」，不涉及文档加载与分割；完整 RAG（含加载、分割与 LLM 生成）见第 19 章。
 
-**建议下一步：** 在本地配置好 Redis 与阿里百炼 API Key，依次跑通 09-embedding 与 10-rag 下的向量存取示例；接着学习 [第 19 章 - RAG 检索增强生成](19-RAG检索增强生成.md)，把文档加载、分割与本章的 Embedding、向量库串联成完整 RAG 流程。
+**建议下一步：** 在本地配置好 Redis 与阿里百炼 API Key，跑通 09-embedding 下的向量化与 `EmbeddingStoreRedis.py`；接着学习 [第 19 章 - RAG 检索增强生成](19-RAG检索增强生成.md)，把文档加载、分割与本节「向量库写入与检索」串联成完整 RAG 流程。
