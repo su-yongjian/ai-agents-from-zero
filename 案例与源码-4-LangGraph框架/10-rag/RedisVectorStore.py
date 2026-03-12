@@ -38,7 +38,10 @@ for i, vec in enumerate(embeddings, 1):
     print(f"前5个向量值: {vec[:10]}\n")
 
 # 定义每条文本对应的元数据信息
-metadata = [{"segment_id": "1"}, {"segment_id": "2"}, {"segment_id": "3"}]
+# metadata = [{"segment_id": "1"}, {"segment_id": "2"}, {"segment_id": "3"}]
+
+# 定义每条文本对应的元数据信息（按条数自动生成，避免手写；真实 RAG 中可从 Document.metadata 取 source、page 等）
+metadata = [{"segment_id": str(i)} for i in range(1, len(texts) + 1)]
 
 # 3. Redis 连接与索引名（需与检索案例一致）
 config = RedisConfig(
