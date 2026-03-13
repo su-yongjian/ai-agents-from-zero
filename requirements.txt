@@ -16,6 +16,7 @@ langchain-openai>=1.1,<2
 openai>=1.0,<3
 python-dotenv>=1.0
 pydantic>=2.7,<3
+httpx>=0.27
 
 # ---------- 社区与厂商集成 ----------
 langchain-community>=0.3,<1
@@ -47,6 +48,11 @@ jq>=1.6
 
 # ---------- RAG 文本分割（10-rag/textsplit 中 RecursiveDocumentSplitter 用 UnstructuredLoader 加载 rag.txt 需此依赖） ----------
 langchain-unstructured>=1.0
+
+# ---------- MCP 与 Agent（11-mcp、12-agent：McpServerByFastMCP / McpServerWeatherByFastMCP / McpClientAgent / AgentSmartSelectV0.3 等） ----------
+mcp>=1.0
+langchain-classic>=1.0
+langchain-mcp-adapters>=0.2
 
 # ---------- 代码格式（可选，用于统一 .py 风格） ----------
 black>=24.0

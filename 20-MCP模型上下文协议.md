@@ -360,22 +360,10 @@ if __name__ == "__main__":
 
 ---
 
-## 7、小结：Tool、RAG 与 MCP 的定位
-
-| 技术                        | 主要作用                              | 一句话                            |
-| --------------------------- | ------------------------------------- | --------------------------------- |
-| **Tool / Function Calling** | 让大模型能「调用」外部能力            | 大模型使用 Util 工具              |
-| **RAG**                     | 让大模型获得足够上下文                | 大模型获取检索到的知识            |
-| **MCP**                     | 统一「大模型与工具/数据源」的连接方式 | 大模型与工具/服务之间的标准化通讯 |
-
-**延伸**：MCP 在 Java 生态也有实现，例如可参考 B 站视频（74–80 集）：https://www.bilibili.com/video/BV1pvWGznEqh?spm_id_from=333.788.videopod.sections&vd_source=f3f60f7acbef49d38b97c4d660d439fc&p=74 。
-
----
-
 **本章小结：**
 
 - **MCP** 是规范「大模型与外部工具/数据源」连接的**标准化协议**，解决接口不统一、重复开发、协作难等问题；可类比「大模型版的 OpenFeign」或 AI 世界的「万能适配器」。架构上采用客户端-服务器模型，常见传输模式有 **STDIO**（本地/进程内）和 **SSE**（网络、流式）。
 - 学习时可通过本地 MCP 天气服务端与客户端（`McpServer.py`、`McpClient.py`）理解「工具暴露与调用」；多服务场景可配合 `mcp.json` 与 LangChain MCP 适配器（注意 Python 版本与依赖）。
-- **定位速记**：Tool 让大模型能用工具；RAG 让大模型获得检索上下文；**MCP** 让大模型与工具/服务之间的连接标准化、可复用。
+- **定位速记**：Tool 让大模型能用工具；RAG 让大模型获得检索上下文；**MCP** 让大模型与工具/服务之间的连接标准化、可复用。与 Agent、Function Calling 等的详细对比见 [第 21 章 - Agent 智能体](21-Agent智能体.md) 第 6 节。
 
-**建议下一步：** 在本地跑通 `McpServer.py` 与 `McpClient.py`，巩固 MCP 的配置与调用；接着学习 [第 21 章 - Agent 智能体](21-Agent智能体.md)，理解 Tool 与 Agent 的配合及 ReAct、A2A 等案例。若需更复杂的图编排与多步工作流，可继续学习 **LangGraph** 相关章节。
+**建议下一步：** 在本地跑通 `McpServer.py` 与 `McpClient.py`，巩固 MCP 的配置与调用；接着学习 [第 21 章 - Agent 智能体](21-Agent智能体.md)，理解 Tool 与 Agent 的配合及 ReAct、A2A 等案例。若需更复杂的图编排与多步工作流，可继续学习 **LangGraph** 相关章节。MCP 在 Java 生态也有实现，可参考 B 站视频（74–80 集）：https://www.bilibili.com/video/BV1pvWGznEqh。

@@ -17,6 +17,10 @@
 venv/
 env/
 .env
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
 
 # profiling files
 chrome-profiler-events*.json
