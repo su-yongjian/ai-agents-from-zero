@@ -1,7 +1,12 @@
 """
-LangGraph普通边演示
+【案例】普通边（Normal Edges）：用 add_edge 串联节点，形成固定执行顺序 START → node_a → node_b → node_c → END，无条件跳转。
 
-普通边是直接连接两个节点的边，表示无条件地从一个节点跳转到另一个节点。
+对应教程章节：第 24 章 - LangGraph API：节点、边与进阶 → 2、Graph API 之 Edge（边）
+
+知识点速览：
+- 普通边：add_edge(源节点, 目标节点)，表示执行完源节点后必定进入目标节点，无分支。
+- START、END 为 LangGraph 内置虚拟节点，分别表示图入口与出口。
+- 线性链是最简单的图结构，适合理解「状态在节点间顺序传递」。
 """
 
 from typing_extensions import TypedDict
@@ -9,25 +14,25 @@ from langgraph.graph import StateGraph, START, END
 
 
 # 定义状态
-class AtguiguState(TypedDict):
+class DiliState(TypedDict):
     value: int
     step: str
 
 
 # 定义节点函数
-def node_a(state: AtguiguState) -> dict:
+def node_a(state: DiliState) -> dict:
     """节点A"""
     print("执行节点A")
     return {"value": state["value"] + 1, "step": "A执行完毕"}
 
 
-def node_b(state: AtguiguState) -> dict:
+def node_b(state: DiliState) -> dict:
     """节点B"""
     print("执行节点B")
     return {"value": state["value"] * 2, "step": "B执行完毕"}
 
 
-def node_c(state: AtguiguState) -> dict:
+def node_c(state: DiliState) -> dict:
     """节点C"""
     print("执行节点C")
     return {"value": state["value"] - 1, "step": "C执行完毕"}
@@ -38,7 +43,7 @@ def main():
     print("=== 普通边演示 ===")
 
     # 创建图
-    builder = StateGraph(AtguiguState)
+    builder = StateGraph(DiliState)
 
     # 添加节点
     builder.add_node("node_a", node_a)
@@ -59,7 +64,7 @@ def main():
     print(f"执行结果: {result}\n")
     # 打印图的边和节点信息
     print(builder.edges)
-    #print(builder.nodes)
+    # print(builder.nodes)
     # 打印图的ascii可视化结构
     print(app.get_graph().print_ascii())
     print("=================================")
@@ -70,5 +75,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

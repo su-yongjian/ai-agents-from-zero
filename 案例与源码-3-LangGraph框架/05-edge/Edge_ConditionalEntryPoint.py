@@ -1,7 +1,12 @@
-'''
-LangGraph中条件入口点的典型应用场景
-完整展示了条件入口点的核心概念：根据输入内容动态决定从START节点去往哪个处理节点。
-'''
+"""
+【案例】条件入口点：从 START 开始就根据状态分支，使用 add_conditional_edges(START, route_fn, mapping)，根据初始输入（如 user_input）决定进入哪个处理节点。
+
+对应教程章节：第 24 章 - LangGraph API：节点、边与进阶 → 2、Graph API 之 Edge（边）
+
+知识点速览：
+- add_conditional_edges(START, route_input, {"greeting": "greeting_node", ...})：invoke 传入的 state 先交给 route_input，返回值作为 key 在 mapping 中查下一节点，实现「不同输入走不同入口」。
+- 与「条件边」区别：条件边是「某节点执行完后」再分支；条件入口点是「图一启动」就分支，常用于路由到不同处理逻辑。
+"""
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
 

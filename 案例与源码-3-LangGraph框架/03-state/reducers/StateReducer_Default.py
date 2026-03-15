@@ -1,51 +1,50 @@
-'''
-如果未明确指定reducer函数，则默认对该键的更新是覆盖行为。
-LangGraph Reducer函数演示 - 默认Reducer（覆盖更新）
+"""
+【案例】默认 Reducer（覆盖更新）：未为状态字段指定 Reducer 时，节点返回的值会直接覆盖该字段，后执行节点的结果覆盖先执行节点的结果。
 
-直接覆盖：
-如果没有为状态字段指定 Reducer，默认会覆盖更新。
-也就是说，后执行的节点返回的值会直接覆盖先执行节点的值，
-即下一个节点的State数据是上一个节点的返回。
-'''
+对应教程章节：第 23 章 - LangGraph API：图与状态 → 2、Graph API 之 State（状态）
+
+知识点速览：
+- Reducer 决定「节点返回的更新如何合并到当前状态」；不指定时采用默认行为：覆盖。
+- 多节点依次更新同一字段时，最终状态中该字段只保留最后一个节点返回的值。
+- 适合「单写」场景；若需追加、累加等，需使用 add_messages、operator.add 等 Reducer。
+"""
 
 from typing import List
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 
 
-# 1. 默认Reducer（覆盖更新）
-# 未指定合并策略，默认覆盖，上一个节点的返回是下一个节点的值
+# 未为 foo、bar 指定 Reducer，默认覆盖更新
 class DefaultReducerState(TypedDict):
     foo: int
     bar: List[str]
 
+
 def node_default_1(state: DefaultReducerState) -> dict:
+    """节点1 只更新 foo，bar 保持原样（本示例中会被节点2 覆盖 bar）。"""
     print(state["foo"])
     print(state["bar"])
     return {"foo": 22}
 
+
 def node_default_2(state: DefaultReducerState) -> dict:
-    print()
+    """节点2 只更新 bar；foo 保持为节点1 写入的 22。"""
     print(state["foo"])
     print(state["bar"])
-    return {"bar": ["bye1","bye2","bye3"]}
+    return {"bar": ["bye1", "bye2", "bye3"]}
 
 
 def main():
-    print("1. 默认Reducer（覆盖更新）演示:\n")
+    print("1. 默认 Reducer（覆盖更新）演示:\n")
     builder = StateGraph(DefaultReducerState)
-
     builder.add_node("node1", node_default_1)
     builder.add_node("node2", node_default_2)
-
     builder.add_edge(START, "node1")
     builder.add_edge("node1", "node2")
     builder.add_edge("node2", END)
-
     graph = builder.compile()
 
     result = graph.invoke(input={"foo": 1, "bar": ["hi"]})
-    #print(f"初始状态: {{'foo': 1, 'bar': ['hi']}}")
     print(f"执行结果: {result}\n")
 
 

@@ -1,73 +1,66 @@
 """
-LangGraph 图输入输出模式和私有状态传递演示
+【案例】图的输入/输出 Schema：用 input_schema 和 output_schema 限制「调用时只能传 question、返回时只拿 answer」，实现对外接口的契约化，适合需要明确 I/O 边界的场景。
 
-该演示展示了：
-1. 如何定义图的输入和输出模式
+对应教程章节：第 23 章 - LangGraph API：图与状态 → 2、Graph API 之 State（状态）
+
+知识点速览：
+- state_schema（整体状态）可拆出子集：input_schema 规定 invoke 时接受的输入，output_schema 规定返回给调用者的输出。
+- 构建时 StateGraph(OverallState, input_schema=InputState, output_schema=OutputState)，invoke 会先按 input_schema 过滤输入，执行结束后按 output_schema 过滤再返回。
+- 节点内部仍使用完整 OverallState；只有「图的边界」受 input/output 约束，便于封装和类型安全。
 """
 
 from langgraph.graph import StateGraph, START, END
 from typing_extensions import TypedDict
 
 
-# 定义输入状态模式
+# 仅包含「输入」字段的 Schema
 class InputState(TypedDict):
     question: str
 
-# 定义输出状态模式
+
+# 仅包含「输出」字段的 Schema
 class OutputState(TypedDict):
     answer: str
 
-# 定义整体状态模式，结合输入和输出
+
+# 图内部使用的完整状态（输入 + 输出）
 class OverallState(InputState, OutputState):
     pass
 
 
-# 定义处理节点
 def answer_node(state: InputState):
-    """
-    处理输入并生成答案的节点
-    Args:
-        state: 输入状态
-    Returns:
-        dict: 包含答案的字典
-    """
+    """处理节点：根据 question 生成 answer。"""
     print(f"执行 answer_node 节点:")
     print(f"  输入: {state}")
-
-    # 示例答案
     answer = "再见" if "bye" in state["question"].lower() else "你好"
     result = {"answer": answer, "question": state["question"]}
-
     print(f"  输出: {result}")
     return result
 
 
 def demo_input_output_schema():
-    """演示输入输出模式"""
+    """演示：调用时只传 question，返回时只得到 answer。"""
     print("=== 演示输入输出模式 ===")
 
-    # 使用指定的输入和输出模式构建图
-    builder = StateGraph(OverallState, input_schema=InputState, output_schema=OutputState)
-    builder.add_edge(START, "answer_node")  # 定义起始边
-    builder.add_node("answer_node", answer_node)  # 添加答案节点
-    builder.add_edge("answer_node", END)  # 定义结束边
-    graph = builder.compile()  # 编译图
+    # 指定 input_schema / output_schema，约束图的对外接口
+    builder = StateGraph(
+        OverallState, input_schema=InputState, output_schema=OutputState
+    )
+    builder.add_edge(START, "answer_node")
+    builder.add_node("answer_node", answer_node)
+    builder.add_edge("answer_node", END)
+    graph = builder.compile()
 
-    # 使用输入调用图并打印结果
+    # invoke 只传 InputState 的字段；返回结果仅包含 OutputState 的字段
     result = graph.invoke({"question": "你好"})
     print(f"图调用结果: {result}")
-    # 打印图的ascii可视化结构
     print(graph.get_graph().print_ascii())
     print()
 
 
 def main():
-    """主函数"""
     print("=== LangGraph 图输入输出模式===\n")
-
-    # 演示输入输出模式
     demo_input_output_schema()
-
     print("=== 演示完成 ===")
 
 

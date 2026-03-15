@@ -1,10 +1,12 @@
 """
-LangGraph 条件边
-分支流程控制语句分支路由（Router → Weather / Chat）
-使用langgraph构建了一个状态图，根据输入数值的奇偶性执行不同节点。
-check_x接收并传递状态，
-is_even判断奇偶，
-handle_even和handle_odd分别处理偶数和奇数情况，最终输出结果。
+【案例】条件边（Conditional Edges）：根据状态（如 x 的奇偶）在多个后继节点中选一个执行，使用 add_conditional_edges(节点名, 路由函数, 映射)。
+
+对应教程章节：第 24 章 - LangGraph API：节点、边与进阶 → 2、Graph API 之 Edge（边）
+
+知识点速览：
+- add_conditional_edges(source, route_fn, mapping)：route_fn(state) 的返回值作为 key，在 mapping 中查到下一节点名；若为 bool，常用 {True: "node_a", False: "node_b"}。
+- 路由函数在 source 节点执行后被调用，根据当前 state 决定分支；适合「分支流程控制」。
+- State 可用 Pydantic BaseModel 定义，便于带默认值与校验。
 """
 
 from typing import Optional

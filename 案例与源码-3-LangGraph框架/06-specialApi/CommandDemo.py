@@ -1,6 +1,12 @@
 """
-CommandDemo.py | LangGraph 1.0.6 正式版
-Command 基础演示：状态更新+流程控制+动态路由
+【案例】Command 对象：节点可返回 Command(update=..., goto=节点或END)，在「更新状态」的同时「指定下一跳」，实现状态更新与路由一步完成，适合人机闭环与多智能体交接。
+
+对应教程章节：第 24 章 - LangGraph API：节点、边与进阶 → 3、Send、Command 与 Runtime 上下文
+
+知识点速览：
+- 节点函数返回 Command(update=字典, goto=节点名或END)，表示先对 state 应用 update，再跳转到 goto；若 goto=END 则结束图。
+- 与条件边的区别：条件边只做路由；Command 在路由的同时写入 state，适合「决策节点」既要写日志/标记又要转交下一节点的场景。
+- 常用于 decision_agent 根据消息内容路由到 math_agent / translation_agent，或检测到任务完成后 goto=END 并写结束消息。
 """
 from typing import Annotated
 from typing_extensions import TypedDict

@@ -1,10 +1,14 @@
 """
-LangGraph 节点重试策略演示
+【案例】节点重试策略（RetryPolicy）：默认重试、自定义 retry_on 仅对特定异常重试、以及「不可重试异常」直接失败，演示 add_node(..., retry_policy=RetryPolicy(...)) 的用法。
 
-默认重试策略：max_attempts=5，对Exception重试、对ValueError/TypeError等不重试，异常过滤列表完全相同；
-自定义重试策略：max_attempts=5 + custom_retry_on，仅对包含{模拟API调用失败}的异常重试；throw new RuntimeExp("模拟API调用失败")
-不可重试测试：ValueError直接抛错，无重试，max_attempts=3
+对应教程章节：第 24 章 - LangGraph API：节点、边与进阶 → 1、Graph API 之 Node（节点）
+
+知识点速览：
+- RetryPolicy(max_attempts=5)：默认 retry_on 会对多数异常重试，但 ValueError、TypeError 等在「不重试」列表中。
+- RetryPolicy(max_attempts=5, retry_on=custom_retry_on)：custom_retry_on(exception) -> bool 可自定义「仅对某类异常重试」。
+- 节点执行中若抛出「不重试」的异常，不会重试，直接向调用方抛错。
 """
+
 from typing import Dict, Any
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -12,8 +16,9 @@ from langgraph.types import RetryPolicy
 
 
 # 定义状态类型
-class AtguiguState(TypedDict):
+class DiliState(TypedDict):
     result: str
+
 
 # 全局计数器：记录API尝试次数
 attempt_counter = 0
@@ -21,8 +26,8 @@ attempt_counter = 0
 
 # 工具函数
 def build_retry_graph(node_name: str, node_func, retry_policy: RetryPolicy):
-    builder = StateGraph(AtguiguState)
-    #为节点添加重试策略，需要在add_node中设置retry_policy参数。
+    builder = StateGraph(DiliState)
+    # 为节点添加重试策略，需要在add_node中设置retry_policy参数。
     # retry_policy参数接受一个RetryPolicy命名元组对象。
     # 默认情况下，retry_on参数使用default_retry_on函数，该函数会在遇到任何异常时重试
     builder.add_node(node_name, node_func, retry_policy=retry_policy)
@@ -32,7 +37,7 @@ def build_retry_graph(node_name: str, node_func, retry_policy: RetryPolicy):
 
 
 # 模拟不稳定的API调用，使用全局变量跟踪尝试次数
-def unstable_api_call(state: AtguiguState) -> Dict[str, Any]:
+def unstable_api_call(state: DiliState) -> Dict[str, Any]:
     """模拟不稳定API：前2次失败，第3次成功（全局计数器记录尝试次数）"""
     global attempt_counter
     attempt_counter += 1
@@ -44,10 +49,11 @@ def unstable_api_call(state: AtguiguState) -> Dict[str, Any]:
         raise Exception(f"模拟API调用失败abcd (尝试 {attempt_counter})")
     return {"result": f"API调用成功，经过 {attempt_counter} 次尝试"}
 
+
 # 自定义重试条件判断函数
 def custom_retry_on(exception: Exception) -> bool:
     """自定义重试规则：只对包含「模拟API调用失败」的异常重试"""
-    print("########################:  "+str(exception))
+    print("########################:  " + str(exception))
     err_msg = str(exception)
     if "模拟API调用失败" in err_msg:
         print(f"捕获到可重试异常: {err_msg}")
@@ -55,8 +61,9 @@ def custom_retry_on(exception: Exception) -> bool:
     print(f"捕获到不可重试异常: {err_msg}")
     return False
 
+
 # 模拟抛出 ValueError 的节点
-def value_error_call(state: AtguiguState) -> Dict[str, Any]:
+def value_error_call(state: DiliState) -> Dict[str, Any]:
     """模拟抛出ValueError：默认重试策略对这类异常不重试"""
     print("调用会抛出 ValueError 的节点")
     raise ValueError("模拟 ValueError 异常")
@@ -69,14 +76,16 @@ def test_default_retry():
     print("   默认策略会对除特定异常外的所有异常进行重试")
     print("   不会重试的异常包括: ValueError, TypeError, ArithmeticError, ImportError,")
     print("                     LookupError, NameError, SyntaxError, RuntimeError,")
-    print("                     ReferenceError, StopIteration, StopAsyncIteration, OSError\n")
+    print(
+        "                     ReferenceError, StopIteration, StopAsyncIteration, OSError\n"
+    )
 
     print("测试默认重试策略:")
     attempt_counter = 0  # 重置计数器
     default_graph = build_retry_graph(
         node_name="unstable_api",
         node_func=unstable_api_call,
-        retry_policy=RetryPolicy(max_attempts=5)  # 最多5次尝试，足够重试成功
+        retry_policy=RetryPolicy(max_attempts=5),  # 最多5次尝试，足够重试成功
     )
     try:
         result = default_graph.invoke({"result": ""})
@@ -95,7 +104,7 @@ def test_custom_retry():
     custom_graph = build_retry_graph(
         node_name="custom_retry_api",
         node_func=unstable_api_call,
-        retry_policy=RetryPolicy(max_attempts=5, retry_on=custom_retry_on)
+        retry_policy=RetryPolicy(max_attempts=5, retry_on=custom_retry_on),
     )
     try:
         result = custom_graph.invoke({"result": ""})
@@ -111,7 +120,7 @@ def test_no_retry_exception():
     no_retry_graph = build_retry_graph(
         node_name="value_error_node",
         node_func=value_error_call,
-        retry_policy=RetryPolicy(max_attempts=3)
+        retry_policy=RetryPolicy(max_attempts=3),
     )
     try:
         result = no_retry_graph.invoke({"result": ""})
@@ -124,8 +133,8 @@ def test_no_retry_exception():
 def run_demo():
     print("=== LangGraph 节点重试策略完整演示===")
     print("-" * 80 + "\n")
-    #test_default_retry()
-    #test_custom_retry()
+    # test_default_retry()
+    # test_custom_retry()
     test_no_retry_exception()
     print("-" * 80)
     print("=== 演示结束 ===")

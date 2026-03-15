@@ -1,11 +1,21 @@
+"""
+【案例】条件边另一种写法：路由函数返回字符串 key（如 "condition_1"），在 add_conditional_edges 的 mapping 中映射到不同节点；可从 START 直接根据 state 分支到多个节点之一。
+
+对应教程章节：第 24 章 - LangGraph API：节点、边与进阶 → 2、Graph API 之 Edge（边）
+
+知识点速览：
+- add_conditional_edges(START, route_fn, {"condition_1": "node1", "condition_2": "node2", ...})：路由函数返回的字符串与 mapping 的 key 匹配，决定从 START 进入哪个节点。
+- 适合「多分支入口」：根据初始 state 的某个字段（如 x）决定第一跳，再各自到 END。
+"""
 
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, List, Annotated
 
 
 # 定义状态
-class AtguiguState(TypedDict):
+class DiliState(TypedDict):
     x: int
+
 
 def addition1(state):
     """
@@ -15,18 +25,21 @@ def addition1(state):
     返回:
         dict: 返回更新后的状态字典，其中"x"的值增加1
     """
-    print(f'加法节点addition1收到的初始值:{state}')
+    print(f"加法节点addition1收到的初始值:{state}")
     return {"x": state["x"] + 1}
 
+
 def addition2(state):
-    print(f'加法节点addition2收到的初始值:{state}')
+    print(f"加法节点addition2收到的初始值:{state}")
     return {"x": state["x"] + 2}
 
+
 def addition3(state):
-    print(f'加法节点addition3收到的初始值:{state}')
+    print(f"加法节点addition3收到的初始值:{state}")
     return {"x": state["x"] + 3}
 
-def route_by_sentiment(state: AtguiguState) -> str:
+
+def route_by_sentiment(state: DiliState) -> str:
     # 路由逻辑...返回最终的条件
     flag = state["x"]
     if flag == 1:
@@ -36,7 +49,8 @@ def route_by_sentiment(state: AtguiguState) -> str:
     else:
         return "condition_3"
 
-graph = StateGraph(AtguiguState)
+
+graph = StateGraph(DiliState)
 graph.add_node("node1", addition1)
 graph.add_node("node2", addition2)
 graph.add_node("node3", addition3)
@@ -44,11 +58,7 @@ graph.add_node("node3", addition3)
 graph.add_conditional_edges(
     START,
     route_by_sentiment,
-    {
-        "condition_1": "node1",
-        "condition_2": "node2",
-        "condition_3": "node3"
-    }
+    {"condition_1": "node1", "condition_2": "node2", "condition_3": "node3"},
 )
 
 # 所有处理节点都连接到END
@@ -57,16 +67,15 @@ graph.add_edge("node2", END)
 graph.add_edge("node3", END)
 app = graph.compile()
 # 定义一个初始状态字典，包含键值对"x": 具体数字
-initial_state ={"x": 3}
+initial_state = {"x": 3}
 # 调用graph对象的invoke方法，传入初始状态，执行图计算流程
-result= app.invoke(initial_state)
+result = app.invoke(initial_state)
 print(f"最后的结果是:{result}")
 
 
-
 # 打印图的边和节点信息
-#print(graph.edges)
-#print(graph.nodes)
+# print(graph.edges)
+# print(graph.nodes)
 # 打印图的ascii可视化结构
 print(app.get_graph().print_ascii())
 print("=================================")

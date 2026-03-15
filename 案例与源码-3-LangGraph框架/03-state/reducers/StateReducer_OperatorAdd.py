@@ -1,5 +1,11 @@
 """
-LangGraph Reducer函数演示 - operator.add Reducer（列表追加）
+【案例】operator.add 作为 Reducer（列表）：对列表字段做「 extend 」式追加，多节点返回的列表会按顺序合并成一个列表。
+
+对应教程章节：第 23 章 - LangGraph API：图与状态 → 2、Graph API 之 State（状态）
+
+知识点速览：
+- Annotated[List[int], operator.add] 表示该字段用 operator.add 规约：语义为列表的 extend，即 current + update 拼成新列表。
+- 适合多节点各自产生一段数据、最后合并成一条列表的场景（如多路采集再汇总）。
 """
 
 import operator
@@ -7,10 +13,9 @@ from typing import Annotated, List
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 
-# 3. operator.add Reducer（列表追加）
+
 class ListAddState(TypedDict):
-    #data: Annotated[List[int], None]  #默认覆盖
-    data: Annotated[List[int], operator.add] # （列表追加）
+    data: Annotated[List[int], operator.add]
 
 
 def producer_1(state: ListAddState) -> dict:
@@ -23,14 +28,11 @@ def producer_2(state: ListAddState) -> dict:
 
 def run_demo():
     builder = StateGraph(ListAddState)
-    # 注册节点
     builder.add_node("producer1", producer_1)
     builder.add_node("producer2", producer_2)
-    # 顺序执行边
     builder.add_edge(START, "producer1")
     builder.add_edge("producer1", "producer2")
     builder.add_edge("producer2", END)
-
     graph = builder.compile()
     result = graph.invoke({"data": [0]})
     print(f"初始状态: {{'data': [0]}}")

@@ -1,15 +1,12 @@
 """
-SendDemo.py
-LangGraph Map-Reduce 模式演示
-通过使用 Send 对象，LangGraph 提供了一种优雅的方式来实现这种动态图结构，
-使得我们可以根据运行时状态来决定执行路径。
+【案例】Send 与 Map-Reduce 模式：条件边函数返回 Sequence[Send]，每个 Send(节点名, 状态) 触发一次该节点的执行，LangGraph 并行执行后按 Reducer 汇总（如列表合并），适合「动态数量子任务」并行再汇总。
 
-解释：
-（1）首先执行 generate_subjects主题列表节点，生成主题列表：['猫', '狗', '程序员']
-（2）然后通过条件边函数 map_subjects_to_jokes 为每个主题创建一个 Send 对象
-（3）make_joke 节点被并行执行3次，每次处理一个主题
-（4）最终将所有生成的笑话合并到一个列表中
-这种模式非常适合处理动态数量的任务
+对应教程章节：第 24 章 - LangGraph API：节点、边与进阶 → 3、Send、Command 与 Runtime 上下文
+
+知识点速览：
+- 条件边若返回 List[Send]（或 Sequence[Send]），每个 Send 指定「下一节点 + 传入该节点的 state」，框架会并行执行这些分支并合并结果。
+- Map 阶段：生成主题列表 → 为每个主题构造 Send("make_joke", {"subject": 主题})；Reduce 阶段：jokes 字段用列表合并 Reducer，多路结果合并成一条列表。
+- 适合「一批输入拆成多份、并行处理、再汇总」的流程。
 """
 
 from typing import Annotated, List, Sequence
@@ -19,13 +16,13 @@ from langgraph.types import Send
 
 
 # 定义状态
-class AtguiguState(TypedDict):
+class DiliState(TypedDict):
     subjects: List[str]
     jokes: Annotated[List[str], lambda x, y: x + y]  # 使用列表合并的方式
 
 
 # 第一个节点：生成需要处理的主题列表
-def generate_subjects(state: AtguiguState) -> dict:
+def generate_subjects(state: DiliState) -> dict:
     """生成需要处理的主题列表"""
     print("执行节点(第一个节点：生成需要处理的主题列表): generate_subjects")
     subjects = ["猫", "狗", "程序员"]
@@ -34,7 +31,7 @@ def generate_subjects(state: AtguiguState) -> dict:
 
 
 # Map节点：为每个主题生成笑话
-def make_joke(state: AtguiguState) -> dict:
+def make_joke(state: DiliState) -> dict:
     """为单个主题生成笑话"""
     subject = state.get("subject", "未知")
     print(f"执行节点: make_joke，处理主题: {subject}")
@@ -44,7 +41,7 @@ def make_joke(state: AtguiguState) -> dict:
         "猫": "为什么猫不喜欢在线购物？因为它们更喜欢实体店！",
         "狗": "为什么狗不喜欢计算机？因为它们害怕被鼠标咬！",
         "程序员": "为什么程序员喜欢洗衣服？因为他们在寻找bugs！",
-        "未知": "这是一个关于未知主题的神秘笑话。"
+        "未知": "这是一个关于未知主题的神秘笑话。",
     }
 
     joke = jokes_map.get(subject, f"这是一个关于{subject}的即兴笑话。")
@@ -53,7 +50,7 @@ def make_joke(state: AtguiguState) -> dict:
 
 
 # 条件边函数：根据主题列表生成Send对象列表
-def map_subjects_to_jokes(state: AtguiguState) -> List[Send]:
+def map_subjects_to_jokes(state: DiliState) -> List[Send]:
     """将主题列表映射到joke生成任务"""
     print("执行条件边函数: map_subjects_to_jokes")
     subjects = state["subjects"]
@@ -71,7 +68,7 @@ def main():
     print("=== Map-Reduce 模式演示 ===\n")
 
     # 创建图
-    builder = StateGraph(AtguiguState)
+    builder = StateGraph(DiliState)
 
     # 添加节点
     builder.add_node("generate_subjects", generate_subjects)
@@ -83,7 +80,7 @@ def main():
     # 添加条件边，使用Send对象实现map-reduce
     builder.add_conditional_edges(
         "generate_subjects",  # 源节点
-        map_subjects_to_jokes  # 路由函数，返回Send对象列表
+        map_subjects_to_jokes,  # 路由函数，返回Send对象列表
     )
 
     # 从make_joke到结束

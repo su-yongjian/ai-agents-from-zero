@@ -13,11 +13,14 @@ def MyOperatorMul(current: float, update: float) -> float:
         return 1.0 * update
     return current * update
 
+
 class MultiplyState(TypedDict):
     factor: Annotated[float, MyOperatorMul]
 
+
 def multiplier(state: MultiplyState) -> dict:
     return {"factor": 2.0}
+
 
 def run_demo():
     print("使用自定义reducer解决乘法问题:")
@@ -31,6 +34,7 @@ def run_demo():
     print(f"初始状态: {{'factor': 5.0}}")
     print(f"执行结果: {result}")  # 应该是 {'factor': 10.0}
     print(f"解释: 5.0 * 2.0 = 10.0\n")
+
 
 if __name__ == "__main__":
     run_demo()

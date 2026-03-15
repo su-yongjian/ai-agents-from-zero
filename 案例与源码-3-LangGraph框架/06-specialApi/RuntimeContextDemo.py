@@ -1,10 +1,12 @@
 """
-RuntimeContextDemo.py
+【案例】Runtime 与 context_schema：创建图时传入 context_schema，invoke 时传入 context，节点函数可接收 (state, runtime)，通过 runtime.context 访问配置（如模型名、数据库连接、API 密钥），实现「配置与状态分离」。
 
-LangGraph Context Schema 演示
+对应教程章节：第 24 章 - LangGraph API：节点、边与进阶 → 3、Send、Command 与 Runtime 上下文
 
-演示如何在 LangGraph 1.0 中使用 context_schema 向节点传递不属于图表状态的信息。
-这在传递模型名称、数据库连接等依赖项时非常有用。
+知识点速览：
+- StateGraph(State, context_schema=ContextSchema)：图的「运行时配置」由 context_schema 描述，不进入 state，适合放模型名、连接串、密钥等。
+- 节点签名 (state, runtime: Runtime[ContextSchema])：runtime.context 即 invoke(..., context=...) 传入的对象，类型安全。
+- invoke(initial_state, context=ContextSchema(...))：将配置注入图，节点内用 runtime.context.xxx 读取，便于测试与多环境部署。
 """
 
 from typing import Annotated

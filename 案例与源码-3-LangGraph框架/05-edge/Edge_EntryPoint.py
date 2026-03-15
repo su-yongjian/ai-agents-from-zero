@@ -1,27 +1,34 @@
 """
-LangGraph入口点演示
+【案例】入口点与出口点：用 set_entry_point / set_finish_point 指定图的第一个和最后一个节点，等价于 add_edge(START, node) 与 add_edge(node, END)，写法更简洁。
 
-入口点定义了图开始执行的第一个节点。
+对应教程章节：第 24 章 - LangGraph API：节点、边与进阶 → 2、Graph API 之 Edge（边）
+
+知识点速览：
+- set_entry_point(node_id)：图从该节点开始执行，底层等价于 add_edge(START, node_id)。
+- set_finish_point(node_id)：执行到该节点后图结束，底层等价于 add_edge(node_id, END)。
+- 适合线性链或单入口单出口的图，减少重复写 START/END 边。
 """
+
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 
 
 # 定义状态
-class AtguiguState(TypedDict):
+class DiliState(TypedDict):
     value: int
     step: str
 
+
 # 定义节点函数
-def node_a(state: AtguiguState) -> dict:
+def node_a(state: DiliState) -> dict:
     """节点A"""
     print("执行节点A")
-    print("state[value]:"+str(state["value"]))
-    print("state[step]:"+str(state["step"]))
+    print("state[value]:" + str(state["value"]))
+    print("state[step]:" + str(state["step"]))
     return {"value": state["value"] + 1, "step": "A执行完毕"}
 
 
-def node_b(state: AtguiguState) -> dict:
+def node_b(state: DiliState) -> dict:
     """节点B"""
     print("执行节点B")
     return {"value": state["value"] * 2, "step": "B执行完毕"}
@@ -32,7 +39,7 @@ def main():
     print("=== 入口点演示 ===")
 
     # 创建图
-    builder = StateGraph(AtguiguState)
+    builder = StateGraph(DiliState)
 
     # 添加节点
     builder.add_node("node_a", node_a)
@@ -54,7 +61,6 @@ def main():
     builder.add_edge("node_a", "node_b")
     builder.set_finish_point("node_b")
 
-
     # 编译图
     graph = builder.compile()
     # 执行图
@@ -72,5 +78,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

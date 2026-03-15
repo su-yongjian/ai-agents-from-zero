@@ -4,10 +4,12 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 import operator
 
+
 class ChatState(TypedDict):
     messages: Annotated[list, add_messages]  # 消息历史
     tags: Annotated[List[str], operator.add]  # 标签列表
-    score: Annotated[float, operator.add]     # 累计分数
+    score: Annotated[float, operator.add]  # 累计分数
+
 
 def process_user_message(state: ChatState) -> dict:
     user_message = state["messages"][-1]  # 获取最新消息
@@ -15,14 +17,13 @@ def process_user_message(state: ChatState) -> dict:
     return {
         "messages": [("assistant", f"Echo: {user_message.content}")],
         "tags": ["processed"],
-        "score": 1.0
+        "score": 1.0,
     }
 
+
 def add_sentiment_tag(state: ChatState) -> dict:
-    return {
-        "tags": ["positive"],
-        "score": 0.5
-    }
+    return {"tags": ["positive"], "score": 0.5}
+
 
 # 构建图
 builder = StateGraph(ChatState)
@@ -37,10 +38,12 @@ builder.add_edge("sentiment", END)
 graph = builder.compile()
 
 # 使用示例 -使用正确的消息格式
-result = graph.invoke({
-    "messages": [{"role": "user", "content": "Hello, how are you?"}],
-    "tags": ["greeting"],
-    "score": 0.0
-})
+result = graph.invoke(
+    {
+        "messages": [{"role": "user", "content": "Hello, how are you?"}],
+        "tags": ["greeting"],
+        "score": 0.0,
+    }
+)
 
 print(result)

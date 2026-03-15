@@ -1,5 +1,11 @@
 """
-LangGraph Reducer函数演示 - 字符串连接Reducer
+【案例】operator.add 作为 Reducer（字符串）：对字符串字段做「连接」，多节点返回的字符串会按顺序拼成一条。
+
+对应教程章节：第 23 章 - LangGraph API：图与状态 → 2、Graph API 之 State（状态）
+
+知识点速览：
+- Annotated[str, operator.add] 表示该字段用 operator.add 规约：语义为字符串拼接，即 current + update。
+- 适合多节点依次或并行产出文本片段、最后拼成完整文案的场景。
 """
 
 import operator
@@ -8,7 +14,6 @@ from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 
 
-# 6. 字符串连接Reducer
 class StringConcatState(TypedDict):
     text: Annotated[str, operator.add]
 
@@ -22,20 +27,15 @@ def add_text_2(state: StringConcatState) -> dict:
 
 
 def run_demo():
-    print("3.2 字符串连接Reducer演示:")
-
+    print("3.2 字符串连接 Reducer 演示:")
     builder = StateGraph(StringConcatState)
-
     builder.add_node("add_text_1", add_text_1)
     builder.add_node("add_text_2", add_text_2)
-
     builder.add_edge(START, "add_text_1")
-    builder.add_edge(START, "add_text_2")  # 并行执行
+    builder.add_edge(START, "add_text_2")
     builder.add_edge("add_text_1", END)
     builder.add_edge("add_text_2", END)
-
     graph = builder.compile()
-
     result = graph.invoke({"text": "Say: "})
     print(f"初始状态: {{'text': 'Say: '}}")
     print(f"执行结果: {result}\n")

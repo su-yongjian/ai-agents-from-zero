@@ -1,54 +1,61 @@
+"""
+【案例】多节点、固定边的完整图：input → process → output 三个节点，状态字段 process_data 在节点间传递并逐步更新，对应教程中「图的构建流程」与「状态在节点间的传递」示例。
+
+对应教程章节：第 23 章 - LangGraph API：图与状态 → 1、Graph API 之 Graph（图）
+
+知识点速览：
+- StateGraph(GraphState) 指定状态类型后，各节点接收完整 state，返回对 state 的「部分更新」字典。
+- 未为字段指定 Reducer 时，默认覆盖：后一节点返回的 process_data 会覆盖前一节点的值。
+- 固定边：add_edge 依次串联 START → input → process → output → END，执行顺序确定。
+- 编译后 invoke(initial_state) 传入初始 process_data，结果中可看到最后一轮 process_data 的内容。
+"""
+
 from typing import TypedDict
 from langgraph.constants import START, END
 from langgraph.graph import StateGraph
 
-'''图的构建流程：
-1、初始化一个StateGraph实例。
-2、添加节点。
-3、定义边，将所有的节点连接起来。
-4、设置特殊节点，入口和出口（可选）。
-5、编译图。
-6、执行工作流。'''
 
-# 定义状态
+# 定义状态：process_data 用于在节点间传递并累积/覆盖的中间数据
 class GraphState(TypedDict):
     process_data: dict
 
-def input_node(state: GraphState) -> GraphState:
-    print(f"input_node节点执行state.get('process_data')方法结果:  {state.get('process_data')}")
+
+def input_node(state: GraphState) -> dict:
+    """入口节点：写入初始 process_data。"""
+    print(f"input_node 节点执行 state.get('process_data'): {state.get('process_data')}")
     return {"process_data": {"input": "input_value"}}
 
+
 def process_node(state: dict) -> dict:
-    print(f"process_node节点执行state.get('process_data')方法结果:  {state.get('process_data')}")
+    """处理节点：更新 process_data。"""
+    print(f"process_node 节点执行 state.get('process_data'): {state.get('process_data')}")
     return {"process_data": {"process": "process_value9527"}}
 
-def output_node(state: GraphState) -> GraphState:
-    print(f"output_node节点执行state.get('process_data')方法结果:  {state.get('process_data')}")
-    return {"process_data": state.get('process_data')}
 
-# 创建一个状态图StateGraph并指定状态
+def output_node(state: GraphState) -> dict:
+    """出口节点：读取并返回当前 process_data。"""
+    print(f"output_node 节点执行 state.get('process_data'): {state.get('process_data')}")
+    return {"process_data": state.get("process_data")}
+
+
+# 创建状态图并指定状态类型
 graph = StateGraph(GraphState)
-
-# 添加input、process、output节点
 graph.add_node("input", input_node)
 graph.add_node("process", process_node)
 graph.add_node("output", output_node)
 
-# 添加固定边，执行顺序：start -> input -> process -> output -> end
+# 固定边：start → input → process → output → end
 graph.add_edge(START, "input")
 graph.add_edge("input", "process")
 graph.add_edge("process", "output")
 graph.add_edge("output", END)
 
-# 编译图，保证生成的图是正确的，如果添加了边，没添加节点，会报错
+# 编译后执行；传入的初始 state 会与各节点返回值按 Reducer 规则合并
 app = graph.compile()
-# 执行
 result = app.invoke({"process_data": {"name": "测试数据", "value": 123456}})
 print(f"最后的结果是:{result}")
 
-# 打印图的ascii可视化结构
+# 可视化
 print(app.get_graph().print_ascii())
 print("=================================")
-print()
-# 打印图的可视化结构，生成更加美观的Mermaid 代码，通过processon 编辑器查看
 print(app.get_graph().draw_mermaid())
