@@ -263,9 +263,9 @@ if __name__ == "__main__":
 
 **手写实现**（不依赖 FastMCP，适合学原理、多 Python 版本）：
 
-【案例源码】`案例与源码-4-LangGraph框架/11-mcp/McpServer.py`
+【案例源码】`案例与源码-2-LangChain框架/11-mcp/McpServer.py`
 
-[McpServer.py](案例与源码-4-LangGraph框架/11-mcp/McpServer.py ":include :type=code")
+[McpServer.py](案例与源码-2-LangChain框架/11-mcp/McpServer.py ":include :type=code")
 
 > **说明**：在基于 FastMCP 的 SSE 实现中，常用 **HTTP 202 Accepted** 表示请求已接受、结果将通过 SSE 流式返回，以适配 MCP SSE 的流式处理特性；200 OK 则多用于一次性请求-响应。本仓库中的 `McpServer.py` 为简化版，重点展示「工具注册与暴露」的思路。
 
@@ -277,9 +277,9 @@ if __name__ == "__main__":
 | ------------------------------ | ------------------------------------------------------- | ----------------------------------------------------------------------- |
 | 需自己写 `MCPWeatherServer` 类 | 多能力：add、resource、prompt；`run(transport="stdio")` | 单工具 get_weather；`run(transport="sse", host="127.0.0.1", port=8000)` |
 
-【案例源码】`案例与源码-4-LangGraph框架/11-mcp/McpServerByFastMCP.py` · 【案例源码】`案例与源码-4-LangGraph框架/11-mcp/McpServerWeatherByFastMCP.py`
+【案例源码】`案例与源码-2-LangChain框架/11-mcp/McpServerByFastMCP.py` · 【案例源码】`案例与源码-2-LangChain框架/11-mcp/McpServerWeatherByFastMCP.py`
 
-[McpServerByFastMCP.py](案例与源码-4-LangGraph框架/11-mcp/McpServerByFastMCP.py ":include :type=code")
+[McpServerByFastMCP.py](案例与源码-2-LangChain框架/11-mcp/McpServerByFastMCP.py ":include :type=code")
 
 ### 6.3 MCP 配置文件（多服务时使用）
 
@@ -332,16 +332,16 @@ if __name__ == "__main__":
 
 ---
 
-仓库中已提供 `mcp.json`，路径为 `案例与源码-4-LangGraph框架/11-mcp/mcp.json`，供多服务客户端加载；可按需修改。
+仓库中已提供 `mcp.json`，路径为 `案例与源码-2-LangChain框架/11-mcp/mcp.json`，供多服务客户端加载；可按需修改。
 
 **配置示例说明（服务连接）：**
 
 - **天气服务（SSE 模式）**：`weather` 使用 `transport: "sse"`，通过 HTTP 长连接与本地 8000 端口的 `/sse` 通信，适合独立运行的 MCP 服务。
 - **网页抓取服务（STDIO 模式）**：`fetch` 使用 `transport: "stdio"`，通过 `uvx` 运行 `mcp-server-fetch`，适合本地命令行工具、无需单独网络端点。
 
-【配置文件】`案例与源码-4-LangGraph框架/11-mcp/mcp.json`
+【配置文件】`案例与源码-2-LangChain框架/11-mcp/mcp.json`
 
-[mcp.json](案例与源码-4-LangGraph框架/11-mcp/mcp.json ":include :type=code")
+[mcp.json](案例与源码-2-LangChain框架/11-mcp/mcp.json ":include :type=code")
 
 - **作用**：调用 `weather` 可获取天气数据；调用 `fetch` 可抓取并解析网页内容，让 AI 能基于链接内容回答问题。
 
@@ -349,9 +349,9 @@ if __name__ == "__main__":
 
 下面示例演示如何在本机直接调用 MCP 服务端已注册的天气工具，不依赖 LangChain Agent，也不依赖 `langchain-mcp-adapters`（通过同进程导入 mcp 实例或加载 mcp.json 仅读配置）。若要将 MCP 工具与 LangChain Agent 结合（从 mcp.json 加载配置、MultiServerMCPClient 获取工具并交给 AgentExecutor），见 [第 21 章 - Agent 智能体](21-Agent智能体.md) 中的 **5.4 Agent + MCP 工具（mcp.json）**。
 
-【案例源码】`案例与源码-4-LangGraph框架/11-mcp/McpClient.py`
+【案例源码】`案例与源码-2-LangChain框架/11-mcp/McpClient.py`
 
-[McpClient.py](案例与源码-4-LangGraph框架/11-mcp/McpClient.py ":include :type=code")
+[McpClient.py](案例与源码-2-LangChain框架/11-mcp/McpClient.py ":include :type=code")
 
 ### 6.5 测试建议
 

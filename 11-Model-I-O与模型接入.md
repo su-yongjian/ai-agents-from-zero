@@ -131,9 +131,9 @@ def chat_with_model(model_name, prompt):
 
 下面是一个在代码中设置模型参数的简单示例，便于理解「参数 → 模型行为」的对应关系。
 
-【案例源码】`案例与源码-4-LangGraph框架/02-models_io/ModelIO_Params.py`
+【案例源码】`案例与源码-2-LangChain框架/02-models_io/ModelIO_Params.py`
 
-[ModelIO_Params.py](案例与源码-4-LangGraph框架/02-models_io/ModelIO_Params.py ":include :type=code")
+[ModelIO_Params.py](案例与源码-2-LangChain框架/02-models_io/ModelIO_Params.py ":include :type=code")
 
 ![示例：在代码中设置模型参数](images/11/11-2-4-1.jpeg)
 
@@ -190,21 +190,21 @@ LangChain 支持通过不同集成包接入多种大模型，以下按「OpenAI 
 
 **示例一：使用 OpenAI 官方 SDK（如对接 DeepSeek 兼容接口）**
 
-【案例源码】`案例与源码-4-LangGraph框架/02-models_io/ModelIO_OpenAI.py`
+【案例源码】`案例与源码-2-LangChain框架/02-models_io/ModelIO_OpenAI.py`
 
-[ModelIO_OpenAI.py](案例与源码-4-LangGraph框架/02-models_io/ModelIO_OpenAI.py ":include :type=code")
+[ModelIO_OpenAI.py](案例与源码-2-LangChain框架/02-models_io/ModelIO_OpenAI.py ":include :type=code")
 
 **示例二：使用 LangChain ChatOpenAI（0.x 写法，如对接通义千问兼容接口）**
 
-【案例源码】`案例与源码-4-LangGraph框架/02-models_io/ModelIO_ChatOpenAI.py`
+【案例源码】`案例与源码-2-LangChain框架/02-models_io/ModelIO_ChatOpenAI.py`
 
-[ModelIO_ChatOpenAI.py](案例与源码-4-LangGraph框架/02-models_io/ModelIO_ChatOpenAI.py ":include :type=code")
+[ModelIO_ChatOpenAI.py](案例与源码-2-LangChain框架/02-models_io/ModelIO_ChatOpenAI.py ":include :type=code")
 
 **示例三：使用 init_chat_model 统一入口（1.0 写法，推荐）**
 
-【案例源码】`案例与源码-4-LangGraph框架/02-models_io/ModelIO_Init_chat_model.py`
+【案例源码】`案例与源码-2-LangChain框架/02-models_io/ModelIO_Init_chat_model.py`
 
-[ModelIO_Init_chat_model.py](案例与源码-4-LangGraph框架/02-models_io/ModelIO_Init_chat_model.py ":include :type=code")
+[ModelIO_Init_chat_model.py](案例与源码-2-LangChain框架/02-models_io/ModelIO_Init_chat_model.py ":include :type=code")
 
 ### 3.2 接入 DeepSeek
 
@@ -216,11 +216,11 @@ LangChain 支持通过不同集成包接入多种大模型，以下按「OpenAI 
 
 DeepSeek 提供官方 LangChain 集成包 `langchain-deepseek`，无需手动填写 `base_url`（已在 SDK 内封装）。下面示例为 **0.x 写法**（直接使用厂商类 `ChatDeepSeek`）；若希望统一用 1.0 入口，也可使用 `init_chat_model(model_provider="deepseek", ...)`（需以官方文档为准）。
 
-【案例源码】`案例与源码-4-LangGraph框架/02-models_io/ModelIO_DeepSeek.py`
+【案例源码】`案例与源码-2-LangChain框架/02-models_io/ModelIO_DeepSeek.py`
 
 **0.x 写法：**
 
-[ModelIO_DeepSeek.py](案例与源码-4-LangGraph框架/02-models_io/ModelIO_DeepSeek.py ":include :type=code")
+[ModelIO_DeepSeek.py](案例与源码-2-LangChain框架/02-models_io/ModelIO_DeepSeek.py ":include :type=code")
 
 **1.0 写法一：OpenAI 兼容接口（通用、不依赖 langchain-deepseek）**
 
@@ -269,11 +269,11 @@ print(model.invoke("你是谁？").content)
 
 > **为何 [All providers](https://docs.langchain.com/oss/python/integrations/providers/all_providers) 里没有 ChatTongyi？** 该页按**厂商/提供商**（公司或平台）列出的，不是按「类名」或「产品名」。通义千问是**阿里云**的产品，因此会归在 **Alibaba Cloud** 下（点进 [Alibaba Cloud](https://docs.langchain.com/oss/python/integrations/providers/alibaba_cloud) 可看到其下的集成），而不会出现单独的 “Tongyi” 或 “ChatTongyi” 卡片；`ChatTongyi` 是代码里的类名，文档里对应的提供商是 **Alibaba Cloud**。
 
-【案例源码】`案例与源码-4-LangGraph框架/02-models_io/ModelIO_Qwen.py`
+【案例源码】`案例与源码-2-LangChain框架/02-models_io/ModelIO_Qwen.py`
 
 **0.x 写法：**
 
-[ModelIO_Qwen.py](案例与源码-4-LangGraph框架/02-models_io/ModelIO_Qwen.py ":include :type=code")
+[ModelIO_Qwen.py](案例与源码-2-LangChain框架/02-models_io/ModelIO_Qwen.py ":include :type=code")
 
 **1.0 写法（推荐）：**
 

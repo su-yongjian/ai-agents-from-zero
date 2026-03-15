@@ -6,7 +6,7 @@
 
 - 完成从零到一的 HelloWorld：环境与约定、安装依赖、基于阿里百炼/通义接入与调用。
 - 掌握**调用三件套**（API Key、模型名、Base URL）及 0.x 与 1.0 两种写法（`ChatOpenAI` / `init_chat_model`）。
-- 会实现**多模型共存**（通义 + DeepSeek）、**企业级封装与流式输出**，为后续学习 [Model I/O](11-Model-I-O与模型接入.md)、[Ollama 本地调用](12-Ollama本地部署与调用.md)、[提示词与消息模板](13-提示词与消息模板.md)、[输出解析器](14-输出解析器.md)（第 11～14 章）打好基础。
+- 会实现**多模型共存**（通义 + DeepSeek）、**企业级封装与流式输出**，为后续学习 [Model I/O](11-Model-I-O与模型接入.md)、[Ollama 本地调用](12-Ollama本地部署与调用.md)、[提示词与消息模板](13-提示词与消息模板.md)、[输出解析器](14-输出解析器.md)（第 11 ～ 14 章）打好基础。
 
 **前置知识建议：** 已学习 [第 9 章 - LangChain 概述与架构](9-LangChain概述与架构.md)，了解 LangChain 的定位与六大核心模块；具备 Python 环境与包管理基础。环境与版本说明见 [新手入门与常见问题](新手入门与常见问题.md)。
 
@@ -98,9 +98,9 @@ pip install langchain-core
 
 在项目目录下执行脚本，可一次性查看 LangChain、langchain_community 的版本与安装路径，以及当前 Python 版本。
 
-【案例源码】环境检查脚本：`案例与源码-4-LangGraph框架/01-helloworld/GetEnvInfo.py`
+【案例源码】环境检查脚本：`案例与源码-2-LangChain框架/01-helloworld/GetEnvInfo.py`
 
-[GetEnvInfo.py](案例与源码-4-LangGraph框架/01-helloworld/GetEnvInfo.py ":include :type=code")
+[GetEnvInfo.py](案例与源码-2-LangChain框架/01-helloworld/GetEnvInfo.py ":include :type=code")
 
 **方法二：在 PyCharm 中查看已安装包（图形界面）**
 
@@ -157,15 +157,15 @@ pip install langchain-core
 
 **方式一：LangChain 0.3（了解即可，目前仍在使用）**
 
-【案例源码】`案例与源码-4-LangGraph框架/01-helloworld/LangChainV0.3.py`
+【案例源码】`案例与源码-2-LangChain框架/01-helloworld/LangChainV0.3.py`
 
-[LangChainV0.3.py](案例与源码-4-LangGraph框架/01-helloworld/LangChainV0.3.py ":include :type=code")
+[LangChainV0.3.py](案例与源码-2-LangChain框架/01-helloworld/LangChainV0.3.py ":include :type=code")
 
 **方式二：LangChain 1.0+（推荐）**
 
-【案例源码】`案例与源码-4-LangGraph框架/01-helloworld/LangChainV1.0.py`
+【案例源码】`案例与源码-2-LangChain框架/01-helloworld/LangChainV1.0.py`
 
-[LangChainV1.0.py](案例与源码-4-LangGraph框架/01-helloworld/LangChainV1.0.py ":include :type=code")
+[LangChainV1.0.py](案例与源码-2-LangChain框架/01-helloworld/LangChainV1.0.py ":include :type=code")
 
 **两版对比小结**：1.0 通过 `init_chat_model` 统一入口，便于切换不同厂商与模型。
 
@@ -206,9 +206,9 @@ pip install langchain-core
 
 下面示例使用 **不同变量名**（`model_qwen`、`model_deepseek`）保存两个模型实例，避免后者覆盖前者，便于后续扩展与维护。
 
-【案例源码】`案例与源码-4-LangGraph框架/01-helloworld/LangChain_MoreV1.0.py`
+【案例源码】`案例与源码-2-LangChain框架/01-helloworld/LangChain_MoreV1.0.py`
 
-[LangChain_MoreV1.0.py](案例与源码-4-LangGraph框架/01-helloworld/LangChain_MoreV1.0.py ":include :type=code")
+[LangChain_MoreV1.0.py](案例与源码-2-LangChain框架/01-helloworld/LangChain_MoreV1.0.py ":include :type=code")
 
 ---
 
@@ -224,9 +224,9 @@ pip install langchain-core
 
 下面示例将 LLM 初始化封装成函数、做环境变量校验、使用日志与异常处理，并演示流式调用。
 
-【案例源码】`案例与源码-4-LangGraph框架/01-helloworld/StandardDesc.py`
+【案例源码】`案例与源码-2-LangChain框架/01-helloworld/StandardDesc.py`
 
-[StandardDesc.py](案例与源码-4-LangGraph框架/01-helloworld/StandardDesc.py ":include :type=code")
+[StandardDesc.py](案例与源码-2-LangChain框架/01-helloworld/StandardDesc.py ":include :type=code")
 
 ---
 

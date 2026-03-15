@@ -116,9 +116,9 @@ LangChain 中 Agent 的创建方式从 V0.x 的多步配置演进到 V1.0 的 **
 
 **对应案例**：下面用「多城市天气比较」的完整代码对照上述流程——模型 + 工具 + 提示模板 → `create_tool_calling_agent` 得到 Agent → 用 `AgentExecutor` 执行并循环。
 
-【案例源码】`案例与源码-4-LangGraph框架/12-agent/AgentSmartSelectV0.3.py`
+【案例源码】`案例与源码-2-LangChain框架/12-agent/AgentSmartSelectV0.3.py`
 
-[AgentSmartSelectV0.3.py](案例与源码-4-LangGraph框架/12-agent/AgentSmartSelectV0.3.py ":include :type=code")
+[AgentSmartSelectV0.3.py](案例与源码-2-LangChain框架/12-agent/AgentSmartSelectV0.3.py ":include :type=code")
 
 ---
 
@@ -157,9 +157,9 @@ agent = create_agent(
 
 **对应案例**：同一业务「多城市天气比较」用 V1.0 实现——直接 `create_agent(model, tools, system_prompt, response_format=...)` 得到 agent，再 `agent.invoke({"input": "..."})` 即可；无需手写 Prompt 模板和 AgentExecutor。
 
-【案例源码】`案例与源码-4-LangGraph框架/12-agent/AgentSmartSelectV1.0.py`
+【案例源码】`案例与源码-2-LangChain框架/12-agent/AgentSmartSelectV1.0.py`
 
-[AgentSmartSelectV1.0.py](案例与源码-4-LangGraph框架/12-agent/AgentSmartSelectV1.0.py ":include :type=code")
+[AgentSmartSelectV1.0.py](案例与源码-2-LangChain框架/12-agent/AgentSmartSelectV1.0.py ":include :type=code")
 
 **V0.3 与 V1.0 对比小结**（结合上面两段源码）：
 
@@ -197,9 +197,9 @@ agent = create_agent(
 - **消息结构**：源码中通过 **`result['messages']`** 可看到完整对话：AIMessage（含 `tool_calls`）、ToolMessage（工具返回）、以及最终的 AIMessage（文本回答），对应教程 1 节中的 ReAct 四步循环。
 - **与 3、4 节对比**：3、4 节的「工具+判断」多为「一次问题 → 一次或少数几次固定工具调用」；ReAct 强调**多步、有条件分支**的决策（如先搜索再查库存，再根据结果决定是否继续）。
 
-【案例源码】`案例与源码-4-LangGraph框架/12-agent/AgentReact.py`
+【案例源码】`案例与源码-2-LangChain框架/12-agent/AgentReact.py`
 
-[AgentReact.py](案例与源码-4-LangGraph框架/12-agent/AgentReact.py ":include :type=code")
+[AgentReact.py](案例与源码-2-LangChain框架/12-agent/AgentReact.py ":include :type=code")
 
 ---
 
@@ -214,9 +214,9 @@ agent = create_agent(
 - **规范要点**：子 Agent **单一职责**、对外统一 `invoke({"input": "..."})`；工具用 **`@tool(名称, description=...)`** 并写清参数，便于模型正确传参。
 - **与 ReAct 对比**：ReAct 是**一个** Agent 面对**多个**工具自行选择；A2A 是**多个** Agent 各管一个工具，由**总协调**决定调用顺序与汇总方式。
 
-【案例源码】`案例与源码-4-LangGraph框架/12-agent/Agent2Agent.py`
+【案例源码】`案例与源码-2-LangChain框架/12-agent/Agent2Agent.py`
 
-[Agent2Agent.py](案例与源码-4-LangGraph框架/12-agent/Agent2Agent.py ":include :type=code")
+[Agent2Agent.py](案例与源码-2-LangChain框架/12-agent/Agent2Agent.py ":include :type=code")
 
 ---
 
@@ -228,9 +228,9 @@ agent = create_agent(
 - **流程要点**：**load_servers(mcp.json) → MultiServerMCPClient(connections) → async with client.session(): tools = client.get_tools()**，之后与 3 节的 V0.3 用法一致（Prompt + agent + executor + 聊天循环）。
 - **与本地 @tool 对比**：工具**定义与运行**在 MCP 服务端，客户端只负责「按协议发现并调用」，便于多应用复用、跨进程部署。mcp.json 写法见 [第 20 章](20-MCP模型上下文协议.md)。
 
-【案例源码】`案例与源码-4-LangGraph框架/11-mcp/McpClientAgent.py`
+【案例源码】`案例与源码-2-LangChain框架/11-mcp/McpClientAgent.py`
 
-[McpClientAgent.py](案例与源码-4-LangGraph框架/11-mcp/McpClientAgent.py ":include :type=code")
+[McpClientAgent.py](案例与源码-2-LangChain框架/11-mcp/McpClientAgent.py ":include :type=code")
 
 ---
 

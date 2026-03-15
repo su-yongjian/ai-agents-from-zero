@@ -120,9 +120,9 @@ def add_number(a: int, b: int) -> int:
 
 ### 4.2 基础案例：加法工具
 
-【案例源码】`案例与源码-4-LangGraph框架/08-tools/Tool_AddNumberTool.py`
+【案例源码】`案例与源码-2-LangChain框架/08-tools/Tool_AddNumberTool.py`
 
-[Tool_AddNumberTool.py](案例与源码-4-LangGraph框架/08-tools/Tool_AddNumberTool.py ":include :type=code")
+[Tool_AddNumberTool.py](案例与源码-2-LangChain框架/08-tools/Tool_AddNumberTool.py ":include :type=code")
 
 ### 4.3 Pydantic 与参数 schema
 
@@ -169,13 +169,13 @@ class User(BaseModel):
 
 **一句话**：Pydantic = 「类型注解 + 自动校验 + 转换」神器，让 Python 在运行时也能享受「静态类型」的安全感。
 
-【案例源码】`案例与源码-4-LangGraph框架/08-tools/PydanticDemo.py`
+【案例源码】`案例与源码-2-LangChain框架/08-tools/PydanticDemo.py`
 
-[PydanticDemo.py](案例与源码-4-LangGraph框架/08-tools/PydanticDemo.py ":include :type=code")
+[PydanticDemo.py](案例与源码-2-LangChain框架/08-tools/PydanticDemo.py ":include :type=code")
 
-【案例源码】`案例与源码-4-LangGraph框架/08-tools/Tool_AddNumberToolPro.py`
+【案例源码】`案例与源码-2-LangChain框架/08-tools/Tool_AddNumberToolPro.py`
 
-[Tool_AddNumberToolPro.py](案例与源码-4-LangGraph框架/08-tools/Tool_AddNumberToolPro.py ":include :type=code")
+[Tool_AddNumberToolPro.py](案例与源码-2-LangChain框架/08-tools/Tool_AddNumberToolPro.py ":include :type=code")
 
 ---
 
@@ -212,17 +212,17 @@ class User(BaseModel):
 
 ### 5.3 定义天气工具
 
-【案例源码】`案例与源码-4-LangGraph框架/08-tools/QueryWeatherTool.py`
+【案例源码】`案例与源码-2-LangChain框架/08-tools/QueryWeatherTool.py`
 
-[QueryWeatherTool.py](案例与源码-4-LangGraph框架/08-tools/QueryWeatherTool.py ":include :type=code")
+[QueryWeatherTool.py](案例与源码-2-LangChain框架/08-tools/QueryWeatherTool.py ":include :type=code")
 
 ### 5.4 大模型调用天气工具并生成回复
 
 下面示例：将 `get_weather` 绑定到模型（`bind_tools`），用 `JsonOutputKeyToolsParser` 解析模型返回的 tool_calls，再执行天气工具，最后用另一条链把 JSON 天气数据转成自然语言描述。
 
-【案例源码】`案例与源码-4-LangGraph框架/08-tools/LLMQueryWeatherDemo.py`
+【案例源码】`案例与源码-2-LangChain框架/08-tools/LLMQueryWeatherDemo.py`
 
-[LLMQueryWeatherDemo.py](案例与源码-4-LangGraph框架/08-tools/LLMQueryWeatherDemo.py ":include :type=code")
+[LLMQueryWeatherDemo.py](案例与源码-2-LangChain框架/08-tools/LLMQueryWeatherDemo.py ":include :type=code")
 
 > **注意**：`LLMQueryWeatherDemo.py` 中通过 `from QueryWeatherTool import get_weather` 引用同目录下的天气工具，运行前请确保已配置 `OPENWEATHER_API_KEY`（或在 `QueryWeatherTool.py` 中按需改为从环境变量读取）。
 

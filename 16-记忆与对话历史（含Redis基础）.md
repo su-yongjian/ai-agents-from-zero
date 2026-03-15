@@ -40,9 +40,9 @@
 
 下面示例演示：同一程序内连续两次调用链，第一次告诉模型「我叫张三」，第二次问「你知道我是谁吗？」——若不注入历史，模型会回答「我不知道」。
 
-【案例源码】`案例与源码-4-LangGraph框架/07-memory/Memory_IDontKnow.py`
+【案例源码】`案例与源码-2-LangChain框架/07-memory/Memory_IDontKnow.py`
 
-[Memory_IDontKnow.py](案例与源码-4-LangGraph框架/07-memory/Memory_IDontKnow.py ":include :type=code")
+[Memory_IDontKnow.py](案例与源码-2-LangChain框架/07-memory/Memory_IDontKnow.py ":include :type=code")
 
 ---
 
@@ -109,19 +109,19 @@
 
 ### 6.1 内存版（进程内，重启即丢失）
 
-【案例源码】`案例与源码-4-LangGraph框架/07-memory/Memory_RunnableWithMessageHistory.py`
+【案例源码】`案例与源码-2-LangChain框架/07-memory/Memory_RunnableWithMessageHistory.py`
 
-[Memory_RunnableWithMessageHistory.py](案例与源码-4-LangGraph框架/07-memory/Memory_RunnableWithMessageHistory.py ":include :type=code")
+[Memory_RunnableWithMessageHistory.py](案例与源码-2-LangChain框架/07-memory/Memory_RunnableWithMessageHistory.py ":include :type=code")
 
-【案例源码】`案例与源码-4-LangGraph框架/07-memory/Memory_RunnableWithMessageHistoryV2.py`
+【案例源码】`案例与源码-2-LangChain框架/07-memory/Memory_RunnableWithMessageHistoryV2.py`
 
-[Memory_RunnableWithMessageHistoryV2.py](案例与源码-4-LangGraph框架/07-memory/Memory_RunnableWithMessageHistoryV2.py ":include :type=code")
+[Memory_RunnableWithMessageHistoryV2.py](案例与源码-2-LangChain框架/07-memory/Memory_RunnableWithMessageHistoryV2.py ":include :type=code")
 
 **直接使用 InMemoryChatMessageHistory API**：下面案例不通过 RunnableWithMessageHistory，而是手动创建 `InMemoryChatMessageHistory`、用 `add_user_message` / `add_message` 维护历史，每次将 `history.messages` 传给 `llm.invoke`。适合需要细粒度控制「何时读、何时写」的场景；多数多轮对话仍推荐用上面两种「链 + RunnableWithMessageHistory」的写法。
 
-【案例源码】`案例与源码-4-LangGraph框架/07-memory/Memory_InMemoryChatMessageHistory.py`
+【案例源码】`案例与源码-2-LangChain框架/07-memory/Memory_InMemoryChatMessageHistory.py`
 
-[Memory_InMemoryChatMessageHistory.py](案例与源码-4-LangGraph框架/07-memory/Memory_InMemoryChatMessageHistory.py ":include :type=code")
+[Memory_InMemoryChatMessageHistory.py](案例与源码-2-LangChain框架/07-memory/Memory_InMemoryChatMessageHistory.py ":include :type=code")
 
 ### 6.2 持久化：Redis 存储
 
@@ -224,15 +224,15 @@ list
 
 运行以下脚本确认 Redis 与 Python 包可用。
 
-【案例源码】`案例与源码-4-LangGraph框架/07-memory/RedisEnvCheck.py`
+【案例源码】`案例与源码-2-LangChain框架/07-memory/RedisEnvCheck.py`
 
-[RedisEnvCheck.py](案例与源码-4-LangGraph框架/07-memory/RedisEnvCheck.py ":include :type=code")
+[RedisEnvCheck.py](案例与源码-2-LangChain框架/07-memory/RedisEnvCheck.py ":include :type=code")
 
 #### 6.2.6 案例：Redis 对话历史
 
-【案例源码】`案例与源码-4-LangGraph框架/07-memory/Memory_RedisChatMessageHistory.py`
+【案例源码】`案例与源码-2-LangChain框架/07-memory/Memory_RedisChatMessageHistory.py`
 
-[Memory_RedisChatMessageHistory.py](案例与源码-4-LangGraph框架/07-memory/Memory_RedisChatMessageHistory.py ":include :type=code")
+[Memory_RedisChatMessageHistory.py](案例与源码-2-LangChain框架/07-memory/Memory_RedisChatMessageHistory.py ":include :type=code")
 
 #### 6.2.7 案例：使用 Redis Stack（可选）
 
@@ -244,9 +244,9 @@ docker run -d --name redis-stack -p 26379:6379 -p 8001:8001 redis/redis-stack
 
 ![RedisInsight 界面示意](images/16/16-6-2-7-1.png)
 
-【案例源码】`案例与源码-4-LangGraph框架/07-memory/Memory_RedisStackChatMessageHistory.py`
+【案例源码】`案例与源码-2-LangChain框架/07-memory/Memory_RedisStackChatMessageHistory.py`
 
-[Memory_RedisStackChatMessageHistory.py](案例与源码-4-LangGraph框架/07-memory/Memory_RedisStackChatMessageHistory.py ":include :type=code")
+[Memory_RedisStackChatMessageHistory.py](案例与源码-2-LangChain框架/07-memory/Memory_RedisStackChatMessageHistory.py ":include :type=code")
 
 ---
 

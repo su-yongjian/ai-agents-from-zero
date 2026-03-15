@@ -153,9 +153,9 @@ pip install -U ollama
 
 以下示例使用 `langchain_ollama` 的 `ChatOllama`，连接本机默认的 Ollama 服务（`http://localhost:11434`），并调用已拉取的模型（如 `qwen:4b` 或 `llama3`）。
 
-【案例源码】`案例与源码-4-LangGraph框架/03-ollama/LangChain_Ollama.py`
+【案例源码】`案例与源码-2-LangChain框架/03-ollama/LangChain_Ollama.py`
 
-[LangChain_Ollama.py](案例与源码-4-LangGraph框架/03-ollama/LangChain_Ollama.py ":include :type=code")
+[LangChain_Ollama.py](案例与源码-2-LangChain框架/03-ollama/LangChain_Ollama.py ":include :type=code")
 
 若需与 [提示词模板](13-提示词与消息模板.md)、[链（LCEL）](15-LCEL与链式调用.md)、[Agent](21-Agent智能体.md) 等结合，只需将上面的 `llm` 传入对应组件即可，与使用 [ChatOpenAI](11-Model-I-O与模型接入.md) 的方式一致。
 

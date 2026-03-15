@@ -103,7 +103,7 @@
 | **Chroma**        | 开源、轻量级向量库，API 极简，适合本地或小规模快速搭建。                                           |
 | **Milvus**        | 开源、云原生的向量数据库，专为向量检索设计，性能和功能都较强，可从轻量原型扩展到数十亿向量级生产。 |
 | **Pgvector**      | PostgreSQL 的扩展，在关系库里增加向量类型和相似性搜索能力，适合已有 PG 的项目。                    |
-| **Redis**         | 开源内存存储，在 Redis Stack 等版本中已原生支持向量相似性搜索；本教程案例即用 Redis 做向量存查。    |
+| **Redis**         | 开源内存存储，在 Redis Stack 等版本中已原生支持向量相似性搜索；本教程案例即用 Redis 做向量存查。   |
 | **Elasticsearch** | 开源分布式搜索与分析引擎，支持结构化、非结构化与向量数据的统一存储与检索。                         |
 
 ---
@@ -154,27 +154,27 @@
 
 **（1）DashScope 原生调用 — 单句文本向量化**
 
-【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopeHello.py`
+【案例源码】`案例与源码-2-LangChain框架/09-embedding/Text2Embedding_DashScopeHello.py`
 
-[Text2Embedding_DashScopeHello.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopeHello.py ":include :type=code")
+[Text2Embedding_DashScopeHello.py](案例与源码-2-LangChain框架/09-embedding/Text2Embedding_DashScopeHello.py ":include :type=code")
 
 **（2）OpenAI 兼容接口调用（如百炼兼容模式）**
 
-【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_OpenAiHello.py`
+【案例源码】`案例与源码-2-LangChain框架/09-embedding/Text2Embedding_OpenAiHello.py`
 
-[Text2Embedding_OpenAiHello.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_OpenAiHello.py ":include :type=code")
+[Text2Embedding_OpenAiHello.py](案例与源码-2-LangChain框架/09-embedding/Text2Embedding_OpenAiHello.py ":include :type=code")
 
 **（3）LangChain DashScope 封装 — 单条与批量**
 
-【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScope.py`
+【案例源码】`案例与源码-2-LangChain框架/09-embedding/Text2Embedding_DashScope.py`
 
-[Text2Embedding_DashScope.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScope.py ":include :type=code")
+[Text2Embedding_DashScope.py](案例与源码-2-LangChain框架/09-embedding/Text2Embedding_DashScope.py ":include :type=code")
 
 **（4）DashScope 进阶用法（如多模态或更多参数）**
 
-【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopePro.py`
+【案例源码】`案例与源码-2-LangChain框架/09-embedding/Text2Embedding_DashScopePro.py`
 
-[Text2Embedding_DashScopePro.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_DashScopePro.py ":include :type=code")
+[Text2Embedding_DashScopePro.py](案例与源码-2-LangChain框架/09-embedding/Text2Embedding_DashScopePro.py ":include :type=code")
 
 ---
 
@@ -182,9 +182,9 @@
 
 文本转为向量后，可用**余弦相似度**等度量比较两段文本的语义是否接近。下面案例使用多句文本，先得到各自向量，再两两计算余弦相似度。
 
-【案例源码】`案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_CosSimilarity.py`
+【案例源码】`案例与源码-2-LangChain框架/09-embedding/Text2Embedding_CosSimilarity.py`
 
-[Text2Embedding_CosSimilarity.py](案例与源码-4-LangGraph框架/09-embedding/Text2Embedding_CosSimilarity.py ":include :type=code")
+[Text2Embedding_CosSimilarity.py](案例与源码-2-LangChain框架/09-embedding/Text2Embedding_CosSimilarity.py ":include :type=code")
 
 ---
 
@@ -199,9 +199,9 @@
 - **写入（建索引）**：`Redis.from_documents(documents, embeddings, ...)` 会把每个 Document 的 `page_content` 用嵌入模型向量化，并与原文、元数据一并写入 Redis。
 - **检索（查索引）**：`vectorstore.as_retriever()` 得到检索器，`retriever.invoke(查询文本)` 会把查询文本向量化，在库中做相似度比较，返回最相关的 Document 列表。
 
-【案例源码】`案例与源码-4-LangGraph框架/09-embedding/EmbeddingStoreRedis.py`
+【案例源码】`案例与源码-2-LangChain框架/09-embedding/EmbeddingStoreRedis.py`
 
-[EmbeddingStoreRedis.py](案例与源码-4-LangGraph框架/09-embedding/EmbeddingStoreRedis.py ":include :type=code")
+[EmbeddingStoreRedis.py](案例与源码-2-LangChain框架/09-embedding/EmbeddingStoreRedis.py ":include :type=code")
 
 ![RedisInsight 中查看写入的文档与向量](images/18/18-6-1-1.jpg)
 

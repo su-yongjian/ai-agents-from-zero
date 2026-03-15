@@ -32,9 +32,9 @@
 
 下面案例用 `input → process → output` 三个节点和固定边，演示状态（`process_data`）在节点间的传递与打印，便于对照「流程」与「状态」的关系。
 
-【案例源码】`案例与源码-5-LangGraph/02-graph/BuildWholeGraphSummary.py`
+【案例源码】`案例与源码-3-LangGraph框架/02-graph/BuildWholeGraphSummary.py`
 
-[BuildWholeGraphSummary.py](案例与源码-5-LangGraph/02-graph/BuildWholeGraphSummary.py ":include :type=code")
+[BuildWholeGraphSummary.py](案例与源码-3-LangGraph框架/02-graph/BuildWholeGraphSummary.py ":include :type=code")
 
 ---
 
@@ -56,9 +56,9 @@
 
 下面用 **TypedDict** 定义一个简单状态，并构建一张「无中间节点、直接从 START 到 END」的图，用于验证 `invoke(initial_state)` 的用法。注意：`invoke()` 只接收一个核心位置参数（状态字典），不要传入多个独立参数。
 
-【案例源码】`案例与源码-5-LangGraph/03-state/DefState.py`
+【案例源码】`案例与源码-3-LangGraph框架/03-state/DefState.py`
 
-[DefState.py](案例与源码-5-LangGraph/03-state/DefState.py ":include :type=code")
+[DefState.py](案例与源码-3-LangGraph框架/03-state/DefState.py ":include :type=code")
 
 ### 2.3 State 的组成：Schema 与三要素
 
@@ -97,9 +97,9 @@ State 可以是 **TypedDict**，也可以是 **Pydantic 的 BaseModel**。下表
 
 下面案例演示如何通过 `input_schema` 和 `output_schema` 限制图的输入与输出类型，实现「调用时只传 question，返回时只拿 answer」的接口，适合需要明确对外契约的场景。
 
-【案例源码】`案例与源码-5-LangGraph/03-state/schema/StateSchema.py`
+【案例源码】`案例与源码-3-LangGraph框架/03-state/schema/StateSchema.py`
 
-[StateSchema.py](案例与源码-5-LangGraph/03-state/schema/StateSchema.py ":include :type=code")
+[StateSchema.py](案例与源码-3-LangGraph框架/03-state/schema/StateSchema.py ":include :type=code")
 
 ---
 
@@ -109,4 +109,4 @@ State 可以是 **TypedDict**，也可以是 **Pydantic 的 BaseModel**。下表
 - **State**：由 **Schema** 与 **Reducer** 组成，是节点间共享的「单一事实来源」；**state_schema** 为图的完整内部状态，**input_schema** / **output_schema** 可选的子集，用于约束图的输入输出接口；`graph.invoke` 会先按 input_schema 过滤输入、再经节点处理、最后按 output_schema 过滤输出。
 - **State 类型**：常用 **TypedDict**（轻量、推荐），也可用 **pydantic.BaseModel**（校验、嵌套、描述更强）；DefState 演示基本定义，StateSchema 演示 input/output schema 的用法。
 
-**建议下一步：** 在本地运行 BuildWholeGraphSummary、DefState、StateSchema，并尝试修改 State 字段或增加 input_schema/output_schema；若需深入 **Reducer**（如消息列表的追加方式），可学习本仓库中 `案例与源码-5-LangGraph/03-state/reducers` 下的 Reducer 示例；若需条件分支、循环或多智能体，可继续学习后续 LangGraph 进阶章节（条件边、子图、Agent 节点等）。
+**建议下一步：** 在本地运行 BuildWholeGraphSummary、DefState、StateSchema，并尝试修改 State 字段或增加 input_schema/output_schema；若需深入 **Reducer**（如消息列表的追加方式），可学习本仓库中 `案例与源码-3-LangGraph框架/03-state/reducers` 下的 Reducer 示例；若需条件分支、循环或多智能体，可继续学习后续 LangGraph 进阶章节（条件边、子图、Agent 节点等）。

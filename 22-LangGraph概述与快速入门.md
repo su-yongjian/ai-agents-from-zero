@@ -168,25 +168,25 @@ print("=" * 50)
 
 下面案例完成「定义 State → 定义节点 → 构建图 → 加边 → 编译 → 运行」，并打印 ASCII / Mermaid，是理解「四要素」的最佳起点。
 
-【案例源码】`案例与源码-5-LangGraph/01-helloworld/LangGraphHello.py`
+【案例源码】`案例与源码-3-LangGraph框架/01-helloworld/LangGraphHello.py`
 
-[LangGraphHello.py](案例与源码-5-LangGraph/01-helloworld/LangGraphHello.py ":include :type=code")
+[LangGraphHello.py](案例与源码-3-LangGraph框架/01-helloworld/LangGraphHello.py ":include :type=code")
 
 ### 2.6 案例二：加一点业务（LangGraphBiz.py）
 
 在不接入大模型的前提下，用自定义的加法和减法函数作为节点，构建一个简单的「输入 → 加法 → 减法 → 输出」图，体会状态在节点间的传递。
 
-【案例源码】`案例与源码-5-LangGraph/01-helloworld/LangGraphBiz.py`
+【案例源码】`案例与源码-3-LangGraph框架/01-helloworld/LangGraphBiz.py`
 
-[LangGraphBiz.py](案例与源码-5-LangGraph/01-helloworld/LangGraphBiz.py ":include :type=code")
+[LangGraphBiz.py](案例与源码-3-LangGraph框架/01-helloworld/LangGraphBiz.py ":include :type=code")
 
 ### 2.7 案例三：接入大模型（LangGraphLLM.py）
 
 在图中接入 LangChain 的聊天模型，实现「用户消息 → 模型节点 → 回复」的最小对话流，并演示带 `messages` 状态与 `add_messages` 的用法。
 
-【案例源码】`案例与源码-5-LangGraph/01-helloworld/LangGraphLLM.py`
+【案例源码】`案例与源码-3-LangGraph框架/01-helloworld/LangGraphLLM.py`
 
-[LangGraphLLM.py](案例与源码-5-LangGraph/01-helloworld/LangGraphLLM.py ":include :type=code")
+[LangGraphLLM.py](案例与源码-3-LangGraph框架/01-helloworld/LangGraphLLM.py ":include :type=code")
 
 ### 2.8 本节小结
 
@@ -200,6 +200,6 @@ print("=" * 50)
 
 - **LangGraph 是什么**：基于 LangChain 的图结构工作流框架，支持多轮交互、状态持久化、分支与循环；**LangGraph = LangChain + 图编排 + 状态机**。Chain 太线性、Agent 太黑箱，LangGraph 用「图」在可控性与表达能力之间取得平衡。
 - **四要素**：**State（状态）、Nodes（节点）、Edges（边）、Graph（图）**；图的构建流程：初始化 StateGraph → 加节点 → 定义边（含 START/END）→ 编译 → `invoke(initial_state)` 执行。
-- **HelloWorld 与案例**：LangGraphHello（最简问候）、LangGraphBiz（加减法业务）、LangGraphLLM（接入大模型）均位于 `案例与源码-5-LangGraph/01-helloworld`，可按顺序运行体会；可视化可用 `print_ascii()`、`draw_mermaid()`。
+- **HelloWorld 与案例**：LangGraphHello（最简问候）、LangGraphBiz（加减法业务）、LangGraphLLM（接入大模型）均位于 `案例与源码-3-LangGraph框架/01-helloworld`，可按顺序运行体会；可视化可用 `print_ascii()`、`draw_mermaid()`。
 
 **建议下一步：** 在本地运行 `LangGraphHello.py` 和 `LangGraphBiz.py`，再尝试修改状态字段或增加节点、边；接着学习 [第 23 章 - LangGraph Graph API 与 State](23-LangGraphGraphAPI与State.md)，深入理解「图」的 API、State 的 Schema/Reducer、input_schema / output_schema 及 TypedDict 与 Pydantic 选型；若需条件分支、循环或多智能体，可继续学习后续 LangGraph 进阶章节。
