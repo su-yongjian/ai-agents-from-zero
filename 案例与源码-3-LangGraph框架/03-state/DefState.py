@@ -16,6 +16,7 @@ from langgraph.graph import StateGraph, START, END
 
 class BasicState(TypedDict):
     """基本 State 定义：包含常用字段示例。"""
+
     user_input: str
     response: str
     count: int
@@ -38,3 +39,6 @@ initial_state = {
 
 result = app.invoke(initial_state)
 print("执行结果：", result)
+
+# 【输出实例】
+# 执行结果： {'user_input': 'a', 'response': 'resp', 'count': 25, 'process_data': {'k1': 'v1'}}

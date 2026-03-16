@@ -18,7 +18,7 @@
 
 ### 1.1 什么是图
 
-**知识出处：** https://docs.langchain.com/oss/javascript/langgraph/graph-api#graphs（概念通用，Python 版可查对应文档）
+**知识出处：** https://docs.langchain.com/oss/javascript/langgraph/graph-api#graphs （概念通用，Python 版可查对应文档）
 
 **图**是一种由**节点**和**边**组成的、用于描述节点之间关系的数据结构，分为无向图和有向图；**有向图**的边带有方向。LangGraph 通过**有向图**定义 AI 工作流中的执行步骤与执行顺序，从而实现**复杂、有状态、可循环**的应用程序逻辑。
 
@@ -44,7 +44,11 @@
 
 **知识出处：** https://docs.langchain.com/oss/javascript/langgraph/graph-api#state
 
-在 LangGraph 中，**State** 是贯穿整个工作流执行过程的**共享数据结构**，代表当前「快照」。它存储从工作流开始到结束所需的信息（如历史对话、检索到的文档、工具执行结果等），在**各节点间共享**，且每个节点都可以按规则对其更新。State 包含两部分：一是**图的模式（Schema）**，二是**规约函数（Reducer functions）**——后者规定如何把节点产生的**更新**应用到状态上（例如追加列表、替换字段等）。
+在 LangGraph 中，**State** 是贯穿整个工作流执行过程的**共享数据结构**，代表当前「快照」。
+
+它存储从工作流开始到结束所需的信息（如历史对话、检索到的文档、工具执行结果等），在**各节点间共享**，且每个节点都可以按规则对其更新。
+
+State 由两部分组成：**图的 Schema（模式）** 和 **规约函数（Reducer）**。Schema 描述状态有哪些字段、什么类型；Reducer 规定节点产生的**更新**如何合并到当前状态（例如追加列表、替换字段等）。**定义图时，首先要做的就是定义图的 State**，即把这两部分设计好。
 
 可以这样理解 State 的角色：
 
@@ -53,11 +57,9 @@
 - **所有数据都通过 State 在节点间传递和更新**：没有单独的数据线，状态就是数据流动的载体，是 LangGraph 的核心。
 - **Reducer 定义状态如何被安全、原子化地更新**：多个节点可能同时改状态，Reducer 规定「怎么合并这些改动」，保证更新过程可控、不丢数据、不冲突。
 
-**定义图时，首先要做的就是定义图的 State。** State 由**图的 Schema** 和 **Reducer 函数**组成：Schema 描述状态有哪些字段、类型；Reducer 指定当节点返回部分更新时，如何合并到当前状态。
-
 ![State 的组成：Schema + Reducer；所有节点向 State 发出更新，由 Reducer 应用](images/22/image23.jpeg)
 
-### 2.2 基本 State 定义示例（DefState.py）
+### 2.2 基本 State 定义示例
 
 下面用 **TypedDict** 定义一个简单状态，并构建一张「无中间节点、直接从 START 到 END」的图，用于验证 `invoke(initial_state)` 的用法。注意：`invoke()` 只接收一个核心位置参数（状态字典），不要传入多个独立参数。
 
@@ -65,9 +67,30 @@
 
 [DefState.py](案例与源码-3-LangGraph框架/03-state/DefState.py ":include :type=code")
 
-### 2.3 State 的组成：Schema 与三要素
+### 2.3 State 的类型：TypedDict 与 Pydantic BaseModel
 
-**知识出处（Schema）：** https://docs.langchain.com/oss/javascript/langgraph/graph-api#schema
+State 可以是 **TypedDict**，也可以是 **Pydantic 的 BaseModel**。下表对比两者，便于选型；在 LangGraph 中通常**推荐使用 TypedDict** 作为 State 类型，简单轻量、无额外运行时校验开销。
+
+| 对比项                 | TypedDict                                | BaseModel（Pydantic）                                               |
+| ---------------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| **来源**               | Python 标准库（`typing` 模块）           | 需安装 Pydantic 库                                                  |
+| **定位**               | 轻量级「带类型的字典」，主要做类型提示   | 完整的数据模型，自带校验、解析等能力                                |
+| **运行时检查**         | 无：不校验数据是否合法，只做类型标注     | 有：自动校验类型、默认值、约束等，不合规会报错                      |
+| **性能**               | 快：几乎无额外开销，就是普通字典         | 稍慢：创建和更新时会做解析与校验，有额外成本                        |
+| **序列化**             | 需自己转成 dict/JSON 或从 dict/JSON 读入 | 自带 `.model_dump()`、`.model_dump_json()` 等，方便与 JSON/API 对接 |
+| **适用场景**           | 结构简单、以「传参/状态容器」为主        | 需要严格校验、默认值、嵌套结构或字段说明时                          |
+| **LangGraph 中的用法** | 推荐作为 State 类型，写起来简单          | 可用，但官方更推荐 TypedDict；若用 Pydantic 需注意与图的兼容与转换  |
+
+**一句话选型：**
+
+- 想要**轻量、无运行时开销、习惯字典写法** → 用 **TypedDict**。
+- 想要**自动校验、默认值、嵌套结构、字段描述** → 用 **pydantic.BaseModel**。
+
+两种写法在 LangGraph 里都能参与图的编译，只需按规则声明字段即可。
+
+### 2.4 State 的组成：Schema 与三要素
+
+**官方介绍：** https://docs.langchain.com/oss/javascript/langgraph/graph-api#schema
 
 **一切之基石：State Schema。** State 是 LangGraph 应用的核心数据结构；它定义了应用中「有哪些数据」，这些数据会在所有节点之间传递，并且可以被持久化保存。
 
@@ -86,15 +109,23 @@
 | **input_schema**  | 图接受什么输入，是 state_schema 的子集       | 可选；不指定时默认等于 state_schema；用于限制图的输入接口          |
 | **output_schema** | 图返回什么输出，是 state_schema 的子集       | 可选；不指定时默认等于 state_schema；用于限制图的输出接口          |
 
-下图展示了 `graph.invoke(input_data)` 的典型流程：先按 **input_schema** 验证/过滤输入，再经 START → 普通节点（均接收 state_schema）→ END，最后按 **output_schema** 过滤输出并返回给调用者。
+`graph.invoke(input_data)` 的典型流程如下（按执行顺序）：
 
-![graph.invoke 调用流程：input_schema 验证 → START → 普通节点（state_schema）→ END → output_schema 过滤 → 返回](images/22/image26.jpeg)
+1. **外部调用**：调用方执行 `graph.invoke(input_data)`，把输入数据交给图。
+2. **input_schema 验证/过滤**：图先用 **input_schema** 对传入数据做校验和过滤，只保留 schema 里允许的字段，不符合的会被拒之门外或忽略，保证「进图」的数据格式正确。
+3. **START（虚拟节点）**：通过校验后进入图的内部流程，从 **START** 这个虚拟起点开始（没有实际业务逻辑，只表示「开始」）。
+4. **普通节点 1 → 2 → … → N**：按边的定义依次执行各个普通节点；每个节点拿到的都是**完整的 state_schema**（即图的内部状态），读、算、写都针对这份状态。
+5. **END（虚拟节点）**：所有节点跑完后到达 **END** 这个虚拟终点，表示图内执行结束。
+6. **output_schema 过滤输出**：在把结果还给调用方之前，用 **output_schema** 对最终状态做过滤，只保留 schema 里声明要输出的字段，实现「对外只暴露约定好的字段」。
+7. **返回结果**：过滤后的数据作为返回值交给调用者。
 
-### 2.4 State 的组成：Reducer（规约函数）
+全程中，**input_schema** 管「进来什么」、**state_schema** 管「图内部用什么」、**output_schema** 管「出去什么」，三者各司其职。
+
+### 2.5 State 的组成：Reducer（规约函数）
 
 前面 2.1 已说明：State 由 **Schema** 与 **Reducer** 组成；Schema 描述状态有哪些字段与类型，**Reducer 规定节点产生的更新如何合并到当前状态**。本节展开 Reducer 的用法与常见类型，与 Schema 一起构成「State 组成」的完整图景。
 
-#### 2.4.1 什么是 Reducer
+#### 2.5.1 什么是 Reducer
 
 **知识出处：** https://docs.langchain.com/oss/javascript/langgraph/graph-api#reducers
 
@@ -105,13 +136,13 @@
 
 ![Reducer 决定节点更新如何作用到 State；有向图与状态流转示意](images/23/image29.jpeg)
 
-#### 2.4.2 default：未指定 Reducer 时使用覆盖更新
+#### 2.5.2 default：未指定 Reducer 时使用覆盖更新
 
 【案例源码】`案例与源码-3-LangGraph框架/03-state/reducers/StateReducer_Default.py`
 
 [StateReducer_Default.py](案例与源码-3-LangGraph框架/03-state/reducers/StateReducer_Default.py ":include :type=code")
 
-#### 2.4.3 add_messages：用于消息列表追加
+#### 2.5.3 add_messages：用于消息列表追加
 
 对话场景中需要将多轮消息**追加**到列表。使用 `Annotated[List, add_messages]`，节点只返回增量消息，由 `add_messages` 规约器自动追加。
 
@@ -119,7 +150,7 @@
 
 [StateReducer_AddMessages.py](案例与源码-3-LangGraph框架/03-state/reducers/StateReducer_AddMessages.py ":include :type=code")
 
-#### 2.4.4 operator.add：列表/字符串/数值追加
+#### 2.5.4 operator.add：列表/字符串/数值追加
 
 `operator.add` 作为 Reducer 时，对列表做 extend、对字符串做连接、对数值做累加。
 
@@ -141,7 +172,7 @@
 
 [StateReducer_OperatorAdd3.py](案例与源码-3-LangGraph框架/03-state/reducers/StateReducer_OperatorAdd3.py ":include :type=code")
 
-#### 2.4.5 operator.mul：数值相乘
+#### 2.5.5 operator.mul：数值相乘
 
 使用 `operator.mul` 时要注意：LangGraph 会用类型默认值（如 float 的 0.0）先做一次规约，导致 `0.0 * 初始值 = 0`，后续乘法始终为 0。**建议对乘法使用自定义 Reducer**，将「第一次」的 current 视为单位元 1.0。
 
@@ -149,7 +180,7 @@
 
 [StateReducer_OperatorMul.py](案例与源码-3-LangGraph框架/03-state/reducers/StateReducer_OperatorMul.py ":include :type=code")
 
-#### 2.4.6 自定义 Reducer
+#### 2.5.6 自定义 Reducer
 
 当内置 Reducer 不满足需求时（如 operator.mul 的初始值问题），可自定义规约函数：签名为 `(current, update) -> new_value`，在函数内处理「第一次」等边界。
 
@@ -157,7 +188,7 @@
 
 [StateReducer_Custom.py](案例与源码-3-LangGraph框架/03-state/reducers/StateReducer_Custom.py ":include :type=code")
 
-#### 2.4.7 多种策略并存（家庭作业）
+#### 2.5.7 多种策略并存（家庭作业）
 
 同一 State 中可对不同字段使用不同 Reducer（如 messages 用 add_messages，tags 用 operator.add，score 用 operator.add）。下面案例供自行阅读与运行。
 
@@ -165,28 +196,7 @@
 
 [StateReducersMyChatBot 家庭作业.py](案例与源码-3-LangGraph框架/03-state/reducers/StateReducersMyChatBot家庭作业.py ":include :type=code")
 
-### 2.5 State 的类型：TypedDict 与 Pydantic BaseModel
-
-State 可以是 **TypedDict**，也可以是 **Pydantic 的 BaseModel**。下表对比两者，便于选型；在 LangGraph 中通常**推荐使用 TypedDict** 作为 State 类型，简单轻量、无额外运行时校验开销。
-
-| 对比项 | TypedDict | BaseModel（Pydantic） |
-|--------|-----------|------------------------|
-| **来源** | Python 标准库（`typing` 模块） | 需安装 Pydantic 库 |
-| **定位** | 轻量级「带类型的字典」，主要做类型提示 | 完整的数据模型，自带校验、解析等能力 |
-| **运行时检查** | 无：不校验数据是否合法，只做类型标注 | 有：自动校验类型、默认值、约束等，不合规会报错 |
-| **性能** | 快：几乎无额外开销，就是普通字典 | 稍慢：创建和更新时会做解析与校验，有额外成本 |
-| **序列化** | 需自己转成 dict/JSON 或从 dict/JSON 读入 | 自带 `.model_dump()`、`.model_dump_json()` 等，方便与 JSON/API 对接 |
-| **适用场景** | 结构简单、以「传参/状态容器」为主 | 需要严格校验、默认值、嵌套结构或字段说明时 |
-| **LangGraph 中的用法** | 推荐作为 State 类型，写起来简单 | 可用，但官方更推荐 TypedDict；若用 Pydantic 需注意与图的兼容与转换 |
-
-**一句话选型：**
-
-- 想要**轻量、无运行时开销、习惯字典写法** → 用 **TypedDict**。
-- 想要**自动校验、默认值、嵌套结构、字段描述** → 用 **pydantic.BaseModel**。
-
-两种写法在 LangGraph 里都能参与图的编译，只需按规则声明字段即可。
-
-### 2.6 输入输出 Schema 示例（StateSchema.py）
+### 2.6 输入输出 Schema 示例
 
 下面案例演示如何通过 `input_schema` 和 `output_schema` 限制图的输入与输出类型，实现「调用时只传 question，返回时只拿 answer」的接口，适合需要明确对外契约的场景。
 
