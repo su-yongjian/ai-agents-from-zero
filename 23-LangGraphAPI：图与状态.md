@@ -16,7 +16,7 @@
 
 ## 1、Graph API 之 Graph（图）
 
-### 1.1 什么是图
+### 1.1 简介
 
 **知识出处：** https://docs.langchain.com/oss/javascript/langgraph/graph-api#graphs （概念通用，Python 版可查对应文档）
 
@@ -40,7 +40,7 @@
 
 ## 2、Graph API 之 State（状态）
 
-### 2.1 什么是 State
+### 2.1 简介
 
 **知识出处：** https://docs.langchain.com/oss/javascript/langgraph/graph-api#state
 
