@@ -98,7 +98,7 @@ LangChain 中 Agent 的创建方式从 V0.x 的多步配置演进到 V1.0 的 **
 
 ---
 
-## 3、Agent 工作原理（V0.3 视角）
+## 3、Agent 工作原理（V0.3）
 
 在 LangChain 的 Agent 架构中，**Agent** 负责「接收输入并决定采取什么操作」，**不直接执行**这些操作；**AgentExecutor** 负责真正调用 Agent、执行其选定的工具，并把工具输出传回 Agent，形成循环，二者结合才构成完整的智能体。
 

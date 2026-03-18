@@ -69,6 +69,20 @@
             color: "rgb(90,90,90)",
             language: "chinese",
           },
+          giscus: {
+            repo: "didilili/ai-agents-from-zero",
+            repoId: "R_kgDORDu3Jw",
+            category: "Announcements",
+            categoryId: "DIC_kwDORDu3J84C13V4",
+            mapping: "url",
+            reactionsEnabled: "1",
+            strict: "0",
+            emitMetadata: "0",
+            inputPosition: "bottom",
+            theme: "preferred_color_scheme",
+            lang: "zh-CN",
+            loading: "lazy",
+          },
         };
         // 仅 GitHub Pages 需要 basePath；本地不设置，否则会请求 /undefinedREADME.md 等错误路径
         if (isGitHubPages) config.basePath = "/ai-agents-from-zero/";
@@ -83,5 +97,11 @@
     <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docsify-count/dist/countable.js"></script>
+    <!-- Giscus 评论 -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/docsify-giscus@1.0.2/dist/giscus.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/docsify-giscus@1.0.2/dist/docsify-giscus.min.js"></script>
   </body>
 </html>
