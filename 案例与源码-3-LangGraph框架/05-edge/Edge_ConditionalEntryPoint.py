@@ -7,6 +7,7 @@
 - add_conditional_edges(START, route_input, {"greeting": "greeting_node", ...})：invoke 传入的 state 先交给 route_input，返回值作为 key 在 mapping 中查下一节点，实现「不同输入走不同入口」。
 - 与「条件边」区别：条件边是「某节点执行完后」再分支；条件入口点是「图一启动」就分支，常用于路由到不同处理逻辑。
 """
+
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
 
@@ -63,14 +64,14 @@ def create_simple_graph():
     stateGraph.add_node("farewell_node", handle_farewell)
     stateGraph.add_node("question_node", handle_question)
 
-    '''条件入口点
+    """条件入口点
      add_conditional_edges(START, route_function, mapping)
          START：从图的起点开始
          route_function：决定去哪里的函数，返回一个字符串（路由键）
          mapping（可选）：路由键到节点名的映射
 
     START → route_input()函数 → 返回"greeting" → 映射到"greeting_node" → 执行handle_greeting → END
-    '''
+    """
     stateGraph.add_conditional_edges(
         START,  # 起点
         route_input,  # 路由函数
@@ -78,8 +79,8 @@ def create_simple_graph():
         {
             "greeting": "greeting_node",  # route_input返回"greeting"时，去greeting_node
             "farewell": "farewell_node",  # route_input返回"farewell"时，去farewell_node
-            "question": "question_node"  # route_input返回"question"时，去question_node
-        }
+            "question": "question_node",  # route_input返回"question"时，去question_node
+        },
     )
 
     # 所有节点都到END
@@ -95,22 +96,14 @@ def run_example():
     # 创建图
     graph = create_simple_graph()
     # 测试不同的输入
-    test_inputs = [
-        "Hello everyone!",
-        "Goodbye now",
-        "What time is it?"
-    ]
+    test_inputs = ["Hello everyone!", "Goodbye now", "What time is it?"]
 
     for user_input in test_inputs:
         print(f"\n输入: {user_input}")
         print("-" * 30)
 
         # 创建初始状态
-        initial_state = SimpleState(
-            user_input=user_input,
-            response="",
-            node_visited=""
-        )
+        initial_state = SimpleState(user_input=user_input, response="", node_visited="")
 
         # 执行图
         result = graph.invoke(initial_state)
@@ -134,3 +127,66 @@ if __name__ == "__main__":
     print("=" * 40)
     run_example()
 
+
+"""
+【输出实例】
+简单条件入口点示例
+========================================
+
+输入: Hello everyone!
+------------------------------
+路由决策: greeting
+访问的节点: greeting_node
+响应: 你好！很高兴见到你！
+
+输入: Goodbye now
+------------------------------
+路由决策: farewell
+访问的节点: farewell_node
+响应: 再见！祝你有个美好的一天！
+
+输入: What time is it?
+------------------------------
+路由决策: question
+访问的节点: question_node
+响应: 我听到了你的问题，需要更多帮助吗？
+
+                              +-----------+                                
+                              | __start__ |.                               
+                         .....+-----------+ .....                          
+                     ....           .            ....                      
+                .....               .                .....                 
+             ...                    .                     ...              
++---------------+           +---------------+           +---------------+  
+| farewell_node |           | greeting_node |           | question_node |  
++---------------+****       +---------------+        ***+---------------+  
+                     ****           *            ****                      
+                         *****      *       *****                          
+                              ***   *    ***                               
+                               +---------+                                 
+                               | __end__ |                                 
+                               +---------+                                 
+None
+=================================
+
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+        __start__([<p>__start__</p>]):::first
+        greeting_node(greeting_node)
+        farewell_node(farewell_node)
+        question_node(question_node)
+        __end__([<p>__end__</p>]):::last
+        __start__ -. &nbsp;farewell&nbsp; .-> farewell_node;
+        __start__ -. &nbsp;greeting&nbsp; .-> greeting_node;
+        __start__ -. &nbsp;question&nbsp; .-> question_node;
+        farewell_node --> __end__;
+        greeting_node --> __end__;
+        question_node --> __end__;
+        classDef default fill:#f2f0ff,line-height:1.2
+        classDef first fill-opacity:0
+        classDef last fill:#bfb6fc
+"""

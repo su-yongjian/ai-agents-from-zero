@@ -82,3 +82,47 @@ print("=================================")
 print()
 # 打印图的可视化结构，生成更加美观的Mermaid 代码，通过processon 编辑器查看
 print(app.get_graph().draw_mermaid())
+
+"""
+【输出实例】
+加法节点addition3收到的初始值:{'x': 3}
+最后的结果是:{'x': 6}
+                +-----------+                  
+                | __start__ |                  
+                +-----------+..                
+             ...      .        ...             
+          ...         .           ...          
+        ..            .              ..        
++-------+         +-------+         +-------+  
+| node1 |*        | node2 |         | node3 |  
++-------+ ***     +-------+       **+-------+  
+             ***      *        ***             
+                ***   *     ***                
+                   ** *   **                   
+                 +---------+                   
+                 | __end__ |                   
+                 +---------+                   
+None
+=================================
+
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+        __start__([<p>__start__</p>]):::first
+        node1(node1)
+        node2(node2)
+        node3(node3)
+        __end__([<p>__end__</p>]):::last
+        __start__ -. &nbsp;condition_1&nbsp; .-> node1;
+        __start__ -. &nbsp;condition_2&nbsp; .-> node2;
+        __start__ -. &nbsp;condition_3&nbsp; .-> node3;
+        node1 --> __end__;
+        node2 --> __end__;
+        node3 --> __end__;
+        classDef default fill:#f2f0ff,line-height:1.2
+        classDef first fill-opacity:0
+        classDef last fill:#bfb6fc
+"""

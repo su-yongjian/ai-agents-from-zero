@@ -78,3 +78,55 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+【输出实例】
+=== 入口点演示 ===
+执行节点A
+state[value]:0
+state[step]:hello
+执行节点B
+执行结果: {'value': 2, 'step': 'B执行完毕'}
+
+
++-----------+  
+| __start__ |  
++-----------+  
+      *        
+      *        
+      *        
+  +--------+   
+  | node_a |   
+  +--------+   
+      *        
+      *        
+      *        
+  +--------+   
+  | node_b |   
+  +--------+   
+      *        
+      *        
+      *        
+ +---------+   
+ | __end__ |   
+ +---------+   
+None
+=================================
+
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+        __start__([<p>__start__</p>]):::first
+        node_a(node_a)
+        node_b(node_b)
+        __end__([<p>__end__</p>]):::last
+        __start__ --> node_a;
+        node_a --> node_b;
+        node_b --> __end__;
+        classDef default fill:#f2f0ff,line-height:1.2
+        classDef first fill-opacity:0
+        classDef last fill:#bfb6fc
+"""

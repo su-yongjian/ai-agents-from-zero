@@ -225,7 +225,7 @@ agent = create_agent(
 **知识点**：
 
 - **工具来源**：前面案例的工具都是本进程内 **`@tool`** 定义；本案例演示**工具从 MCP 服务来**——从同目录 **mcp.json** 读取服务配置，用 **MultiServerMCPClient** 连接多台 MCP 服务器，通过 **`get_tools()`** 拿到 LangChain 可用的工具列表，再交给 **create_tool_calling_agent + AgentExecutor**，形成「LLM + MCP 工具」的对话 Agent。
-- **流程要点**：**load_servers(mcp.json) → MultiServerMCPClient(connections) → async with client.session(): tools = client.get_tools()**，之后与 3 节的 V0.3 用法一致（Prompt + agent + executor + 聊天循环）。
+- **流程要点**：<strong>load_servers(mcp.json) → MultiServerMCPClient(connections) → async with client.session(): tools = client.get_tools()</strong>，之后与 3 节的 V0.3 用法一致（Prompt + agent + executor + 聊天循环）。
 - **与本地 @tool 对比**：工具**定义与运行**在 MCP 服务端，客户端只负责「按协议发现并调用」，便于多应用复用、跨进程部署。mcp.json 写法见 [第 20 章](20-MCP模型上下文协议.md)。
 
 【案例源码】`案例与源码-2-LangChain框架/11-mcp/McpClientAgent.py`

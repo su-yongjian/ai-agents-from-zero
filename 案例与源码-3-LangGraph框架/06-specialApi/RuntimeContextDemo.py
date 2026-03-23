@@ -52,10 +52,7 @@ def process_message(state: AgentState, runtime: Runtime[ContextSchema]) -> dict:
     # 模拟使用这些信息处理请求
     response = f"使用 {model_name} 处理了您的请求，已连接到 {db_connection}"
 
-    return {
-        "messages": [AIMessage(content=response)],
-        "response": response
-    }
+    return {"messages": [AIMessage(content=response)], "response": response}
 
 
 # 节点函数：生成最终响应
@@ -73,10 +70,7 @@ def generate_response(state: AgentState, runtime: Runtime[ContextSchema]) -> dic
     # 生成更详细的响应
     final_response = f"{previous_response}\n\n这是使用 {model_name} 生成的完整响应。"
 
-    return {
-        "messages": [AIMessage(content=final_response)],
-        "response": final_response
-    }
+    return {"messages": [AIMessage(content=final_response)], "response": final_response}
 
 
 def main():
@@ -87,7 +81,7 @@ def main():
     context = ContextSchema(
         model_name="gpt-4-turbo",
         db_connection="postgresql://user:pass@localhost:5432/orders_db",
-        api_key="sk-abcdefghijklmnopqrstuvwxyz123456"
+        api_key="sk-abcdefghijklmnopqrstuvwxyz123456",
     )
 
     # 创建图，指定state_schema和context_schema
@@ -108,16 +102,19 @@ def main():
     # 定义初始状态
     initial_state = {
         "messages": [HumanMessage(content="请帮我查询最新的订单信息")],
-        "response": ""
+        "response": "",
     }
 
     print("初始状态:", initial_state)
     print()
-    print("上下文信息:\n", {
-        "model_name": context.model_name,
-        "db_connection": context.db_connection,
-        "api_key": f"{context.api_key[:5]}***"
-    })
+    print(
+        "上下文信息:\n",
+        {
+            "model_name": context.model_name,
+            "db_connection": context.db_connection,
+            "api_key": f"{context.api_key[:5]}***",
+        },
+    )
     print("\n" + "-" * 50 + "\n")
 
     # 执行图，通过context参数传递上下文
@@ -131,3 +128,32 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+【输出实例】
+=== Context Schema 演示 ===
+
+初始状态: {'messages': [HumanMessage(content='请帮我查询最新的订单信息', additional_kwargs={}, response_metadata={})], 'response': ''}
+
+上下文信息:
+ {'model_name': 'gpt-4-turbo', 'db_connection': 'postgresql://user:pass@localhost:5432/orders_db', 'api_key': 'sk-ab***'}
+
+--------------------------------------------------
+
+执行节点: process_message
+用户消息: 请帮我查询最新的订单信息
+=========以下是从RuntimeContext中获得信息=========
+使用的模型: gpt-4-turbo
+数据库连接: postgresql://user:pass@localhost:5432/orders_db
+API密钥前缀: sk-ab***
+执行节点: generate_response
+使用模型 gpt-4-turbo 生成最终响应
+
+==================================================
+最终状态: {'messages': [HumanMessage(content='请帮我查询最新的订单信息', additional_kwargs={}, response_metadata={}), AIMessage(content='使用 gpt-4-turbo 处理了您的请求，已连接到 postgresql://user:pass@localhost:5432/orders_db', additional_kwargs={}, response_metadata={}, tool_calls=[], invalid_tool_calls=[]), AIMessage(content='使用 gpt-4-turbo 处理了您的请求，已连接到 postgresql://user:pass@localhost:5432/orders_db\n\n这是使用 gpt-4-turbo 生成的完整响应。', additional_kwargs={}, response_metadata={}, tool_calls=[], invalid_tool_calls=[])], 'response': '使用 gpt-4-turbo 处理了您的请求，已连接到 postgresql://user:pass@localhost:5432/orders_db\n\n这是使用 gpt-4-turbo 生成的完整响应。'}
+
+最终响应:
+使用 gpt-4-turbo 处理了您的请求，已连接到 postgresql://user:pass@localhost:5432/orders_db
+
+这是使用 gpt-4-turbo 生成的完整响应。
+"""

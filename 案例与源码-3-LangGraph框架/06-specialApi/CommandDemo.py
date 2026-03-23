@@ -8,6 +8,7 @@
 - 与条件边的区别：条件边只做路由；Command 在路由的同时写入 state，适合「决策节点」既要写日志/标记又要转交下一节点的场景。
 - 常用于 decision_agent 根据消息内容路由到 math_agent / translation_agent，或检测到任务完成后 goto=END 并写结束消息。
 """
+
 from typing import Annotated
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
@@ -16,11 +17,13 @@ from langgraph.types import Command
 # 全局常量：统一递归限制，便于维护
 RECURSION_LIMIT = 50
 
+
 # 定义状态
 class AgentState(TypedDict):
     messages: Annotated[list, lambda x, y: x + y]  # 自动合并消息
     current_agent: str
     task_completed: bool
+
 
 # 决策代理（核心路由节点）
 def decision_agent(state: AgentState) -> Command[AgentState]:
@@ -31,7 +34,7 @@ def decision_agent(state: AgentState) -> Command[AgentState]:
         print("✅ 检测到任务已完成，直接终止流程")
         return Command(
             update={"messages": [("system", "所有任务处理完成，流程正常结束")]},
-            goto=END
+            goto=END,
         )
     # 提取消息文本（兼容空消息）
     last_message = state["messages"][-1] if state["messages"] else ("", "")
@@ -42,20 +45,26 @@ def decision_agent(state: AgentState) -> Command[AgentState]:
     if "数学" in last_msg_content:
         print("✅ 检测到数学任务，路由到数学代理")
         return Command(
-            update={"messages": [("system", "路由到数学代理")], "current_agent": "math_agent"},
-            goto="math_agent"
+            update={
+                "messages": [("system", "路由到数学代理")],
+                "current_agent": "math_agent",
+            },
+            goto="math_agent",
         )
     elif "翻译" in last_msg_content:
         print("✅ 检测到翻译任务，路由到翻译代理")
         return Command(
-            update={"messages": [("system", "路由到翻译代理")], "current_agent": "translation_agent"},
-            goto="translation_agent"
+            update={
+                "messages": [("system", "路由到翻译代理")],
+                "current_agent": "translation_agent",
+            },
+            goto="translation_agent",
         )
     else:
         print("❌ 未识别任务类型，标记任务完成并终止")
         return Command(
             update={"messages": [("system", "任务完成")], "task_completed": True},
-            goto=END
+            goto=END,
         )
 
 
@@ -69,9 +78,9 @@ def math_agent(state: AgentState) -> Command[AgentState]:
         update={
             "messages": [("assistant", f"数学计算结果: {result}")],
             "current_agent": "decision_agent",
-            "task_completed": True
+            "task_completed": True,
         },
-        goto="decision_agent"
+        goto="decision_agent",
     )
 
 
@@ -85,9 +94,9 @@ def translation_agent(state: AgentState) -> Command[AgentState]:
         update={
             "messages": [("assistant", f"翻译结果: {translation}")],
             "current_agent": "decision_agent",
-            "task_completed": True
+            "task_completed": True,
         },
-        goto="decision_agent"
+        goto="decision_agent",
     )
 
 
@@ -112,15 +121,25 @@ def main():
 
     # 测试1：数学任务
     print("【测试1: 数学任务】")
-    initial_state = {"messages": [("user", "我需要计算数学题")], "current_agent": "user", "task_completed": False}
+    initial_state = {
+        "messages": [("user", "我需要计算数学题")],
+        "current_agent": "user",
+        "task_completed": False,
+    }
     print("初始状态:", initial_state)
     result = graph.invoke(initial_state, recursion_limit=RECURSION_LIMIT)
-    print("最终状态(简化):", {k: v for k, v in result.items() if k != "messages"})  # 简化输出
+    print(
+        "最终状态(简化):", {k: v for k, v in result.items() if k != "messages"}
+    )  # 简化输出
     print("\n" + "-" * 50 + "\n")
 
     # 测试2：翻译任务
     print("【测试2: 翻译任务】")
-    initial_state = {"messages": [("user", "我需要翻译文本")], "current_agent": "user", "task_completed": False}
+    initial_state = {
+        "messages": [("user", "我需要翻译文本")],
+        "current_agent": "user",
+        "task_completed": False,
+    }
     print("初始状态:", initial_state)
     result = graph.invoke(initial_state, recursion_limit=RECURSION_LIMIT)
     print("最终状态(简化):", {k: v for k, v in result.items() if k != "messages"})
@@ -128,7 +147,11 @@ def main():
 
     # 测试3：未识别任务
     print("【测试3: 未识别任务类型】")
-    initial_state = {"messages": [("user", "你好")], "current_agent": "user", "task_completed": False}
+    initial_state = {
+        "messages": [("user", "你好")],
+        "current_agent": "user",
+        "task_completed": False,
+    }
     print("初始状态:", initial_state)
     result = graph.invoke(initial_state, recursion_limit=RECURSION_LIMIT)
     print("最终状态(简化):", {k: v for k, v in result.items() if k != "messages"})
@@ -140,3 +163,59 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+【输出实例】
+=== Command 基础演示（LangGraph 1.0.6）===
+
+【测试1: 数学任务】
+初始状态: {'messages': [('user', '我需要计算数学题')], 'current_agent': 'user', 'task_completed': False}
+执行节点: decision_agent
+最新消息文本: 我需要计算数学题
+✅ 检测到数学任务，路由到数学代理
+执行节点: math_agent
+计算结果: 2 + 2 = 4
+执行节点: decision_agent
+✅ 检测到任务已完成，直接终止流程
+最终状态(简化): {'current_agent': 'decision_agent', 'task_completed': True}
+
+--------------------------------------------------
+
+【测试2: 翻译任务】
+初始状态: {'messages': [('user', '我需要翻译文本')], 'current_agent': 'user', 'task_completed': False}
+执行节点: decision_agent
+最新消息文本: 我需要翻译文本
+✅ 检测到翻译任务，路由到翻译代理
+执行节点: translation_agent
+翻译结果: Hello -> 你好
+执行节点: decision_agent
+✅ 检测到任务已完成，直接终止流程
+最终状态(简化): {'current_agent': 'decision_agent', 'task_completed': True}
+
+--------------------------------------------------
+
+【测试3: 未识别任务类型】
+初始状态: {'messages': [('user', '你好')], 'current_agent': 'user', 'task_completed': False}
+执行节点: decision_agent
+最新消息文本: 你好
+❌ 未识别任务类型，标记任务完成并终止
+最终状态(简化): {'current_agent': 'user', 'task_completed': True}
+
+=== 图结构可视化 ===
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+        __start__(<p>__start__</p>)
+        decision_agent(decision_agent)
+        math_agent(math_agent)
+        translation_agent(translation_agent)
+        __end__(<p>__end__</p>)
+        __start__ --> decision_agent;
+        decision_agent --> __end__;
+        classDef default fill:#f2f0ff,line-height:1.2
+        classDef first fill-opacity:0
+        classDef last fill:#bfb6fc
+"""

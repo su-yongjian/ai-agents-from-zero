@@ -195,7 +195,7 @@ print(f"图片已生成：{output_path}")
 
 ### 2.6 案例三：接入大模型
 
-在图中接入 LangChain 的聊天模型，实现「用户消息 → 模型节点 → 回复」的最小对话流。状态中的 `messages` 使用 LangGraph 内置规约器 **`add_messages`**：表示对该字段「追加」而非「覆盖」，节点只返回新增消息，框架会自动合并到列表末尾，适合多轮对话。
+在图中接入 LangChain 的聊天模型，实现「用户消息 → 模型节点 → 回复」的最小对话流。状态中的 `messages` 使用 LangGraph 内置规约器 `add_messages`：表示对该字段「追加」而非「覆盖」，节点只返回新增消息，框架会自动合并到列表末尾，适合多轮对话。
 
 【案例源码】`案例与源码-3-LangGraph框架/01-helloworld/LangGraphLLM.py`
 
