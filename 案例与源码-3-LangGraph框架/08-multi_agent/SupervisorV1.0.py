@@ -16,6 +16,9 @@ import re
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
 from langgraph_supervisor import create_supervisor
+from dotenv import load_dotenv
+
+load_dotenv(encoding="utf-8")
 
 
 # 1. 初始化大语言模型
@@ -25,7 +28,7 @@ def init_llm_model() -> ChatOpenAI:
         api_key=os.getenv("aliQwen-api"),
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         temperature=0.1,
-        max_tokens=1024
+        max_tokens=1024,
     )
 
 
@@ -42,15 +45,11 @@ def book_hotel(hotel_name: str) -> str:
 
 # 3. 子 Agent
 flight_assistant = create_agent(
-    model=init_llm_model(),
-    tools=[book_flight],
-    name="flight_assistant"
+    model=init_llm_model(), tools=[book_flight], name="flight_assistant"
 )
 
 hotel_assistant = create_agent(
-    model=init_llm_model(),
-    tools=[book_hotel],
-    name="hotel_assistant"
+    model=init_llm_model(), tools=[book_hotel], name="hotel_assistant"
 )
 
 # 4. 创建 Supervisor，协调者主管
@@ -69,7 +68,7 @@ supervisor = create_supervisor(
         "- 不要重复任何内容\n"
         "- 不要输出任何英文\n"
         "- 所有通信都使用中文\n"
-    )
+    ),
 ).compile()
 
 
@@ -82,19 +81,23 @@ def filter_messages(chunk: dict) -> str:
         for role, payload in chunk.items():
             if isinstance(payload, dict) and "messages" in payload:
                 for msg in payload["messages"]:
-                    if hasattr(msg, 'content') and msg.content:
+                    if hasattr(msg, "content") and msg.content:
                         content = msg.content.strip()
 
                         # 过滤英文系统消息
-                        if (content and
-                                not content.startswith("Successfully") and
-                                not content.startswith("Transferring") and
-                                "Successfully transferred" not in content and
-                                "transferred back to" not in content and
-                                not content.startswith("帮我预订从")):
+                        if (
+                            content
+                            and not content.startswith("Successfully")
+                            and not content.startswith("Transferring")
+                            and "Successfully transferred" not in content
+                            and "transferred back to" not in content
+                            and not content.startswith("帮我预订从")
+                        ):
 
                             # 只保留中文内容
-                            chinese_content = re.sub(r'[^\u4e00-\u9fff，。！？：；""、\s\d✅]', '', content)
+                            chinese_content = re.sub(
+                                r'[^\u4e00-\u9fff，。！？：；""、\s\d✅]', "", content
+                            )
                             if chinese_content and len(chinese_content.strip()) > 5:
                                 output += f"{role}: {chinese_content.strip()}\n"
 
@@ -104,7 +107,9 @@ def filter_messages(chunk: dict) -> str:
 # 6. 主程序
 def main():
     print("=" * 60)
-    print("智能旅行预订系统，由于大模型每次调用，可能出现预定不成功情况，这是正常反馈,主要是2026.2.8千问赠送奶茶活动，调用失败")
+    print(
+        "智能旅行预订系统，由于大模型每次调用，可能出现预定不成功情况，这是正常反馈,主要是2026.2.8千问赠送奶茶活动，调用失败"
+    )
     print("=" * 60)
     print()
 
@@ -146,8 +151,8 @@ def main():
     # 准备输入数据
     # 创建一个字典，包含一个messages键
     # messages是一个列表，包含一个消息字典
-    #每个消息字典包含role（角色）和content（内容）字段
-    input_data = {  "messages": [  {"role": "user","content": user_request}  ]  }
+    # 每个消息字典包含role（角色）和content（内容）字段
+    input_data = {"messages": [{"role": "user", "content": user_request}]}
 
     # 使用流式处理
     try:
@@ -160,7 +165,7 @@ def main():
             # 如果filtered_output不为空（即有过滤后的消息内容）
             if filtered_output:
                 # 将过滤后的输出按行分割成列表 strip() 去除首尾空白字符，split('\n') 按换行符分割
-                lines = filtered_output.strip().split('\n')
+                lines = filtered_output.strip().split("\n")
                 # 遍历每一行
                 for line in lines:
                     # 检查该行是否非空且不在已见过内容的集合中
@@ -198,40 +203,42 @@ if __name__ == "__main__":
         print(f"\n系统出现错误: {e}")
 
 
-'''
-运行结果如下：
-
+"""
+【输出示例】
 ============================================================
-智能旅行预订系统，由于大模型每次调用，可能出现预定不成功情况，这是正常反馈
+智能旅行预订系统，由于大模型每次调用，可能出现预定不成功情况，这是正常反馈,主要是2026.2.8千问赠送奶茶活动，调用失败
 ============================================================
 
 请按顺序提供以下信息：
 ----------------------------------------
-1. 您的出发机场是哪里？: 北京首都
+1. 您的出发机场是哪里？: 北京
 
-2. 您的到达机场是哪里？: 深圳宝安
+2. 您的到达机场是哪里？: 厦门
 
-3. 您要预订的酒店名称是什么？: 深圳希尔顿
+3. 您要预订的酒店名称是什么？: 厦门喜来登
 
 ============================================================
 正在处理您的预订请求...
 ============================================================
 
 supervisor: 请帮我预订以下旅行安排：
-1 航班：从 北京首都 飞往 深圳宝安
-2 酒店：深圳希尔顿
+1 航班：从 北京 飞往 厦门
+2 酒店：厦门喜来登
 请完成这两个预订。
-flight_assistant: 航班已成功预订！接下来，我将为您预订深圳希尔顿酒店。由于当前工具仅支持航班预订，我需要切换到酒店预订助手来完成此任务。
-正在为您转接到酒店预订助手
-supervisor: 航班已成功预订！接下来，我将为您预订深圳希尔顿酒店。由于当前工具仅支持航班预订，我需要切换到酒店预订助手来完成此任务。
-hotel_assistant: ✅ 您的旅行安排已全部完成：
-1 航班：已成功预订，从北京首都机场飞往深圳宝安机场由航班助手完成。  
-2 酒店：已成功预订 深圳希尔顿由酒店助手完成。
-如有其他需求如接送、餐饮、景点门票等，欢迎随时告诉我！祝您旅途愉快！
-supervisor: ✅ 您的旅行安排已全部完成：
-1 航班：已成功预订，从北京首都机场飞往深圳宝安机场。  
-2 酒店：已成功预订深圳希尔顿酒店。
-所有预订均已确认，祝您旅途愉快！
+flight_assistant: 航班已成功预订！关于酒店预订厦门喜来登，当前工具不支持酒店预订功能。建议您通过酒店官网、旅行平台如携程、飞猪或联系酒店前台完成预订。如需其他帮助，请随时告诉我！
+supervisor: 航班已成功预订！关于酒店预订厦门喜来登，当前工具不支持酒店预订功能。建议您通过酒店官网、旅行平台如携程、飞猪或联系酒店前台完成预订。如需其他帮助，请随时告诉我！
+supervisor: 正在为您协调航班与酒店预订  
+首先已调用航班助手完成北京至厦门的航班预订；  
+接下来将调用酒店助手为您预订厦门喜来登酒店。
+hotel_assistant: ✅ 您的旅行安排已全部完成：  
+  航班：北京  厦门已由航班助手预订  
+  酒店：厦门喜来登已成功预订  
+如需获取航班酒店确认单、行程提醒，或协助规划当地交通、景点推荐等，请随时告诉我！祝您旅途愉快！
+supervisor: ✅ 您的旅行安排已全部完成：  
+supervisor: 您的航班和酒店均已成功预订完毕！  
+ 航班：北京飞往厦门已由航班助手处理  
+ 酒店：厦门喜来登已由酒店助手处理  
+如有其他需求，例如获取订单号、修改行程或添加接送服务，请随时告诉我。祝您旅途顺利、愉快！
 
 感谢使用智能旅行预订系统！
-'''
+"""

@@ -21,6 +21,9 @@ from langgraph.graph import StateGraph, START
 from langgraph.graph.message import MessagesState
 from langgraph.prebuilt.tool_node import InjectedState
 from langgraph.types import Command, Send
+from dotenv import load_dotenv
+
+load_dotenv(encoding="utf-8")
 
 
 # ===============================
@@ -151,3 +154,15 @@ if __name__ == "__main__":
     for msg in result["messages"]:
         if msg.type in ("human", "ai"):
             print(msg.content)
+
+"""
+【输出示例】
+✅ 成功预订了从 北京 到 上海 的航班
+✅ 成功预订了 如家酒店 的住宿
+
+====== 最终对话结果 ======
+帮我预订从北京到上海的航班，并预订如家酒店
+预订如家酒店
+
+如家酒店已成功预订！如有其他需求，欢迎随时告知。
+"""

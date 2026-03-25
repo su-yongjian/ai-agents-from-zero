@@ -15,6 +15,9 @@ import os
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage
+from dotenv import load_dotenv
+
+load_dotenv(encoding="utf-8")
 
 
 def get_weather(city: str) -> str:
@@ -61,3 +64,14 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+【输出示例】
+agent 底层本质是个什么对象: <class 'langgraph.graph.state.CompiledStateGraph'>
+
+模型回答： 今天深圳是晴天。
+
+================================== Ai Message ==================================
+
+今天深圳是晴天。
+"""

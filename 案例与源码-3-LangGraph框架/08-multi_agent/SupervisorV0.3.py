@@ -16,6 +16,9 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langgraph_supervisor import create_supervisor
+from dotenv import load_dotenv
+
+load_dotenv(encoding="utf-8")
 
 
 def print_chinese_messages(chunk: dict):
