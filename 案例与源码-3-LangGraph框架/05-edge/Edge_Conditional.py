@@ -113,7 +113,7 @@ graph.invoke(MyState(x=4))
 # graph.invoke(MyState(x=3))
 
 """
-【输出实例】
+【输出示例】
               +-----------+               
               | __start__ |               
               +-----------+               

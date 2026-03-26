@@ -130,7 +130,7 @@ if __name__ == "__main__":
     main()
 
 """
-【输出实例】
+【输出示例】
 === Context Schema 演示 ===
 
 初始状态: {'messages': [HumanMessage(content='请帮我查询最新的订单信息', additional_kwargs={}, response_metadata={})], 'response': ''}

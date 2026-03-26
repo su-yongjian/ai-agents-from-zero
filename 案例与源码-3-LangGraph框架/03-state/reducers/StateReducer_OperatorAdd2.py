@@ -45,7 +45,7 @@ if __name__ == "__main__":
     run_demo()
 
 """
-【输出实例】
+【输出示例】
 3.2 字符串连接 Reducer 演示:
 初始状态: {'text': 'Say: '}
 执行结果: {'text': 'Say: Hello World!'}

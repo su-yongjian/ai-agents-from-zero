@@ -84,7 +84,7 @@ print()
 print(app.get_graph().draw_mermaid())
 
 """
-【输出实例】
+【输出示例】
 加法节点addition3收到的初始值:{'x': 3}
 最后的结果是:{'x': 6}
                 +-----------+                  

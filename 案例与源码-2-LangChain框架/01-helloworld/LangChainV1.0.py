@@ -11,14 +11,17 @@
 
 # ========== 1. 导入依赖 ==========
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 from langchain.chat_models import (
     init_chat_model,
 )  # 1.0 统一入口：根据 model + model_provider 创建聊天模型
 
+load_dotenv(encoding="utf-8")
+
 # ========== 2. 实例化模型并调用 ==========
 # 关键字参数：k1=v1, k2=v2 的形式（比如这种写法：model="qwen-plus"，就是关键字参数），顺序可打乱，可读性更好
-# 注意：下面未先 load_dotenv()，若系统环境里没有 aliQwen-api，api_key 可能为 None，会报错
 model = init_chat_model(
     model="qwen-plus",  # 模型 ID，与平台模型广场一致
     model_provider="openai",  # 表示使用「OpenAI 兼容」的 API（阿里百炼、通义等均兼容，阿里百炼不支持直接调用，需要通过OpenAI 兼容的 API 调用）
@@ -29,15 +32,14 @@ model = init_chat_model(
 # 调用并直接取回复正文：invoke 返回消息对象，.content 为文本内容
 print(model.invoke("你是谁").content)
 
+print("*" * 50)
+
 # 若不写 model_provider="openai"，会报错：
 # ValueError: Unable to infer model provider for model='qwen-plus', please specify model_provider directly.
 # 原因：qwen-plus 等名称无法自动推断厂商，必须显式指定。
 # 对比 0.3：0.3 用 ChatOpenAI 类，类名已表示「OpenAI 兼容」，故无需 model_provider。
 
-print("*" * 50)
-
 # 同一个系统里面，可以同时存在多个模型，比如
-load_dotenv(encoding="utf-8")
 model2 = init_chat_model(
     model="deepseek-v3",
     model_provider="openai",
@@ -46,3 +48,10 @@ model2 = init_chat_model(
 )
 
 print(model2.invoke("你是谁").content)
+
+"""
+【输出示例】
+你好！我是通义千问（Qwen），阿里巴巴集团旗下的超大规模语言模型。我能够回答问题、创作文字，比如写故事、写公文、写邮件、写剧本、逻辑推理、编程等等，还能表达观点，玩游戏等。如果你有任何问题或需要帮助，欢迎随时告诉我！😊
+**************************************************
+我是DeepSeek Chat，由深度求索公司打造的AI助手！🤖✨ 我可以帮你回答问题、提供建议、聊天解闷，还能处理各种文本和文件信息。有什么我可以帮你的吗？😊
+"""

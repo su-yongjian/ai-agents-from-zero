@@ -70,7 +70,7 @@ if __name__ == "__main__":
     run_demo()
 
 """
-【输出实例】
+【输出示例】
 4. operator.mul Reducer（数值相乘）演示:
 初始状态: {'factor': 5.0}
 执行结果: {'factor': 0.0}

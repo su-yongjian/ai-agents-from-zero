@@ -55,7 +55,7 @@ if __name__ == "__main__":
     run_demo()
 
 """
-【输出实例】
+【输出示例】
 使用自定义reducer解决乘法问题:
 current:0.0
 update:5.0

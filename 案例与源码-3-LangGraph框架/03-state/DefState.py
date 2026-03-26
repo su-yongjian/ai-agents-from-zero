@@ -43,6 +43,6 @@ result = app.invoke(initial_state)
 print("执行结果：", result)
 
 """
-【输出实例】
+【输出示例】
 执行结果： {'user_input': 'a', 'response': 'resp', 'count': 25, 'process_data': {'k1': 'v1'}}
 """

@@ -74,7 +74,7 @@ print(app.get_graph().draw_mermaid())
 
 
 """
-【输出实例】
+【输出示例】
 input_node 节点执行 state.get('process_data'): {'name': '测试数据', 'value': 123456}
 process_node 节点执行 state.get('process_data'): {'input': 'input_value'}
 output_node 节点执行 state.get('process_data'): {'process': 'process_value9527'}
@@ -127,4 +127,3 @@ graph TD;
         classDef first fill-opacity:0
         classDef last fill:#bfb6fc
 """
-

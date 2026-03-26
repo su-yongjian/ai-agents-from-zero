@@ -60,7 +60,7 @@ result = graph.invoke(initial_state)
 print(f"最后的结果是:{result}")
 
 """
-【输出实例】
+【输出示例】
 {('process', '__end__'), ('__start__', 'input'), ('input', 'process')}
 {'input': StateNodeSpec(runnable=input(tags=None, recurse=True, explode_args=False, func_accepts={}), metadata=None, input_schema=<class '__main__.GraphState'>, retry_policy=None, cache_policy=None, ends=(), defer=False), 'process': StateNodeSpec(runnable=process(tags=None, recurse=True, explode_args=False, func_accepts={}), metadata=None, input_schema=<class '__main__.GraphState'>, retry_policy=RetryPolicy(initial_interval=1, backoff_factor=2, max_interval=128.0, max_attempts=3, jitter=True, retry_on=[<class 'requests.exceptions.RequestException'>, <class 'requests.exceptions.Timeout'>]), cache_policy=None, ends=(), defer=False)}
 +-----------+  
