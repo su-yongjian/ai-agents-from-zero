@@ -72,6 +72,3 @@ content='LangChain 是一个开源框架，用于构建基于大语言模型（L
 LangChain 是一个开源框架，用于构建基于大语言模型（LLM）的应用程序。它提供模块化组件（如链、代理、记忆、工具等），支持提示工程、数据检索增强（RAG）、多步推理和外部工具调用，简化 LLM 应用的开发与集成。
 2026-02-27 14:32:54.777 | INFO     | __main__:<module>:57 -
 """
-
-# 2026-02-27 14:32:54.777 | INFO     | __main__:<module>:58 - 结果类型: <class 'langchain_core.messages.base.TextAccessor'>
-

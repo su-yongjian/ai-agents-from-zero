@@ -9,7 +9,7 @@
   - 把这段说明拼进 Prompt（如放在 {format_instructions} 占位符），模型更容易输出可被解析的 JSON，减少格式错误。
 
 二、本案例做法：用 Pydantic 模型 Person 定义「时间、人物、事件」结构 → 用 JsonOutputParser(pydantic_object=Person) 创建解析器 → 用 parser.get_format_instructions() 得到说明 → 把说明拼进 human 消息，再调用模型与解析器。
-  - 这样模型会按 Person 的字段来生成 JSON，解析后得到符合 Person 结构的数据（或解析失败时抛错）。
+  - 模型会按 Person 的 schema 生成 JSON；当前 JsonOutputParser 解析结果为 dict（若要 Pydantic 实例与完整校验，见 PydanticOutputParser / StructuredOutput_Pydantic.py）。
 """
 
 from langchain_core.output_parsers import JsonOutputParser
@@ -31,7 +31,7 @@ class Person(BaseModel):
     event: str = Field(description="事件")
 
 
-# 创建 JSON 解析器，并绑定 Pydantic 模型：解析结果会按 Person 校验与转换
+# 绑定 Pydantic 模型：主要驱动 get_format_instructions() 的 schema；invoke 后得到 dict
 parser = JsonOutputParser(pydantic_object=Person)
 
 # 获取「格式说明」：描述 Person 各字段，便于拼进提示词让模型按此输出
@@ -74,6 +74,4 @@ content='{"time": "2024年3月28日", "person": "雷军", "event": "小米正式
 2026-02-27 15:01:47.540 | INFO     | __main__:<module>:61 - 解析后的结构化结果:
 {'time': '2024年3月28日', 'person': '雷军', 'event': '小米正式发布首款高性能纯电动轿车SU7，百公里加速2.78秒，续航达800公里，开启预订后24小时订单突破10万辆'}
 2026-02-27 15:01:47.540 | INFO     | __main__:<module>:62 - 结果类型: <class 'dict'>
-(.venv) tools@ToolsMacBook-Pro 05_parser %
 """
-
