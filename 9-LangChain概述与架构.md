@@ -53,7 +53,7 @@ LangChain 在 GitHub 上的热度变化如下图所示：
 - **GitHub 主仓库**：https://github.com/langchain-ai/langchain
 - **API 文档**：https://reference.langchain.com/python/langchain/
 
-### 1.2 LangChain 是为了解决什么问题
+### 1.2 为什么需要 LangChain
 
 如果你只是偶尔调一下模型 API，直接用 OpenAI、阿里百炼、DeepSeek、智谱等厂商 SDK 完全没问题；但一旦进入真实项目，单纯“把一个字符串发给模型，再拿回一段文本”的开发方式很快就会暴露出一批工程问题。
 
