@@ -11,8 +11,6 @@
 
 # ========== 1. 导入依赖 ==========
 import os
-from pathlib import Path
-
 from dotenv import load_dotenv
 from langchain.chat_models import (
     init_chat_model,

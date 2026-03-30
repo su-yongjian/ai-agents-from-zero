@@ -1,12 +1,16 @@
 """
 【案例】标准/工程化写法：用 LangChain 调用大模型（invoke + stream）
 
-对应教程章节：第 10 章 - LangChain 快速上手与 HelloWorld → 7、实战：企业级封装与流式输出
+对应教程章节：第 10 章 - LangChain 快速上手与 HelloWorld → 6、实战：企业级封装与流式输出
 
 本案例演示从零到一的完整工程化写法：
 - 用通义/阿里云兼容接口通过 LangChain 发问，掌握 invoke（一次性返回）与 stream（流式返回）两种调用方式。
 - 将「初始化模型」封装成函数便于复用；用 .env 存密钥、logging 打日志、try/except 区分错误，符合正式项目习惯。
 - 运行前在项目根目录配置 .env 中的 QWEN_API_KEY，执行：python 案例与源码-2-LangChain框架/01-helloworld/StandardDesc.py
+
+补充说明：
+- 为了让工程化示例更直观，这里继续使用很多同学在旧资料里更常见的 `ChatOpenAI` 写法；若你想看 1.x 统一入口，请对照同目录下的 `LangChainV1.0.py`。
+- 当前脚本使用的是“阿里百炼兼容端点 + DeepSeek 模型”这组组合，重点仍然是学习工程化写法，而不是限定某一个具体模型。
 """
 
 # ========== 1. 导入与环境 ==========
@@ -59,7 +63,7 @@ def init_llm_client() -> ChatOpenAI:
 
     # 创建客户端：指定用哪个模型、密钥、接口地址，以及「回复风格」相关参数。
     llm = ChatOpenAI(
-        model="deepseek-v3.2",  # 模型名称（这里用的是 DeepSeek，走阿里云兼容接口）
+        model="deepseek-v3.2",  # 模型名称（这里演示的是“DeepSeek 模型 + 阿里百炼兼容接口”）
         api_key=api_key,
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",  # 阿里云提供的兼容 OpenAI 的地址
         temperature=0.7,  # 控制「随机程度」：0 更确定、重复性高；1 更随机、更有创意。一般 0.5～0.8 即可。

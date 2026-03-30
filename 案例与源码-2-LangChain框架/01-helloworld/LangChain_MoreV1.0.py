@@ -7,6 +7,10 @@
 - 同一脚本可初始化多个聊天模型实例（不同 model、base_url、api_key），按场景选用或对比调用。
 - 每个实例用 init_chat_model 单独配置，变量名区分（如 llm_qwen、llm_deepseek）便于后续复用。
 - 通义用 model_provider="openai" + 阿里百炼 base_url；DeepSeek 可用 model_provider="deepseek" 或兼容接口。
+
+补充说明：
+- 运行本脚本前，建议已经完成本章前面的单模型 HelloWorld，否则更容易被“多变量、多平台”搞乱。
+- 如果你使用的是 `model_provider="deepseek"` 这种官方 provider 写法，请确保已经安装 `langchain-deepseek`。
 """
 
 # ========== 1. 导入依赖与环境 ==========
@@ -35,7 +39,7 @@ print("*" * 70)
 # 显式写 model_provider="deepseek" 更稳妥。若接其他厂商（如 OpenAI 兼容），则需写 model_provider="openai"。
 llm_deepseek = init_chat_model(
     model="deepseek-chat",  # 对应 DeepSeek 非思考模式，思考模式常用 deepseek-reasoner
-    model_provider="deepseek",
+    model_provider="deepseek",  # 这里走的是 DeepSeek 官方 provider，而不是阿里百炼兼容端点
     api_key=os.getenv("deepseek-api"),  # .env 中配置 DeepSeek API Key
     base_url="https://api.deepseek.com",
 )
