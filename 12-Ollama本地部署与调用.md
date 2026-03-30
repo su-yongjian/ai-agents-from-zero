@@ -4,11 +4,13 @@
 
 **本章课程目标：**
 
-- 理解 **Ollama** 是什么、能做什么，以及如何获取程序与模型。
-- 掌握 Ollama 的**安装与配置**（含自定义路径、模型存储目录）、**常用命令**及**安装与验证模型**的步骤。
-- 学会使用 **LangChain**（`langchain-ollama` 的 `ChatOllama`）调用本地 Ollama 服务，无需 API Key，适合本地开发与离线使用。本章是 [第 11 章 Model I/O](11-Model-I-O与模型接入.md) 中「模型」一环的**本地接入方式**，与云端 API 互为补充。
+- 理解 **Ollama** 是什么、解决什么问题，以及它在整套 LangChain / Agent 学习路线里的位置。
+- 掌握 Ollama 的**安装、模型目录配置、常用命令、模型拉取与验证**，并建立“本地模型运行”这条完整思路。
+- 学会使用 **LangChain** 里的 `ChatOllama` 调用本机 Ollama 服务，理解它与 [第 11 章 Model I/O 与模型接入](11-Model-I-O与模型接入.md) 中云端模型调用的异同。
 
-**前置知识建议：** 已学习 [第 9 章 LangChain 概述与架构](9-LangChain概述与架构.md)、[第 10 章 快速上手与 HelloWorld](10-LangChain快速上手与HelloWorld.md)、[第 11 章 Model I/O 与模型接入](11-Model-I-O与模型接入.md)，了解 LangChain 的定位与模型调用方式。
+**前置知识建议：** 已学习 [第 9 章 LangChain 概述与架构](9-LangChain概述与架构.md)、[第 10 章 LangChain 快速上手与 HelloWorld](10-LangChain快速上手与HelloWorld.md)、[第 11 章 Model I/O 与模型接入](11-Model-I-O与模型接入.md)，已经对“模型接入”“调用三件套”“`invoke()` 返回 `AIMessage`”这些概念有初步认知。
+
+**学习建议：** 本章建议按 **“Ollama 是什么 → 为什么要本地部署 → 安装与模型目录 → 常用命令 → 拉取并验证模型 → LangChain 对接”** 的顺序学习。不要一上来就只记命令，而是先搞懂 Ollama 在整个 AI 应用开发中扮演什么角色。需要说明的是：**截至 2026 年 3 月 30 日，本章以 Ollama 官方文档、LangChain 官方 ChatOllama 集成文档和本项目当前案例为主线**，同时保留课程中已有的案例与图片，帮助你从“本地跑模型”顺利过渡到“在代码里调用本地模型”。
 
 ---
 
@@ -16,26 +18,25 @@
 
 ### 1.1 定义
 
-**Ollama** 是一个**开源**的本地大模型运行环境：让你**在自己电脑上跑大模型**的一个免费、开源小工具。装好之后，输入一条命令就能下载并运行各种开源模型（比如 LLaMA、Qwen、DeepSeek），不用自己折腾显卡、环境，它会把模型和配置都打包好。
+**Ollama** 是一个用于**在本地运行开源大模型**的工具。你可以把它理解成：**帮你把模型下载、管理、加载、运行、暴露 API 这几件事封装起来的本地大模型运行环境。**
 
-![Ollama 产品介绍：本地运行大模型](images/12/12-1-1-1.png)
+一句话总结：
 
-**它解决什么问题**
+> **Ollama = 让你用很少的命令，在自己电脑上把开源大模型跑起来。**
 
-- 用少量命令（如 `ollama run 模型名`）即可**下载并运行**多种开源权重（常见为 **LLaMA 系**及兼容生态下的 **Qwen、DeepSeek** 等），自动处理本地服务与默认配置。
-- 对学习者、原型验证、**离线或隐私敏感**场景很友好：数据不出本机，也无需云端 API Key。
-- 与 **LangChain**（`langchain-ollama`）、TaskWeaver 等框架**集成成熟**，可像调用普通聊天模型一样对接本地 Ollama。
+安装好之后，你通常只需要像下面这样输入一条命令：
 
-**需要有的预期**
+```bash
+ollama run qwen:4b
+```
 
-- **定位**：更偏**本地开发、教学与快速试验**，不是大规模生产推理的唯一选型。
-- **生产环境**：高并发、极致吞吐或企业级部署时，往往会采用 **vLLM**、TGI 等专用推理框架；本章聚焦 Ollama 的「本机跑通 + 与 LangChain 对接」。
+如果本地还没有这个模型，Ollama 会先下载；下载完成后，它会直接启动并进入交互模式。从初学者视角看，这比自己去处理模型权重、推理框架、启动服务、配置推理端口，要简单得多。
 
-**一句话**：在自己电脑上装一个 Ollama，就能用简单命令把开源大模型跑起来，适合入门和本地项目；和 [第 11 章](11-Model-I-O与模型接入.md) 里的云端 API 调用是同一类「模型接入」，只是端点换成本地。
+![Ollama 官方标志：羊驼线稿风格图标（品牌识别，常见于安装包与文档）](images/12/12-1-1-1.png)
 
 **官方文档与资源：**
 
-- **Ollama 官网**：https://ollama.com（入口与文档导航）
+- **Ollama 官网**：https://ollama.com （入口与文档导航）
 - **安装包下载**：https://ollama.com/download
 - **模型搜索 / 模型库**：https://ollama.com/search
 - **源码仓库（GitHub）**：https://github.com/ollama/ollama
@@ -46,18 +47,148 @@
   - https://docs.langchain.com/oss/python/integrations/chat/ollama （英文）
   - https://docs.langchain.org.cn/oss/python/integrations/chat/ollama （中文）
 
-### 1.2 下载方式
+### 1.2 Ollama 解决了什么问题
 
-- **下载 Ollama 程序**
-  - 官网 / 下载页：https://ollama.com 、https://ollama.com/download ，支持 Windows、macOS、Linux；也可从 **GitHub** 了解版本与源码：https://github.com/ollama/ollama 。
-  - Docker：用容器部署时到 **Docker Hub** 拉 Ollama 镜像即可。
+如果你已经学过前两章的云端模型调用，应该已经知道：通过阿里百炼、DeepSeek、OpenAI 这类平台调用模型，优点是简单、稳定、开箱即用；但它也有明显局限：
 
-- **下载模型**
-  - **Ollama Hub / 模型库**：在官网或命令行里选模型、下模型（如 `llama3`、`qwen:4b`、`deepseek-r1:14b`），执行 `ollama run 模型名` 时会自动从这里拉取。
+- 需要联网
+- 需要 API Key
+- 会产生调用费用
+- 某些场景下，数据不能离开本地机器或企业内网
 
-### 1.3 运行环境与硬件建议
+Ollama 对应的，正好是另一条路：**把模型放到你自己的电脑上跑。**
 
-**说明**：Ollama 能不能流畅跑起来，主要取决于你选的**模型有多大**（参数量、量化方式等）。下面是一般性的经验参考，**以本机实际可用内存、官方文档与模型页说明为准**。
+因此它最直接解决的是：
+
+- **想离线使用模型**
+- **想减少对云端 API 的依赖**
+- **想做本地开发、本地测试**
+- **想让敏感数据尽量不出本机**
+- **想学习开源模型和本地推理的基本流程**
+
+你可以把它和云端 API 调用理解成两种“模型接入方式”：
+
+- **云端 API**：模型在别人服务器上，你通过网络调用
+- **Ollama 本地运行**：模型在你机器上，你通过本机服务调用
+
+### 1.3 Ollama 和云端 API 的区别
+
+这部分一定要讲清楚，因为很多同学学 Ollama 时会下意识地把它当成“另一个模型平台”，其实它更像是**本地运行层**。
+
+| 维度                 | 云端 API（如阿里百炼、DeepSeek）     | Ollama                                                    |
+| -------------------- | ------------------------------------ | --------------------------------------------------------- |
+| **模型在哪**         | 厂商服务器上                         | 你自己的电脑上                                            |
+| **是否需要 API Key** | 通常需要                             | 本地运行通常不需要                                        |
+| **是否依赖联网**     | 是                                   | 本地调用可不依赖外网，但首次拉模型一般需要联网            |
+| **成本**             | 按调用计费                           | 模型本地推理不按 token 计费，但会消耗本机算力、内存、磁盘 |
+| **适合什么**         | 快速接入、稳定服务、无需本地硬件负担 | 本地开发、隐私敏感场景、离线测试、学习开源模型            |
+
+从真实项目角度看，这两者不是非此即彼，而是经常配合使用：
+
+- 本地开发阶段，用 Ollama 跑小模型验证逻辑
+- 上线阶段，再切换到更强、更稳定的云端模型
+- 或者企业内网环境中，本地 / 私有化模型与云端模型混合使用
+
+### 1.4 使用场景
+
+从项目角度给一个比较稳的建议：
+
+- **本地开发 / 课程练习**：非常适合用 Ollama
+- **企业内网原型 / 隐私敏感验证**：也很适合
+- **对性能、稳定性、并发要求很高的正式推理服务**：要根据业务再评估是否继续用 Ollama，还是切向更专业的推理部署方案
+
+但也要有合理预期：
+
+- 它不等于“任何模型都能在你的电脑上丝滑跑起来”
+- 它也不等于“本地跑一定比云端便宜或更强”
+- 它更像一个**本地推理入口**，适合开发、实验、教学和一些轻中量应用
+
+### 1.5 优势与局限
+
+学习时，最好同时看到它的优点和边界。
+
+**优势：**
+
+- 安装和使用门槛低
+- 命令简单，适合初学者
+- 模型管理方便，`pull / run / list / rm` 一套命令就够用
+- 本地调用通常不需要 API Key
+- 与 LangChain 的 `ChatOllama` 集成成熟
+
+**局限：**
+
+- 是否跑得动，强烈依赖你的机器配置
+- 模型体积大，会占内存和磁盘
+- 本地模型能力通常取决于你能跑多大的模型
+- 高并发、企业级推理服务场景，不一定优先选 Ollama
+
+所以，对这章最准确的定位应该是：
+
+> **Ollama 很适合学习本地模型、开发调试和轻量本地服务，但不是所有生产场景的唯一方案。**
+
+---
+
+## 2、安装与配置
+
+### 2.1 安装前先知道两件事
+
+在真正安装之前，初学者最容易忽略两件事：
+
+1. **Ollama 程序本身不大，真正占空间的是模型**
+2. **你未来可能会下载多个模型，因此模型目录最好一开始就想清楚**
+
+这也是为什么很多教程安装完很快就会讲 `OLLAMA_MODELS`。  
+因为模型文件一旦大起来，很容易把系统盘吃满。
+
+### 2.2 下载方式
+
+你可以从 Ollama 官网下载对应平台版本：
+
+- **下载总入口**：https://ollama.com/download
+- **Windows 下载页**：https://ollama.com/download/windows
+- **macOS 下载页**：https://ollama.com/download/mac
+- **Linux 下载页**：https://ollama.com/download/linux
+
+截至 2026 年 3 月 30 日，Linux 下载页仍提供非常常见的一键安装方式：
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+Windows 和 macOS 则更常见的是图形安装包。  
+另外，LangChain 官方 ChatOllama 文档还提到：
+
+- macOS 用户也可以通过 Homebrew 安装：`brew install ollama`
+- 并通过 `brew services start ollama` 启动服务
+
+所以从安装形式上，你可以先这样理解：
+
+- **Windows**：安装包最常见
+- **macOS**：安装包或 Homebrew
+- **Linux**：安装脚本 / 手动安装 / systemd 服务
+
+### 2.3 运行环境与硬件预期
+
+这一节一定要说清楚，因为“能不能运行”不只是软件安装问题，更是硬件问题。
+
+Ollama 跑得是否顺畅，主要受三件事影响：
+
+- **模型大小**
+- **系统内存 / 显存**
+- **是否有可用 GPU 加速**
+
+你可以先记一个粗略但实用的结论：
+
+- **模型越大，占用的内存 / 显存越高**
+- **小模型更适合本地学习**
+- **不是所有电脑都适合一上来就跑 14B、32B、70B 级模型**
+
+从经验上看，初学者更适合先从体量较小的模型开始，例如：
+
+- `qwen:4b`
+- 类似 7B / 8B 量级模型
+
+而不是一开始就追求更大的模型。这也是为什么本项目案例里使用了更适合本地体验的标签，例如 `qwen:4b`。
 
 **1）内存（RAM）**
 
@@ -81,63 +212,140 @@
 
 Ollama **可以只用 CPU 跑**。在 **NVIDIA GPU** 且驱动/CUDA 环境正常时，通常会走 GPU 加速，速度一般明显好于纯 CPU；在 **Apple Silicon（M 系列）** 上，Ollama 通常会利用 **Metal** 做加速，同样不必手动配置训练框架。具体是否走加速、占用哪块设备，以本机运行日志与活动监视器为准。
 
----
+### 2.4 自定义安装路径与模型目录
 
-## 2、安装与配置
+如果你希望把 Ollama 或模型文件安装到非默认路径，例如 D 盘、大容量盘或专门的数据盘，那么建议尽早规划模型目录。
 
-### 2.1 自定义 Ollama 安装路径与模型存储目录
+**Windows 下尤其建议不要把大模型长期堆在系统盘。**
 
-若希望将 Ollama 或模型文件安装到非默认目录（例如 D 盘或大容量磁盘），可先自定义安装路径，再设置**模型存储目录**。**Windows 下建议不要装到 C 盘**，以免程序与模型占满系统盘；安装时或安装前将安装路径与模型目录设到 D 盘等其他盘符即可。
+你可以先准备一个目录，例如：
 
-<img src="images/12/12-2-1-1.gif" style="zoom:50%;" alt="自定义 Ollama 安装路径的配置步骤"/>
+```text
+D:\devSoft\Ollama\models
+```
 
-### 2.2 设置模型存储目录（环境变量）
+然后再通过环境变量或图形设置告诉 Ollama：以后模型存这里。
 
-手动创建用于存放模型的目录（如 `D:\devSoft\Ollama\models`），然后新建系统环境变量：
+<img src="images/12/12-2-4-1.gif" style="zoom:50%;" alt="Windows 安装向导中自定义 Ollama 程序安装路径的操作步骤（动图）"/>
+
+### 2.5 修改模型存储目录
+
+如果你想把模型存到默认目录之外，可以设置环境变量：
 
 - **变量名**：`OLLAMA_MODELS`
-- **变量值**：`D:\devSoft\Ollama\models`（按你的实际路径填写）
+- **变量值**：你希望存放模型的目录路径
 
-这样 Ollama 拉取的模型会保存到该目录，便于管理和迁移。
+例如：
 
-<img src="images/12/12-2-2-1.jpeg" style="zoom:50%;" alt="Windows 系统环境变量中新建 OLLAMA_MODELS 并指向自定义 models 目录"/>
+```text
+OLLAMA_MODELS=D:\devSoft\Ollama\models
+```
 
-> **图示说明**：在「系统属性 → 环境变量」中为 `OLLAMA_MODELS` 赋值后，新开的终端里 Ollama 会把下载的模型存到该路径。
+<img src="images/12/12-2-5-1.jpeg" style="zoom:50%;" alt="Windows「环境变量」对话框中新建用户变量 OLLAMA_MODELS 并指向自定义 models 目录"/>
 
-### 2.3 复制或迁移已有模型目录
+根据 Ollama 官方 FAQ，默认模型目录通常是：
 
-若之前已在其他位置下载过模型，可将整个模型目录复制到上述 `OLLAMA_MODELS` 路径下，避免重复下载。
+- **macOS**：`~/.ollama/models`
+- **Linux**：`/usr/share/ollama/.ollama/models`
+- **Windows**：`C:\Users\%username%\.ollama\models`
 
-<img src="images/12/12-2-3-1.jpeg" style="zoom:50%;" alt="将已有模型目录复制到 OLLAMA_MODELS 路径"/>
+如果你要改路径，官方同样建议用 `OLLAMA_MODELS`。另外要注意：
 
-### 2.4 图形界面修改模型目录
+- **Windows**：Ollama 会继承系统 / 用户环境变量
+- **Linux（标准安装）**：如果使用 systemd 服务，通常要通过 systemd 配置环境变量
+- **macOS（应用形式运行）**：官方 FAQ 推荐使用 `launchctl setenv`
 
-部分 **Ollama 桌面客户端**提供 **Settings（设置）**，可在界面里把 **Models / Model location（模型存放位置）** 指到自定义文件夹（与 §2.2 的 `OLLAMA_MODELS` 目的一样：把大文件放到空间更大的盘）。菜单名称可能随版本微调，以你本机为准。
+这些平台差异在 Ollama 官方 FAQ 中都有说明：
 
-<img src="images/12/12-2-5-1.png" style="zoom:50%;" alt="Ollama 桌面端打开 Settings 设置入口"/>
+- https://docs.ollama.com/faq
 
-<img src="images/12/12-2-5-2.png" style="zoom:50%;" alt="在设置中将 Model location 切换为课程或自定义的 models 文件夹路径"/>
+### 2.6 迁移或复用已有模型目录
 
-改完后建议**重启 Ollama**或新开终端，用 `ollama list` 确认模型是否在预期目录下被识别。
+如果你之前已经在其他目录下载过模型，可以直接把已有模型目录迁移过去，避免重复下载。
+
+<img src="images/12/12-2-6-1.jpeg" style="zoom:50%;" alt="将已有 blobs、manifests 等模型目录内容复制到 OLLAMA_MODELS 指定路径以复用下载"/>
+
+这在实际开发里非常有用，比如：
+
+- 换电脑盘符
+- 重装系统后恢复模型
+- 在多个课程目录之间复用同一批模型
+
+### 2.7 图形界面修改模型目录
+
+部分 Ollama 桌面应用版本支持通过设置界面修改模型存储位置。如果你使用的是桌面客户端，可以在设置中查看是否存在 **Model location** 或类似选项。
+
+<img src="images/12/12-2-7-1.png" style="zoom:50%;" alt="Ollama 桌面客户端菜单中打开 Settings（设置）的入口位置"/>
+
+<img src="images/12/12-2-7-2.png" style="zoom:40%;" alt="在 Settings 中将 Model location 改为课程资料或自定义的 models 文件夹"/>
+
+改完后，建议：
+
+1. 重启 Ollama
+2. 新开终端
+3. 运行 `ollama list` 确认模型是否被正确识别
+
+### 2.8 各平台环境变量设置差异
+
+这部分对初学者很重要，因为很多“明明改了路径但不生效”的问题，本质上就是环境变量设置方式不对。
+
+根据 Ollama 官方 FAQ：
+
+**Windows：**
+
+1. 先退出 Ollama
+2. 打开系统环境变量设置
+3. 为用户或系统创建 / 修改 `OLLAMA_MODELS`
+4. 保存后重新启动 Ollama
+
+**macOS：**
+
+如果 Ollama 以应用形式运行，官方更推荐通过 `launchctl` 设置，例如：
+
+```bash
+launchctl setenv OLLAMA_HOST "0.0.0.0:11434"
+```
+
+同理，`OLLAMA_MODELS` 也可用相同方式设置，然后重启应用。
+
+**Linux：**
+
+如果 Ollama 以 systemd 服务运行，官方 FAQ 建议使用：
+
+```bash
+systemctl edit ollama.service
+```
+
+然后在 `[Service]` 下为每个变量增加一行，例如 `Environment="OLLAMA_MODELS=/path/to/models"`（可多条 `Environment=`），最后执行：
+
+```bash
+systemctl daemon-reload
+systemctl restart ollama
+```
+
+所以你可以记住一个实用结论：
+
+> **Windows 改系统环境变量，macOS 应用模式常用 `launchctl`，Linux 服务模式常用 `systemd`。**
 
 ---
 
 ## 3、常用命令
 
-安装完成后，在终端中可使用以下命令（Windows 需在安装后打开新的终端以使环境变量生效）：
+### 3.1 最常用的一组命令
 
-| 命令                                  | 说明                                        |
-| ------------------------------------- | ------------------------------------------- |
-| `ollama pull llama3`                  | 下载指定模型（如 llama3）。                 |
-| `ollama run llama3`                   | 启动并进入该模型的交互对话。                |
-| `ollama list`                         | 列出本机已下载的所有模型。                  |
-| `ollama rm llama3`                    | 删除指定模型以释放磁盘空间。                |
-| `ollama cp llama3 my-llama3`          | 本地复制或重命名模型。                      |
-| `ollama show llama3`                  | 查看模型详细信息（参数、大小等）。          |
-| `ollama create my-model -f Modelfile` | 使用 Modelfile 构建自定义模型。             |
-| `ollama serve`                        | 启动后台服务，供 API 调用（通常自动启动）。 |
-| `ollama ps`                           | 查看当前正在运行的模型进程。                |
-| `ollama stop llama3`                  | 停止正在运行的指定模型。                    |
+安装完成后，你最常用到的其实就下面这些命令：
+
+| 命令                                  | 说明                          |
+| ------------------------------------- | ----------------------------- |
+| `ollama pull llama3`                  | 下载指定模型                  |
+| `ollama run llama3`                   | 运行模型并进入交互对话        |
+| `ollama list`                         | 查看本机已下载模型            |
+| `ollama rm llama3`                    | 删除模型                      |
+| `ollama show llama3`                  | 查看模型详情                  |
+| `ollama ps`                           | 查看当前加载中的模型          |
+| `ollama stop llama3`                  | 停止正在运行的模型            |
+| `ollama serve`                        | 启动 Ollama 本地服务          |
+| `ollama create my-model -f Modelfile` | 基于 Modelfile 创建自定义模型 |
 
 **退出 `ollama run` 交互对话**
 
@@ -146,15 +354,43 @@ Ollama **可以只用 CPU 跑**。在 **NVIDIA GPU** 且驱动/CUDA 环境正常
 - 在对话里输入 `/bye`（Ollama 提供的退出指令）；
 - 或使用快捷键 **Ctrl+D**（向终端发送「结束输入」，在 macOS / Linux 上很常见；Windows 新终端多也支持，若无效可再试 **Ctrl+Z** 后回车，或直接关闭该终端标签页）。
 
+### 3.2 ollama ps 命令说明
+
+这条命令在真实项目里非常实用，因为它不只是告诉你“模型有没有运行”，还经常能帮助你判断：
+
+- 模型是否真的加载了
+- 是在 CPU 还是 GPU 上运行
+- 当前有哪些模型驻留在内存中
+
+Ollama 官方 FAQ 里也明确提到，`ollama ps` 可以帮助你看模型是否加载到了 GPU：
+
+- `100% GPU`
+- `100% CPU`
+- 或 CPU / GPU 混合比例
+
+这对排查“为什么本地这么慢”特别有帮助。
+
+### 3.3 create 和 Modelfile 是什么
+
+这属于进阶知识，但建议你先知道。Ollama 支持通过 **Modelfile** 创建自定义模型。你可以把 Modelfile 理解为：
+
+> **Ollama 中“如何基于一个已有模型，定义系统提示、参数、模板等规则”的配置蓝图。**
+
+官方文档：
+
+- **Modelfile Reference**：https://docs.ollama.com/modelfile
+
+本章不会展开自定义模型构建细节，但你至少要知道：`ollama create my-model -f Modelfile` **不是**重新训练模型，而更像是**基于已有模型做运行时封装**（系统提示、参数、模板等）。
+
 ---
 
 ## 4、安装与验证模型
 
 ### 4.1 验证 Ollama 是否安装成功
 
-建议做两件事：**能打出版本号**（说明命令已装进 PATH），**默认端口 11434 在监听**（说明后台服务起来了）。下面以 **Windows 命令提示符 / PowerShell** 为例（与常见安装截图一致）；macOS / Linux 用文中对应命令即可。
+建议安装完成后，先做两个最基础的验证：1. 命令是否可用；2. 本地服务是否真的在监听
 
-**1）看版本号**
+#### 4.1.1 看版本号
 
 在终端执行：
 
@@ -162,132 +398,233 @@ Ollama **可以只用 CPU 跑**。在 **NVIDIA GPU** 且驱动/CUDA 环境正常
 ollama --version
 ```
 
-若安装成功且环境变量生效，会看到类似输出（具体版本号随你安装的版本变化）：
+如果命令可用，会输出类似：
 
 ```text
-ollama version is 0.5.11
+ollama version is 0.x.x
 ```
 
-能出现 `ollama version is …` 就表示本机已经能调用 `ollama` 命令。
+这至少说明两件事：
 
-**2）看服务是否在监听 11434**
+- Ollama 已经安装
+- 终端里能找到 `ollama` 命令
 
-Ollama 默认在本机 **11434** 端口提供 HTTP 服务。Windows 下可执行：
+#### 4.1.2 看默认端口是否监听
+
+Ollama 本地 API 默认端口是 **11434**。  
+如果服务正常启动，通常会在这个端口监听。
+
+Windows 下常见验证方式：
 
 ```bash
 netstat -ano | findstr 11434
 ```
 
-若服务正常，输出里通常会出现一行类似（最后一列为进程 PID，与你机器上实际值可能不同）：
+如果看到类似：
 
 ```text
-TCP    127.0.0.1:11434        0.0.0.0:0              LISTENING       13728
+TCP    127.0.0.1:11434        0.0.0.0:0              LISTENING
 ```
 
-含义简述：**127.0.0.1:11434** 表示在本机回环地址上监听；**LISTENING** 表示端口已打开、正在等待连接，说明 Ollama 服务已在跑。
+说明 Ollama 服务已经在本机监听。
 
-**其它系统（命令速查）**
+根据 Ollama 官方 API 文档，本地 API 默认地址是：
 
-- macOS / Linux：优先用 `lsof -i :11434`；或 `netstat -an | grep 11434`（macOS）、`netstat -tlnp | grep 11434`（Linux，部分系统需 root 才显示进程）。
+```text
+http://localhost:11434/api
+```
 
-> **lsof 和 netstat 的区别**：**lsof**（list open files）在 Unix/macOS 里可列出占用端口的**进程**（PID、进程名），适合回答「谁在用 11434」。**netstat** 偏重**连接状态**（如 LISTEN、ESTABLISHED）；在 Windows 上配合 `findstr` 筛端口很常见。查 Ollama 是否在跑时，任选一方式，能确认 **11434** 处于监听即可。
+但要注意一点：
 
-### 4.2 以通义千问、DeepSeek 为例运行模型
+- **直接调 Ollama 原生 API** 时，通常会看到 `/api/...`
+- **LangChain 的 `ChatOllama`** 一般只需要写根地址，例如 `http://localhost:11434`
 
-执行 `ollama run <模型名>` 时，**若本地还没有该模型，Ollama 会先自动拉取（pull）再启动对话**，无需先单独执行 `ollama pull`；若已拉取过则直接进入对话。
+这个区别很关键，后面写 LangChain 代码时会再次用到。
 
-- **浏览可用模型**：在浏览器打开 https://ollama.com/search ，可查模型名、标签与体积说明；命令行里的名字须与列表中一致。
-- **千问**（示例 4B 尺寸）：
-  ```bash
-  ollama run qwen:4b
-  ```
-- **千问**（示例 8B 量级，标签以官网为准，如提供 `qwen3:8b`）：
-  ```bash
-  ollama run qwen3:8b
-  ```
-- **DeepSeek R1**（示例 14B）：
-  ```bash
-  ollama run deepseek-r1:14b
-  ```
+默认情况下，Ollama 只监听 **127.0.0.1**（本机回环）。若需要局域网内其他设备访问本机 Ollama，需在启动前通过环境变量 **OLLAMA_HOST** 绑定地址（如 `0.0.0.0:11434`），具体写法见 [Ollama FAQ](https://docs.ollama.com/faq) 中 “How do I configure Ollama server?” 一节。
 
-**使用课程资料中的离线模型**：若资料里已提供整包 **models** 目录或模型文件，可先在 §2.2 设置 `OLLAMA_MODELS` 或在 §2.5 桌面端把 **Model location** 指到该文件夹，再执行 `ollama list` / `ollama run <名称>`，可减少在线下载或避免重复拉取。
+### 4.2 模型从哪里找
 
-进入对话后，可直接输入问题与模型交互；**退出交互界面**见上文 **§3、常用命令**（`/bye`、Ctrl+D 等）。
+如果你想知道 Ollama 里有哪些模型，最直接的方式是去官方模型库：
+
+- **模型搜索 / 模型库**：https://ollama.com/search
+
+这里你可以看到：
+
+- 模型名称
+- 标签（tag）
+- 参数规模
+- 是否支持 vision / tools / thinking 等特性
+
+这一点非常重要，因为 Ollama 的模型名和标签必须写对。  
+比如：
+
+- `qwen:4b`
+- `qwen3:8b`
+- `deepseek-r1:14b`
+
+这些标签都是“模型名 + 规格”。
+
+### 4.3 以通义千问为例运行模型
+
+执行 `ollama run <模型名>` 时，**若本地还没有该模型，Ollama 会先自动拉取（pull）再启动对话**，无需先单独执行 `ollama pull`；若已拉取过则直接进入交互模式。下载完成后会进入交互式对话。
+
+常见示例命令：
+
+```bash
+ollama run qwen:4b
+ollama run qwen3:8b
+```
+
+这里要提醒一句：
+
+> **模型标签是否可用，要以当时官网模型库里的实际名称为准。**
+
+不要死记教程里某个标签，最好学会自己去模型库里查。
+
+### 4.4 使用课程资料中的离线模型
+
+如果课程资料或你自己的磁盘里已经有现成的 `models` 目录，也可以直接通过：
+
+- `OLLAMA_MODELS`
+- 或图形界面里的 **Model location**
+
+把 Ollama 指向那个目录，再执行：
+
+```bash
+ollama list
+```
+
+这样往往可以避免重复下载。
+
+### 4.5 如何判断模型有没有真的跑起来
+
+从学习和排障角度，最常用的判断方式有三种：
+
+1. `ollama run <模型名>` 能正常进入对话
+2. `ollama list` 能看到模型已下载
+3. `ollama ps` 能看到模型正在内存中
+
+对于初学者来说，这三条基本足够。
 
 ---
 
-## 5、LangChain 整合 Ollama 调用本地大模型
+## 5、LangChain 整合 Ollama
 
-在本地用 Ollama 跑通模型后，即可在 Python 中用 LangChain 通过 HTTP 调用本地 Ollama 服务，无需 API Key，适合本地开发与调试。
+### 5.1 为什么学会 Ollama 命令后，还要学 LangChain 接入
 
-### 5.1 环境要求与依赖
+因为只会在终端里 `ollama run`，还不等于能把它接到自己的项目中。
 
-- 确保已安装**最新版 Ollama**，并已通过 `ollama run <模型名>` 或后台服务拉取过至少一个模型。
-- 安装 LangChain 的 Ollama 集成包与（可选）官方 Ollama Python 包：
+真正的开发目标通常是：
 
-```bash
-pip install -qU langchain-ollama
-pip install -U ollama
-```
+- 在 Python 代码里调用本地模型
+- 让本地模型也能接 Prompt、Parser、LCEL、Agent
+- 让本地模型和云端模型一样，进入统一的 LangChain 生态
 
-### 5.2 示例代码
+这也是本节的核心目的：
 
-以下使用 `langchain_ollama` 的 `ChatOllama` 连接本机 Ollama（默认 `http://localhost:11434`）。**`model=` 必须与 `ollama list` 中已存在的名称一致**（如 `qwen:4b`、`qwen3:8b` 等，以你本机为准）。
+> **把 Ollama 从“命令行能聊天的工具”升级成“项目里能调用的模型端点”。**
 
-**写法一：消息列表（与 OpenAI 风格一致，便于后续接链）**
+### 5.2 ChatOllama 是什么
 
-多角色、多轮写法见 [第 13 章 提示词与消息模板](13-提示词与消息模板.md)；此处仅演示单条用户消息。
+`ChatOllama` 是 LangChain 中用于连接本地 Ollama 聊天模型的类。你可以把它理解成：
+
+> **本地模型版本的 Chat Model 客户端。**
+
+这意味着，它在使用体验上会和你前面学过的：
+
+- `ChatOpenAI`
+- `init_chat_model(...)`
+
+有很多共通点：
+
+- 都可以 `invoke()`
+- 都会返回 `AIMessage`
+- 都能继续接 Prompt、LCEL、Agent
+
+区别只在于：
+
+- 前面那些大多连接的是云端模型
+- `ChatOllama` 连接的是本机 Ollama 服务
+
+### 5.4 最小用法：直接传字符串
+
+最简单的写法可以这样：
 
 ```python
-# pip install langchain-ollama
-from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
 
-ollama_llm = ChatOllama(model="qwen3:8b")  # 若本机无该标签，可改为 qwen:4b 等
-
-messages = [HumanMessage(content="你好，请介绍一下你自己")]
-resp = ollama_llm.invoke(messages)
-print(resp.content)
-```
-
-**写法二：显式指定 `base_url`（非默认地址、远程 Ollama 或自定义端口时）**
-
-```python
-# pip install langchain-ollama
-from langchain_core.messages import HumanMessage
-from langchain_ollama import ChatOllama
-
-ollama_llm = ChatOllama(
-    model="qwen3:8b",
+model = ChatOllama(
+    model="qwen:4b",
     base_url="http://localhost:11434",
 )
 
+print(model.invoke("什么是 LangChain，100 字以内").content)
+```
+
+这和你在前面章节里学的“字符串 `invoke()`”几乎是一样的，只是端点从云端换成了本地。
+
+### 5.4 消息列表写法：更贴近后续章节
+
+如果你希望和 [第 13 章 提示词与消息模板](13-提示词与消息模板.md) 保持一致，也可以传消息列表：
+
+```python
+from langchain_core.messages import HumanMessage
+from langchain_ollama import ChatOllama
+
+ollama_llm = ChatOllama(model="qwen3:8b")
 messages = [HumanMessage(content="你好，请介绍一下你自己")]
 resp = ollama_llm.invoke(messages)
 print(resp.content)
 ```
 
-**写法三：直接传入字符串（最简）**
+这种写法的价值在于：  
+后面你学 Prompt、Messages、多轮历史、Agent 时，思路是连续的。
 
-与 [第 11 章](11-Model-I-O与模型接入.md) 一致，`invoke("一句话")` 等价于单条用户消息，适合快速试验：
+### 5.5 显式写 base_url 原因
+
+很多人会好奇：为什么有时代码里写 `base_url="http://localhost:11434"`，有时不写？
+
+可以这样理解：
+
+- **不写**：默认走本机默认地址
+- **写了**：更显式、更清楚，也方便你以后切到远程 Ollama 或不同端口
+
+比如：
 
 ```python
-from langchain_ollama import ChatOllama
-
-model = ChatOllama(model="qwen:4b", base_url="http://localhost:11434")
-print(model.invoke("什么是 LangChain，100 字以内").content)
+ChatOllama(
+    model="qwen3:8b",
+    base_url="http://localhost:11434",
+)
 ```
 
-【案例源码】`案例与源码-2-LangChain框架/03-ollama/LangChain_Ollama.py`（字符串 `invoke` 示例）
+这在教学上也更直观，因为你能明确知道自己连的是哪个服务地址。
+
+### 5.6 基本案例
+
+【案例源码】`案例与源码-2-LangChain框架/03-ollama/LangChain_Ollama.py`
 
 [LangChain_Ollama.py](案例与源码-2-LangChain框架/03-ollama/LangChain_Ollama.py ":include :type=code")
+
+这个案例是本章最核心的代码落地点。  
+它对应的是：
+
+- 使用 `ChatOllama`
+- 指向本机 `http://localhost:11434`
+- 直接 `invoke()` 一个问题
+- 观察返回结果
+
+虽然它很短，但意义很大，因为它完成了下面这件事：
+
+> **把 Ollama 从“终端中的本地模型”变成“LangChain 代码中的模型对象”。**
 
 ---
 
 **本章小结：**
 
-- **Ollama** 用于在本地一键运行开源大模型；安装后通过 `ollama pull`、`ollama run` 等命令拉取与运行模型，默认提供本地 API（端口 11434）。
-- **安装与配置**：§2.4 各系统安装（含官网安装包与 Linux `install.sh`）；§2.1～§2.3 自定义路径与 `OLLAMA_MODELS`；§2.5 可选图形界面改 **Model location**；模型列表见 https://ollama.com/search 。
-- **LangChain 整合**：通过 **langchain-ollama** 的 `ChatOllama` 在 LangChain 中调用本地模型，无需 API Key，与 [第 11 章](11-Model-I-O与模型接入.md) 的 `ChatOpenAI` 用法一致，可接入 [提示词](13-提示词与消息模板.md)、[链](15-LCEL与链式调用.md)、[Agent](21-Agent智能体.md) 等组件。
+- **Ollama** 是一个本地开源大模型运行环境，核心价值是让你可以在自己的电脑上下载、管理、运行模型，并通过本地 API 对外提供服务。它和前两章中的云端 API 调用不是替代关系，而是另一条“模型接入路线”：**云端模型在别人服务器上，本地模型在你自己机器上。**
+- 本章最重要的实践线有两条：第一条是 **安装与模型管理**，包括下载 Ollama、规划模型目录、理解 `OLLAMA_MODELS`、掌握 `pull / run / list / rm / ps` 等常用命令；第二条是 **LangChain 接入**，也就是用 `ChatOllama` 把本地模型纳入和云端模型一致的编程方式中，继续使用 `invoke()`、消息列表和 `AIMessage` 这套统一抽象。
+- 对初学者来说，最应该带走的不是死记所有命令，而是建立一个完整认知：**Ollama 负责把模型跑在本地，LangChain 负责把本地模型接进代码和应用流程里。** 学会这件事之后，后面的 Prompt、LCEL、Agent、RAG 都可以继续在本地模型上练习。
 
-**建议下一步：** 学习 [第 13 章 提示词与消息模板](13-提示词与消息模板.md)、[第 14 章 输出解析器](14-输出解析器.md)，与 [第 11 章 Model I/O](11-Model-I-O与模型接入.md) 形成完整的「输入 → 模型 → 输出解析」闭环；再用 [第 15 章 LCEL 与链式调用](15-LCEL与链式调用.md) 将三件套串成链。
+**建议下一步：** 先亲手完成这条最小链路：安装 Ollama → `ollama run qwen:4b` 跑通一次本地模型 → 用 [LangChain_Ollama.py](案例与源码-2-LangChain框架/03-ollama/LangChain_Ollama.py) 在 Python 里调通本机模型。跑通之后，再进入 [第 13 章 提示词与消息模板](13-提示词与消息模板.md)、[第 14 章 输出解析器](14-输出解析器.md)、[第 15 章 LCEL 与链式调用](15-LCEL与链式调用.md)，把本地模型也串进完整的 LangChain 工作流里。
