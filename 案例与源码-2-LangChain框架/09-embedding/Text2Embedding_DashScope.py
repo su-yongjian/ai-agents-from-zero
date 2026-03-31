@@ -1,13 +1,13 @@
 """
 【案例】LangChain DashScope 封装：单条与批量文本向量化
 
-对应教程章节：第 18 章 - 向量数据库与 Embedding 实战 → 4、Embedding 文本向量化
+对应教程章节：第 18 章 - 向量数据库与 Embedding 实战 → 4.5 案例：用 LangChain 的统一接口做单条与批量向量化
 
 知识点速览：
-- LangChain 的 DashScopeEmbeddings 对百炼嵌入做了统一封装，便于在链、检索器等组件中复用。
-- embed_query(text)：对「单条」查询文本向量化，常用于把用户问题转成向量做检索。
-- embed_documents(texts)：对「多条」文本批量向量化，常用于建索引时把文档片段转成向量。
-- 返回为浮点数列表（单条）或列表的列表（多条）；len(result) 即为向量维度。
+- 这是最贴近后续 LangChain 检索器、向量库、RAG 用法的 Embedding 案例，因为它使用的是 LangChain 统一接口。
+- embed_query(text)：更偏“查询阶段”，常用于把用户问题转成向量。
+- embed_documents(texts)：更偏“索引阶段”，常用于把文档片段批量转成向量。
+- 返回值分别是“单个向量”和“向量列表”；向量维度由当前模型决定，建索引和查询时应保持模型一致。
 
 模型文档链接：https://bailian.console.aliyun.com/cn-beijing/?tab=api#/api/?type=model&url=2587654
 """
@@ -27,12 +27,12 @@ embeddings = DashScopeEmbeddings(
 
 text = "This is a test document."
 
-# 单条文本 → 一个向量（列表）
+# 单条文本 → 一个向量（列表）；这类写法更贴近“把用户问题转成查询向量”
 query_result = embeddings.embed_query(text)
 # sep=""：print 多个参数时用空字符串连接，默认是空格；这里让「文本向量长度：」和数字紧挨着输出，中间不留空
 print("文本向量长度：", len(query_result), sep="")
 
-# 多条文本 → 多个向量（列表的列表）
+# 多条文本 → 多个向量（列表的列表）；这类写法更贴近“批量建索引”
 doc_results = embeddings.embed_documents(
     [
         "Hi there!",

@@ -1,23 +1,14 @@
 """
 【案例】将 Document 列表向量化并写入 Redis（langchain_community）
 
-对应教程章节：第 18 章 - 向量数据库与 Embedding 实战 → 6、Embedding 存入向量数据库（Redis）
+对应教程章节：第 18 章 - 向量数据库与 Embedding 实战 → 6.1 案例：把 Document 列表写入 Redis，再用检索器取回结果
 
 知识点速览：
-- 向量数据库用于存储各类数据（文本、图像、视频等）经嵌入模型得到的向量，查询时按相似度返回最接近的几条；Redis（RedisStack）可通过 RediSearch 支持向量检索。
-- LangChain 的 Redis.from_documents()：传入 Document 列表 + embedding 实例，会自动对每个 document 的 page_content 做向量化并写入 Redis。
-- 写入后可调用 as_retriever() 得到检索器，用 invoke(查询文本) 做相似检索，返回与查询最相关的 Document 列表。
-- redis_url 需与本地 Redis 端口一致（如 26379）；索引名 index_name 用于区分不同业务的数据。
-
-Redis.from_documents 常用参数与基础用法：
-- 固定写法：Redis.from_documents(documents=..., embedding=..., redis_url=..., index_name=...)，前两个必填。
-- documents：Document 列表，每个 Document 需有 page_content，可选 metadata。
-  能否用图片/音频取决于 embedding：本处用文本嵌入模型，故 page_content 只能是文本。
-  若用多模态嵌入或先算好向量，也可把图像/音频的向量写入同一 Redis；纯图片/音频通常需用 add_embeddings 等接口（from_documents 默认只对文本调 embed_documents）。
-- embedding：嵌入模型实例（如 DashScopeEmbeddings），用于把 page_content 转成向量；文本模型只处理文本，多模态模型可处理图文等。
-- redis_url：Redis 连接地址，如 "redis://localhost:26379"（RedisStack 常用 26379）。
-- index_name：索引名，同一 Redis 可建多个索引区分业务；检索时须用同一 index_name。
-- 可选：key_prefix（键前缀）、distance_metric（相似度度量，如 COSINE）等，见 langchain_community.vectorstores.redis 文档。
+- 这是本章最贴近“向量库实战入口”的案例，演示的是：先准备 Document，再向量化，再写入 Redis，最后按相似度检索。
+- Redis.from_documents() 会自动读取每个 Document 的 page_content，调用 embedding 做向量化，并把原文、向量、metadata 一起写入 Redis。
+- as_retriever() 得到的是检索器；invoke(查询文本) 时，LangChain 会先把查询文本转成向量，再去库里找最相关的 Document。
+- 这个案例是 RAG 的底层能力演示，不包含文档加载器、文本分割器和“检索后交给大模型生成答案”的完整流程。
+- redis_url 和 index_name 要与本地环境一致；如果要复用已有索引，查询端也必须使用同一个 index_name。
 """
 
 # pip install langchain-community dashscope redis redisvl
@@ -34,8 +25,8 @@ embeddings = DashScopeEmbeddings(
     model="text-embedding-v3", dashscope_api_key=os.getenv("aliQwen-api")
 )
 
-# 2. 构造 Document 列表：page_content 为正文，metadata 可存来源等
-# 本脚本用文本嵌入模型，故此处仅为文本；存图像/音频向量需多模态嵌入或 add_embeddings
+# 2. 构造 Document 列表：page_content 是正文，metadata 是附加信息
+# 在完整 RAG 中，这些 Document 往往来自“加载器 + 分割器”；本案例先用手写数据聚焦理解向量库存取流程
 texts = [
     "通义千问是阿里巴巴研发的大语言模型。",
     "Redis 是一个高性能的键值存储系统，支持向量检索。",
@@ -45,8 +36,7 @@ documents = [
     Document(page_content=text, metadata={"source": "manual"}) for text in texts
 ]
 
-# 3. 一次性写入 Redis：内部会对每个 document 调用 embeddings 并建索引
-# 写法固定：documents + embedding 必填，redis_url、index_name 按环境与业务填写
+# 3. 一次性写入 Redis：内部会对每个 Document 的 page_content 做向量化，并建立可检索索引
 vector_store = Redis.from_documents(
     documents=documents,
     embedding=embeddings,
@@ -54,7 +44,7 @@ vector_store = Redis.from_documents(
     index_name="my_index11",
 )
 
-# 4. 得到检索器，按相似度取前 k 条（此处 k=2）
+# 4. 得到检索器：当你 invoke 查询文本时，LangChain 会先把问题向量化，再在库中做相似度检索
 retriever = vector_store.as_retriever(search_kwargs={"k": 2})
 results = retriever.invoke("LangChain 和 Redis 怎么结合？")
 for res in results:

@@ -1,12 +1,13 @@
 """
 【案例】在 Redis 向量库中做相似性检索（similarity_search_with_score）
 
-对应教程章节：第 18 章 - 向量数据库与 Embedding 实战 → 6、Embedding 存入向量数据库（Redis）
+对应教程章节：第 18 章 - 向量数据库与 Embedding 实战 → 6.3 案例：连接已有索引，做相似性检索
 
 知识点速览：
-- 相似性检索：将查询文本向量化后，在向量库中找与查询向量「最接近」的若干条，返回对应文档及相似度（或距离）。
-- similarity_search_with_score(query, k)：返回 (Document, score) 的列表，score 一般为距离（越小越相似），可转为相似度如 1 - score。
-- 使用前需确保 Redis 中已有数据（如先运行同目录下 RedisVectorStore.py 写入）；index_name、redis_url 须与写入端一致。
+- 相似性检索的核心流程是：查询文本先向量化，再到向量库中找到与查询向量最接近的若干条记录。
+- similarity_search_with_score(query, k) 返回 (Document, score) 列表；很多实现里 score 更接近“距离”，通常越小越相似。
+- 代码里把 score 换算成 1 - score，主要是为了更符合初学者直觉；真实项目里应以具体向量库和距离度量定义为准。
+- 运行前需确保 Redis 中已有数据，例如先执行同目录下的 RedisVectorStore.py；index_name、redis_url 也必须保持一致。
 """
 
 from langchain_redis import RedisConfig, RedisVectorStore
@@ -27,13 +28,13 @@ vector_store = RedisVectorStore(
     config=RedisConfig(index_name="newsgroups", redis_url="redis://localhost:26379"),
 )
 
-# 3. 查询文本 → 向量化后在库中做相似度检索，取前 k 条
+# 3. 查询文本 → 向量化 → 在库中做相似度检索；这里取前 3 条结果
 query = "我喜欢用什么手机"
 results = vector_store.similarity_search_with_score(query, k=3)
 
 print("=== 查询结果 ===")
 for i, (doc, score) in enumerate(results, 1):
-    # score 为距离，可转为相似度（如 1 - score，视具体实现而定）
+    # 这里把“距离”近似换算成“相似度”只是为了展示更直观；工程里请以具体返回定义为准
     similarity = 1 - score
     print(f"结果 {i}:")
     print(f"内容: {doc.page_content}")

@@ -1,13 +1,13 @@
 """
 【案例】使用 langchain_redis 将文本写入 Redis 向量库（add_texts）
 
-对应教程章节：第 18 章 - 向量数据库与 Embedding 实战 → 6、Embedding 存入向量数据库（Redis）
+对应教程章节：第 18 章 - 向量数据库与 Embedding 实战 → 6.2 案例：使用 langchain_redis 的 RedisVectorStore 写入文本
 
 知识点速览：
-- langchain_redis 的 RedisVectorStore：需传入 Embedding 实例和 RedisConfig（index_name、redis_url），用于向量存储与检索。
-- add_texts(texts, metadata)：将字符串列表与可选元数据写入向量库；内部会调用 embedding.embed_documents(texts) 得到向量再写入。
-- add_texts 内部会调用 embed_documents，因此只需传 texts 与 metadata，无需为写入而额外先执行 embed_documents；若需在写入前对向量或元数据做自定义处理，可先自行 embed 再使用 add_embeddings 等接口。
-- 返回的 ids 可用于后续按 ID 删除或更新；index_name 需与检索端一致（如与 RedisVectorStore_SimilaritySearch 同用 newsgroups）。
+- 这个案例展示的是另一种常见写法：先创建 RedisVectorStore，再通过 add_texts() 逐批把文本写入向量库。
+- add_texts(texts, metadata) 会在内部调用 embedding.embed_documents(texts) 做批量向量化，然后把文本、向量和 metadata 一起写入 Redis。
+- 本例里额外手动执行了一次 embed_documents，目的是先把“向量长什么样、维度是多少”打印出来帮助理解；真正做存储时，这一步不是必须的。
+- 返回的 ids 可用于后续更新、删除或追踪；index_name 需要和后续检索端保持一致。
 """
 
 from langchain_redis import RedisConfig, RedisVectorStore
@@ -30,7 +30,7 @@ texts = [
 ]
 
 
-# 批量转成向量（若仅做存储可交给 add_texts 内部调用，此处演示可先取向量查看）
+# 批量转成向量：这里只是为了先观察向量维度和内容；真正写入时 add_texts 内部会再次完成向量化
 embeddings = embeddingsModel.embed_documents(texts)
 for i, vec in enumerate(embeddings, 1):
     print(f"文本 {i}: {texts[i-1]}")
@@ -40,7 +40,7 @@ for i, vec in enumerate(embeddings, 1):
 # 定义每条文本对应的元数据信息
 # metadata = [{"segment_id": "1"}, {"segment_id": "2"}, {"segment_id": "3"}]
 
-# 定义每条文本对应的元数据信息（按条数自动生成，避免手写；真实 RAG 中可从 Document.metadata 取 source、page 等）
+# 定义每条文本对应的元数据信息；真实 RAG 中这些 metadata 往往来自 Document.metadata
 metadata = [{"segment_id": str(i)} for i in range(1, len(texts) + 1)]
 
 # 3. Redis 连接与索引名（需与检索案例一致）
@@ -49,7 +49,7 @@ config = RedisConfig(
     redis_url="redis://localhost:26379",
 )
 
-# 创建Redis向量存储实例
+# 创建 Redis 向量存储实例：此时只是“连上库 + 指定索引配置”，还没真正写入文本
 vector_store = RedisVectorStore(embeddingsModel, config=config)
 
 # 4. 将文本与元数据写入向量库（add_texts 内部会调 embed_documents，无需先算向量）
@@ -74,4 +74,3 @@ print(ids[0:5])
 # 前5个向量值: [-0.052530914545059204, 0.006213586777448654, -0.11318981647491455, -0.023480866104364395, -0.036481890827417374, -0.04383847862482071, 0.005418661516159773, 0.02874900959432125, 0.0019732017535716295, 0.01118539646267891]
 
 # ['newsgroups:01KKDZ5MRGBDPWJHDZZWH4W2Q6', 'newsgroups:01KKDZ5MRGBDPWJHDZZWH4W2Q7', 'newsgroups:01KKDZ5MRGBDPWJHDZZWH4W2Q8']
-
