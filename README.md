@@ -1,5 +1,5 @@
 <div align='center'>
-  <img src="./images/banner.png" alt="AI 智能体教程" width="950px">
+  <!-- <img src="./images/banner.png" alt="AI 智能体教程" width="950px"> -->
   <h1 style="margin-top: 15px;">🚀 全网最系统的 AI 智能体实战速成指南（从零到企业级落地）</h1>
   <h4><b>ai-agents-from-zero</b></h4>
   <p><em>2026 持续更新中 · 目标打造<b>「全网最完整」</b>AI Agent 教程 —— <b>系统教程 + 可跑源码 + 面试题汇编</b>，全面对齐「AI 智能体 / 大模型应用开发工程师」<b>培训课表</b>与<b>招聘 JD</b>的一条龙学习路线</em></p>
@@ -9,14 +9,12 @@
 
 ![AI](https://img.shields.io/badge/AI-Agent-00c853?style=flat)
 ![Language](https://img.shields.io/badge/language-Chinese-2ea44f?style=flat)
-![Stars](https://img.shields.io/github/stars/didilili/ai-agents-from-zero?logo=github&style=flat)
-[![GitHub](https://img.shields.io/badge/GitHub-Project-181717?logo=github&logoColor=white)](https://github.com/didilili/ai-agents-from-zero/)
-[![Read Online](https://img.shields.io/badge/在线阅读-点击访问-blue?logo=bookstack)](https://didilili.github.io/ai-agents-from-zero/#/)
+[![Read Online](https://img.shields.io/badge/在线阅读-点击访问-blue?logo=bookstack)](https://69d28af1866df7000824b9e8--aiagents-from-zero.netlify.app/#/)
 
 [快速开始](#quick-start) • [教程大纲](教程目录大纲.md) • [案例汇总](教程案例链接汇总.md#教程案例链接汇总源码与在线演示) • [更新日志](教程更新日志.md) • [面试题汇编](面试题汇编.md) • [新手入门与常见问题](新手入门与常见问题.md)
 
   <p>
-    <a href="https://didilili.github.io/ai-agents-from-zero/#/">📚 在线阅读</a>
+    <a href="https://69d28af1866df7000824b9e8--aiagents-from-zero.netlify.app/#/">📚 在线阅读</a>
   </p>
 
 </div>
@@ -67,7 +65,7 @@
 
 ## 📚 教程大纲（节选）
 
-完整导航见 **[教程目录大纲](教程目录大纲.md)** 与 [在线文档](https://didilili.github.io/ai-agents-from-zero/#/)。
+完整导航见 **[教程目录大纲](教程目录大纲.md)** 与 [在线文档](https://69d28af1866df7000824b9e8--aiagents-from-zero.netlify.app/#/)。
 
 ### 01 大模型基础能力构建
 
@@ -136,12 +134,12 @@
 
 ## 🚀 快速开始
 
-结合 [在线文档](https://didilili.github.io/ai-agents-from-zero/#/) 一起学习。想马上跑通一个案例？按下面几步即可。更详细的环境说明、API 申请、常见报错处理见 [新手入门与常见问题](新手入门与常见问题.md)。
+结合 [在线文档](https://69d28af1866df7000824b9e8--aiagents-from-zero.netlify.app/) 一起学习。想马上跑通一个案例？按下面几步即可。更详细的环境说明、API 申请、常见报错处理见 [新手入门与常见问题](新手入门与常见问题.md)。
 
 1. **克隆仓库并进入项目目录**
 
    ```bash
-   git clone https://github.com/didilili/ai-agents-from-zero.git
+   git clone https://gitee.com/amisu/ai-agents-from-zero.git
    cd ai-agents-from-zero
    ```
 
@@ -155,7 +153,6 @@
    ```
 
 3. **配置 API Key**
-
    - 将根目录下的 `.env-example` 复制为 `.env`
    - 在 `.env` 中填入你的 API Key（如通义千问/阿里百炼、DeepSeek 等），变量名需与代码一致（如 `aliQwen-api`、`QWEN_API_KEY`、`deepseek-api`）
    - 各平台 Key 的申请方式见 [新手入门与常见问题 - 各 API 平台如何申请 Key](新手入门与常见问题.md#_5、各-api-平台如何申请-key？)
@@ -177,12 +174,6 @@
 - **教程来源**：尚硅谷《大模型智能体线上速成班》课件同步，并在此基础上**补充、修订与扩展**；同时吸收社区实践与公开资料，**持续维护**。
 - **内容构成**：**系统章节笔记** + **可运行案例源码** + **[《面试题汇编》](面试题汇编.md)**（对标**同类线上培训**与**社招/校招 JD**）。
 - **目标**：**系统性掌握**大模型与智能体原理与实践（不只入门），从 0 到能独立做 **RAG / Agent** 类项目；**面试汇编**单独保证你能把项目与八股**说成考官听得懂的工程语言**。
-
----
-
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/image?repos=didilili/ai-agents-from-zero&type=date&legend=top-left)]()
 
 ---
 
